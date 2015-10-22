@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+</head>
+<body>
+var xhttp = new XMLHttpRequest();
+    			  xhttp.onreadystatechange = function() {
+	    			  if (xhttp.readyState == 4 && xhttp.status == 200) {
+	    			     
+	    			     var JSONData = JSON.parse(xhttp.responseText);
+	    			      
+	    			  }
+    			  }
+    			  xhttp.open("GET", "/StockWebApp/StockServlet?symbol="+ angular.uppercase(newValue), true);
+    			  xhttp.send();
+    			  $scope.$apply();
+</body>
+</html>

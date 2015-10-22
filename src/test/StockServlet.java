@@ -1,0 +1,167 @@
+package test;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.Scanner;
+
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import yahoofinance.Stock;
+import yahoofinance.YahooFinance;
+
+/**
+ * Servlet implementation class StockServlet
+ */
+@WebServlet("/StockServlet")
+public class StockServlet extends HttpServlet {
+	private static final long serialVersionUID = 1L;
+       
+    /**
+     * @see HttpServlet#HttpServlet()
+     */
+    public StockServlet() {
+        super();
+        // TODO Auto-generated constructor stub
+    }
+
+	/**
+	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
+	 */
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		String symbol = request.getParameter("symbol");
+		if(symbol != null || symbol != "")
+		{
+			StringBuffer returnData = null;		
+			String returnString = "";
+			
+			CompanyProfile profile = getCompanyProfile(symbol, request);
+			
+			if(profile.getName() != null)
+			{
+			StockProfile stock = getStockProfile(symbol);
+			returnData = new StringBuffer ("{\"data\":{");		
+			//Stock Data
+			returnData.append("\"stock\": {");
+			returnData.append("\"price\":\"" + stock.getPrice().toString() + "\"," );
+			returnData.append("\"pctChg\":\"" + stock.getPctChange().toString() + "\"}," );
+			
+			//Company Profile Data
+			returnData.append("\"company\":{");
+			returnData.append("\"market\":\"" + profile.getMarket() + "\"," );
+			returnData.append("\"symbol\":\"" + profile.getSym() + "\"," );		
+			returnData.append("\"name\":\"" + profile.getName() + "\"," );
+			returnData.append("\"marketCap\":\"" + profile.getMarketCap() + "\"," );
+			returnData.append("\"ipoYear\":\"" + profile.getiPOYear() + "\"," );
+			returnData.append("\"sector\": \"" + profile.getSector() + "\"," );
+			returnData.append("\"industry\":\"" + profile.getIndustry() + "\"," );
+			returnData.append("\"summaryQuote\":\"" + profile.getSummaryQuote() + "\"}" );
+			returnData.append("}}");
+			returnString = returnData.toString();
+			}
+			else
+			{
+				returnString = "";
+			}
+			//Write response with JSON data structure
+			response.getWriter().write(returnString);
+		}
+	}
+	
+	private StockProfile getStockProfile(String sym)
+	{
+		StockProfile prof = new StockProfile();
+		
+		Stock stock = YahooFinance.get(sym);
+		
+		if(stock != null)
+		{			
+			prof.setPrice(stock.getQuote().getPrice());
+			prof.setPctChange(stock.getQuote().getChangeInPercent());
+		}
+		
+		return prof;
+	}
+	
+	private CompanyProfile getCompanyProfile(String sym, HttpServletRequest request) throws FileNotFoundException
+	{
+		
+		ServletContext servletContext = request.getSession().getServletContext();
+		String relativeWebPath = "";
+		String file = "";
+		
+		CompanyProfile prof = new CompanyProfile();		
+		prof.setName(null);
+		prof.setSym(sym);
+
+		boolean found = false;
+		
+		
+		for(int i = 0; i < 3; i++)
+		{
+			switch (i){
+				case 0:					
+					relativeWebPath = "AMEX.csv";
+					file = servletContext.getRealPath(relativeWebPath);
+					prof.setMarket("AMEX");
+					break;
+				case 1:					
+					relativeWebPath = "NASDAQ.csv";
+					file = servletContext.getRealPath(relativeWebPath);
+					prof.setMarket("NASDAQ");
+					break;
+				case 2:
+					relativeWebPath = "NYSE.csv";
+					file = servletContext.getRealPath(relativeWebPath);
+					prof.setMarket("NYSE");
+					break;			
+			}
+				
+					
+			Scanner scanner = new Scanner(new File(file));
+         
+	        //Set the delimiter used in file
+	        scanner.useDelimiter(",");
+	         
+	    
+	        //I am just printing them
+	        while (scanner.hasNext())
+	        {
+	        	//System.out.println(scanner.next().trim());
+	        	if(scanner.next().trim().equals(sym.trim()))
+	        	{
+	        		prof.setName(scanner.next());
+	        		prof.setLastSale(scanner.next());
+	        		prof.setMarketCap(scanner.next());
+	        		prof.setiPOYear(scanner.next());
+	        		prof.setSector(scanner.next());
+	        		prof.setIndustry(scanner.next());
+	        		prof.setSummaryQuote(scanner.next());	        		
+	        		found =true;
+	        		break;
+	        	}
+	            
+	        }
+	        scanner.close();
+	        if(found)
+	        {
+	        	break;
+	        }
+		}
+		return prof;
+	}
+
+	/**
+	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
+	 */
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		// TODO Auto-generated method stub
+		doGet(request, response);
+	}
+
+}

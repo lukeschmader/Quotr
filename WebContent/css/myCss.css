@@ -1,0 +1,23 @@
+@CHARSET "ISO-8859-1";
+
+.darkBG
+{
+	color: #ffffff;
+	background: #444444;
+}
+
+h1, h2 {
+    display: inline;
+}
+
+.resizedTextbox
+{
+	position: absolute;
+    right: 0px;
+    padding: 0px;
+	width: 200px; height: 20px
+}
+
+.noHeader { 
+     border-top: none !important; 
+ }
