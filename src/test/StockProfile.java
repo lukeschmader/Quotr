@@ -20,6 +20,8 @@ public class StockProfile {
 	private BigDecimal yearHigh;
 	private BigDecimal eps;
 	private BigDecimal peg;
+	private String name;
+	private String symbol;
 	
 	
 	
@@ -118,6 +120,18 @@ public class StockProfile {
 	}
 	public void setChange(BigDecimal change) {
 		this.change = change;
+	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	public String getSymbol() {
+		return symbol;
+	}
+	public void setSymbol(String symbol) {
+		this.symbol = symbol;
 	}
 	
 	

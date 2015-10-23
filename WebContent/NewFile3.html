@@ -2,7 +2,7 @@
 <html ng-app="stockApp" >
   <head>
     <meta charset="utf-8">
-    <title>Angular.js Example</title>
+    <title>Stock App</title>
     <script src="//cdnjs.cloudflare.com/ajax/libs/angular.js/1.2.1/angular.min.js"></script>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
@@ -16,53 +16,71 @@
     	  $scope.search="GPRO";
         $scope.$watch('search', function(newValue, oldValue){
         	if(newValue != "")
-        	{   			  
-	               refreshStock(newValue);  
-	               refreshChart(newValue);
+        	{   	
+        		
+	            refreshStock(newValue);  
+	            refreshChart(newValue);
         	}
         	
         	
           });  
         function refreshChart(sym)
         {
+        	var urls = '/StockWebApp/GraphServlet?symbol=' + angular.uppercase(sym);        	
+        	$http.get(urls).success(function(data){
+           	if(data != undefined)
+       		{
+           		if(true)
+           		{
+	           		console.log("HERE");
+	           		var values = data.values;
+	           		var dates = data.dates;
+	           		console.log("HERE2");
+	           		console.log(JSON.stringify(data));
+		        	//console.log(values);
+		        	
+		        	
+		        	var ctx = document.getElementById("myChart").getContext("2d");
+		        	var data = {
+		        		    labels: dates,
+		        		    datasets: [
+		        		        {
+		        		            label: "My First dataset",
+		        		            fillColor: "rgba(220,220,220,0.2)",
+		        		            strokeColor: "#676767",
+		        		            pointColor: "#676767",
+		        		            pointStrokeColor: "#fff",
+		        		            pointHighlightFill: "#fff",
+		        		            pointHighlightStroke: "rgba(220,220,220,1)",
+		        		            data: values
+		        		        }
+		        		    ]
+		        		};
+		        	
+		        	
+		        	new Chart(ctx).Line(data, {
+		        	    bezierCurve: false,
+		        	    pointDot : false,
+		        	    animation: false
+		        	});
+		        	$scope.$apply();
+           		}
+       		}
         	
-        	var ctx = document.getElementById("myChart").getContext("2d");
-        	var data = {
-        		    labels: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "Novemeber"],
-        		    datasets: [
-        		        {
-        		            label: "My First dataset",
-        		            fillColor: "rgba(220,220,220,0.2)",
-        		            strokeColor: "#676767",
-        		            pointColor: "#676767",
-        		            pointStrokeColor: "#fff",
-        		            pointHighlightFill: "#fff",
-        		            pointHighlightStroke: "rgba(220,220,220,1)",
-        		            data: [65, 59, 80, 81, 56, 55, 40, 60, 70, 80, 100, 95]
-        		        }
-        		    ]
-        		};
-        	
-        	
-        	new Chart(ctx).Line(data, {
-        	    bezierCurve: false,
-        	    pointDot : false,
-        	    animation: false
-        	});
-        	$scope.$apply();
+        });
         }
         
         function refreshStock(sym)
         {
         	var urls = '/StockWebApp/StockServlet?symbol=' + angular.uppercase(sym);
-            $scope.search=angular.uppercase($scope.search);
+        	$scope.search=angular.uppercase($scope.search);
             $http.get(urls).success(function(data){
             	if(data != "")
         		{
 	            	var J =  data;		            	
 		            //Headings	            
-		            document.getElementById("companyName").innerHTML = J.data.company.name;
-		            document.getElementById("symbol").innerHTML = " (" + J.data.company.symbol + ") ";
+		            document.getElementById("companyName").innerHTML = J.data.stock.name;
+		            document.getElementById("symbol").innerHTML = " (" + J.data.stock.symbol + ") ";
 		            document.getElementById("pctChg").innerHTML = J.data.stock.pctChg < 0.00 ? "<font color=red>" + "(" +J.data.stock.pctChg + "%)" + "</font>" 
 		            		: "<font color=green>" + "(+" + J.data.stock.pctChg + "%)" + "</font>";   
 		            //Table
@@ -97,11 +115,11 @@
  	 <div class="row">
 		<div class="h3 darkBG col-md-12">Stock App</div>
 	</div>
-	<div class="greyBG row">
+	<div class="row">
 		<div class="col-md-9">				
 		</div>
 		<div class="col-md-3">
-		Search:<input ng-model="search" placeholder="Search symbol..." ng-model-options="{debounce: 1000}" type="text"/><br><br><br>
+		Search:<input ng-model="search" placeholder="Search symbol..." ng-model-options="{ updateOn: 'default blur', debounce: {'default': 1000, 'blur': 0} }"  maxlength="6" type="text"/><br><br><br>
 		</div>
 	</div> 
 	<div class="row">
@@ -112,7 +130,7 @@
     </div>
     <div class="row">
     <div class="col-sm-8">
-    		<canvas id="myChart" width="800" height="300"></canvas>
+    		<canvas id="myChart" width="790" height="300"></canvas>
     </div>
 	    <div class="col-sm-2">    
 		    <table class=" table">

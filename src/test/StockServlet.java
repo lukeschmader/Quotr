@@ -36,20 +36,23 @@ public class StockServlet extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String symbol = request.getParameter("symbol");
-		if(symbol != null || symbol != "")
+		if(symbol != null && symbol != "")
 		{
 			StringBuffer returnData = null;		
 			String returnString = "";
 			
 			CompanyProfile profile = getCompanyProfile(symbol, request);
 			
-			if(profile.getName() != null)
-			{
+			
 			StockProfile stock = getStockProfile(symbol);
+			if(stock.getName() != null && stock.getName() != "" && !stock.getName().equals("N/A"))
+			{
 			returnData = new StringBuffer ("{\"data\":{");		
 			//Stock Data
 			returnData.append("\"stock\": {");
 			returnData.append("\"price\":\"" + stock.getPrice().toString() + "\"," );
+			returnData.append("\"name\":\"" + stock.getName() + "\"," );
+			returnData.append("\"symbol\":\"" + stock.getSymbol() + "\"," );
 			returnData.append("\"change\":\"" + stock.getChange().toString() + "\"," );
 			returnData.append("\"pctChg\":\"" + stock.getPctChange().toString() + "\"," );
 			returnData.append("\"ask\":\"" + stock.getAsk().toString() + "\"," );
@@ -96,6 +99,8 @@ public class StockServlet extends HttpServlet {
 		
 		if(stock != null)
 		{			
+			prof.setName(stock.getName());
+			prof.setSymbol(stock.getSymbol());
 			prof.setPrice(stock.getQuote().getPrice().setScale(2, RoundingMode.HALF_UP));
 			prof.setChange(stock.getQuote().getChange().setScale(2, RoundingMode.HALF_UP));
 			prof.setPctChange(stock.getQuote().getChangeInPercent().setScale(2, RoundingMode.HALF_UP));
