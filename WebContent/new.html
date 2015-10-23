@@ -20,14 +20,23 @@
 	            $http.get(urls).success(function(data){
 	            	if(data != "")
             		{
-		            	var J =  data;
-		            	
-			            document.getElementById("price").innerHTML =J;
+		            	var J =  data;		            	
+			            //Headings	            
 			            document.getElementById("companyName").innerHTML = J.data.company.name;
 			            document.getElementById("symbol").innerHTML = " (" + J.data.company.symbol + ") ";
 			            document.getElementById("pctChg").innerHTML = J.data.stock.pctChg < 0.00 ? "<font color=red>" + "(" +J.data.stock.pctChg + "%)" + "</font>" 
-			            		: "<font color=green>" + "(" + J.data.stock.pctChg + "%)" + "</font>";
-			            
+			            		: "<font color=green>" + "(" + J.data.stock.pctChg + "%)" + "</font>";   
+			            //Table
+			            document.getElementById("price").innerHTML =J.data.stock.price;	
+			            document.getElementById("change").innerHTML =J.data.stock.change;
+			            document.getElementById("dayLow").innerHTML =J.data.stock.dayLow;
+			            document.getElementById("dayHigh").innerHTML =J.data.stock.dayHigh;
+			            document.getElementById("ask").innerHTML =J.data.stock.ask;
+			            document.getElementById("bid").innerHTML =J.data.stock.bid;
+			            document.getElementById("chgFromYearLowPct").innerHTML =J.data.stock.chgFromYearLowPct;
+			            document.getElementById("chgFromYearHighPct").innerHTML =J.data.stock.chgFromYearHighPct;
+			            document.getElementById("eps").innerHTML =J.data.stock.eps;
+			            document.getElementById("peg").innerHTML =J.data.stock.peg;
 			            
 			            
             		}
@@ -40,8 +49,9 @@
       
     </script>
   </head>
- <div class="container">
+
   <body ng-controller="StockCtrl">
+   <div class="container">
  	 <div class="row">
 		<div class="h3 darkBG col-md-12">Stock App</div>
 	</div>
@@ -70,20 +80,24 @@
 		    </thead>
 		    <tbody>
 		      <tr>
-		        <td><font color=grey>John</td>
-		        <td>Doe</td>
+		        <td><font color=grey>Price</font></td>
+		        <td id="price"></td>
 		      </tr>
 		      <tr>
-		        <td><font color=grey>John</td>
-		        <td>Doe</td>
+		        <td><font color=grey>Day low</font></td>
+		        <td id="price"></td>
 		      </tr>
 		      <tr>
-		        <td><font color=grey>Mary</td>
-		        <td>Moe</td>
+		        <td><font color=grey>Ask</font></td>
+		        <td id="ask"></td>
 		      </tr>
 		      <tr>
-		        <td><font color=grey>July</td>
-		        <td>Dooley</td>
+		        <td><font color=grey>% frm Yr low</font></td>
+		        <td id ="chgFromYearLowPct"></td>
+		      </tr>
+		      <tr>
+		        <td><font color=grey>EPS</font></td>
+		        <td id="eps"></td>		        
 		      </tr>
 		    </tbody>
 		  </table>
@@ -98,20 +112,24 @@
 		    </thead>
 		    <tbody>
 		      <tr>
-		        <td><font color=grey>John</td>
-		        <td>Doe</td>
+		        <td><font color=grey>Change</font></td>
+		        <td id="change"></td>
 		      </tr>
 		      <tr>
-		        <td><font color=grey>John</td>
-		        <td>Doe</td>
+		        <td><font color=grey>Day high</font></td>
+		        <td id="dayHigh"></td>
 		      </tr>
 		      <tr>
-		        <td><font color=grey>Mary</td>
-		        <td>Moe</td>
+		        <td><font color=grey>Bid</font></td>
+		        <td id="bid"></td>
 		      </tr>
 		      <tr>
-		        <td><font color=grey>July</td>
-		        <td>Dooley</td>
+		        <td><font color=grey>% frm Yr high</font></td>
+		        <td id="chgFromYearHighPct"></td>
+		      </tr>
+		      <tr>
+		        <td><font color=grey>PEG</font></td>
+		        <td id="peg"></td>
 		      </tr>
 		    </tbody>
 		  </table>
@@ -119,8 +137,7 @@
     </div>
     <br>
     <br>
-    <p id="price"></p>
-    
+  </div>  
 </div>
   </body>
 </html>

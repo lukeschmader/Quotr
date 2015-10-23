@@ -1,5 +1,9 @@
 @CHARSET "ISO-8859-1";
 
+html {
+  background-image: url('http://www.boylanbridgebrass.com/wp-content/uploads/2013/02/Website-Background.jpg');
+}
+
 .darkBG
 {
 	color: #ffffff;

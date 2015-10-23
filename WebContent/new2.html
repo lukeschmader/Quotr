@@ -22,7 +22,7 @@
             		{
 		            	var J =  data;
 		            	
-			            document.getElementById("price").innerHTML =J;
+			            document.getElementById("price").innerHTML =JSON.stringify(J);
 			            document.getElementById("companyName").innerHTML = J.data.company.name;
 			            document.getElementById("symbol").innerHTML = " (" + J.data.company.symbol + ") ";
 			            document.getElementById("pctChg").innerHTML = J.data.stock.pctChg < 0.00 ? "<font color=red>" + "(" +J.data.stock.pctChg + "%)" + "</font>" 

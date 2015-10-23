@@ -3,6 +3,7 @@ package test;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.math.RoundingMode;
 import java.util.Scanner;
 
 import javax.servlet.ServletContext;
@@ -49,7 +50,21 @@ public class StockServlet extends HttpServlet {
 			//Stock Data
 			returnData.append("\"stock\": {");
 			returnData.append("\"price\":\"" + stock.getPrice().toString() + "\"," );
-			returnData.append("\"pctChg\":\"" + stock.getPctChange().toString() + "\"}," );
+			returnData.append("\"change\":\"" + stock.getChange().toString() + "\"," );
+			returnData.append("\"pctChg\":\"" + stock.getPctChange().toString() + "\"," );
+			returnData.append("\"ask\":\"" + stock.getAsk().toString() + "\"," );
+			returnData.append("\"bid\":\"" + stock.getBid().toString() + "\"," );
+			returnData.append("\"chgFromYearLowPct\":\"" + stock.getChangeFromYearLowPct().toString() + "\"," );
+			returnData.append("\"chgFromYearHighPct\":\"" + stock.getChangeFromYearHighPct().toString() + "\"," );
+			returnData.append("\"dayLow\":\"" + stock.getDayLow().toString() + "\"," );
+			returnData.append("\"dayHigh\":\"" + stock.getDayHigh().toString() + "\"," );
+			returnData.append("\"open\":\"" + stock.getOpen().toString() + "\"," );
+			returnData.append("\"volume\":\"" + stock.getVolume() + "\"," );
+			returnData.append("\"avgVolume\":\"" + stock.getAvgVolume() + "\"," );
+			returnData.append("\"yearLow\":\"" + stock.getYearLow().toString() + "\"," );
+			returnData.append("\"yearHigh\":\"" + stock.getYearHigh().toString() + "\"," );
+			returnData.append("\"eps\":\"" + stock.getEps().toString() + "\"," );
+			returnData.append("\"peg\":\"" + stock.getPeg().toString() + "\"}," );
 			
 			//Company Profile Data
 			returnData.append("\"company\":{");
@@ -81,8 +96,22 @@ public class StockServlet extends HttpServlet {
 		
 		if(stock != null)
 		{			
-			prof.setPrice(stock.getQuote().getPrice());
-			prof.setPctChange(stock.getQuote().getChangeInPercent());
+			prof.setPrice(stock.getQuote().getPrice().setScale(2, RoundingMode.HALF_UP));
+			prof.setChange(stock.getQuote().getChange().setScale(2, RoundingMode.HALF_UP));
+			prof.setPctChange(stock.getQuote().getChangeInPercent().setScale(2, RoundingMode.HALF_UP));
+			prof.setAsk(stock.getQuote().getAsk().setScale(2, RoundingMode.HALF_UP));
+			prof.setBid(stock.getQuote().getBid().setScale(2, RoundingMode.HALF_UP));
+			prof.setChangeFromYearLowPct(stock.getQuote().getChangeFromYearLowInPercent().setScale(2, RoundingMode.HALF_UP));
+			prof.setChangeFromYearHighPct(stock.getQuote().getChangeFromYearHighInPercent().setScale(2, RoundingMode.HALF_UP));
+			prof.setDayLow(stock.getQuote().getDayLow().setScale(2, RoundingMode.HALF_UP));
+			prof.setDayHigh(stock.getQuote().getDayHigh().setScale(2, RoundingMode.HALF_UP));
+			prof.setOpen(stock.getQuote().getOpen().setScale(2, RoundingMode.HALF_UP));
+			prof.setVolume(stock.getQuote().getVolume());
+			prof.setAvgVolume(stock.getQuote().getAvgVolume());
+			prof.setYearLow(stock.getQuote().getYearLow().setScale(2, RoundingMode.HALF_UP));
+			prof.setYearHigh(stock.getQuote().getYearHigh().setScale(2, RoundingMode.HALF_UP));
+			prof.setEps(stock.getStats().getEps().setScale(2, RoundingMode.HALF_UP));
+			prof.setPeg(stock.getStats().getPeg().setScale(2, RoundingMode.HALF_UP));			
 		}
 		
 		return prof;
