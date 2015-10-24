@@ -30,15 +30,35 @@ h1, h2 {
 
  .btn-group {
 	
- 	 margin-top: 10px;
- 	 margin-left: 25px;
- 	 margin-bottom: 0px;
+
 	 
+ }
+ 
+ .siteBackground
+ {
+
+background: -webkit-gradient(linear, left top, right top, from(#FDFDFD), color-stop(0, #FFFFFF), color-stop(0.5, #FDFDFD), color-stop(1.50, #FFFFFF), to(#FDFDFD)); 
+/* Safari 5.1+, Chrome 10+ */ background: -webkit-linear-gradient(left, #FDFDFD, #FFFFFF 0%, #FDFDFD, #FFFFFF 100%, #FDFDFD); 
+/* Firefox 3.6+ */ background: -moz-linear-gradient(left, #FDFDFD, #FFFFFF 0%, #FDFDFD, #FFFFFF 100%, #FDFDFD); 
+/* IE 10 */ background: -ms-linear-gradient(left, #FDFDFD, #FFFFFF 0%, #FDFDFD, #FFFFFF 100%, #FDFDFD); 
+/* Opera 11.10+ */ background: -o-linear-gradient(left, #FDFDFD, #FFFFFF 0%, #FDFDFD, #FFFFFF 100%, #FDFDFD); 
  }
  
  .right
  {
+ opacity: 0.4;
   position: absolute;
-    right: 0px;
+    right: 3px;
+    top: 33px;
+  }
+  
+   .left
+ {
+ font-weight: bold;
+position: relative;
+opacity: 0.4;
+    left: 30px;
+    top: 30px
+    
   }
  
