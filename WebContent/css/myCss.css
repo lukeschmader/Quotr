@@ -22,7 +22,23 @@ h1, h2 {
      border-top: none !important; 
  }
  
- .greyBG{
+ .greyBG {
  	background-color:lightgrey;	
  	
  }
+ 
+
+ .btn-group {
+	
+ 	 margin-top: 10px;
+ 	 margin-left: 25px;
+ 	 margin-bottom: 0px;
+	 
+ }
+ 
+ .right
+ {
+  position: absolute;
+    right: 0px;
+  }
+ 

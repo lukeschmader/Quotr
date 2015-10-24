@@ -103,6 +103,14 @@ public class GraphServlet extends HttpServlet {
 				
 				returnString.append(dates.get(i));
 				
+//				if(!dates.get(i).equals("15") && !dates.get(i).equals("28") )
+//				{
+//					returnString.append("\"\"");
+//				}
+//				else
+//				{
+//					returnString.append(dates.get(i));
+//				}
 				if(i != 0)
 				{
 					returnString.append(",");

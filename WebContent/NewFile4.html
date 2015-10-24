@@ -14,57 +14,82 @@
     var nameApp = angular.module('stockApp', []);
       nameApp.controller('StockCtrl', function ($scope, $http){	
     	  $scope.search="GPRO";
+    	  $scope.lineChart = null;
+    	  $scope.oldSym = null;
+    	  
         $scope.$watch('search', function(newValue, oldValue){
         	if(newValue != "")
-        	{   	        	
-        		refreshStock(newValue);       		
+        	{   	     
+        		
+        		refreshStock(newValue);      
+        		var canvas = document.getElementById("myChart");
+	        	var ctx = document.getElementById("myChart").getContext("2d");	        	
+	        	ctx.clearRect(0, 0, canvas.width, canvas.height);
+	        	console.clear()
         		$scope.$apply();
+        		
+        		
+        		
         	}
         	
         	
           });  
         function refreshChart(sym)
         {
+        	
         	var urls = '/StockWebApp/GraphServlet?symbol=' + angular.uppercase(sym);        	
         	$http.get(urls).success(function(data){
            	if(data != undefined)
        		{
-           		if(true)
-           		{
-	           		console.log("HERE");
-	           		var values = data.values;
-	           		var dates = data.dates;
-	           		console.log("HERE2");
-	           		console.log(JSON.stringify(data));
-		        	//console.log(values);
-		        	
-		        	
-		        	var ctx = document.getElementById("myChart").getContext("2d");
-		        	var data = {
-		        		    labels: dates,
-		        		    datasets: [
-		        		        {
-		        		            
-		        		            fillColor: "rgba(220,220,220,0.2)",
-		        		            strokeColor: "#676767",
-		        		            pointColor: "#676767",
-		        		            pointStrokeColor: "#fff",
-		        		            pointHighlightFill: "#fff",
-		        		            pointHighlightStroke: "rgba(220,220,220,1)",
-		        		            data: values
-		        		        }
-		        		    ]
-		        		};
-		        	
-		        	
-		        	new Chart(ctx).Line(data, {
-		        	    bezierCurve: false,
-		        	    pointDot : false,
-		        	    pointHitDetectionRadius : -2,
-		        	    animation: false
-		        	});
-		        	$scope.$apply();
-           		}
+           		
+           		if($scope.lineChart != null)
+      			{
+           			$scope.lineChart.destroy();
+           			$scope.lineChart.clear();
+      				
+      			}
+           		
+           		console.log("HERE");
+           		var values = data.values;
+           		var dates = data.dates;
+           		console.log(JSON.stringify(data));
+	        	//console.log(values);
+	        	
+	        	var canvas = document.getElementById("myChart");
+	        	var ctx = document.getElementById("myChart").getContext("2d");	        	
+	        	ctx.clearRect(0, 0, canvas.width, canvas.height);
+	        	$scope.$apply();
+	        	var data = {
+	        		    labels: dates,
+	        		    datasets: [
+	        		        {
+	        		            
+	        		            fillColor: "rgba(220,220,220,0.2)",
+	        		            strokeColor: "#676767",
+	        		            pointColor: "#676767",
+	        		            pointStrokeColor: "#fff",
+	        		            pointHighlightFill: "#fff",
+	        		            pointHighlightStroke: "rgba(220,220,220,1)",
+	        		            data: values
+	        		        }
+	        		    ]
+	        		};
+	        	
+	        	lineChart = new Chart(ctx).Line(data, {
+	        	    bezierCurve: false,
+	        	    pointDot : false,
+	        	    animationEasing: "easeOutQuart",
+	        	    pointHitDetectionRadius : -2,
+	        	    showTooltips: false,
+	        	    animation: true      	    
+	        	
+	        	});
+	        	
+	        	 
+	        	
+	        	
+	        	
+	        	
        		}
         	
         });
@@ -81,7 +106,7 @@
 		            //Headings	            
 		            document.getElementById("companyName").innerHTML = J.data.stock.name;
 		            document.getElementById("symbol").innerHTML = " (" + J.data.stock.symbol + ") ";
-		            document.getElementById("pctChg").innerHTML = J.data.company.pctChg < 0.00 ? "<font color=red>" + "(" +J.data.company.pctChg + "%)" + "</font>" 
+		            document.getElementById("pctChg").innerHTML = J.data.stock.pctChg < 0.00 ? "<font color=red>" + "(" +J.data.stock.pctChg + "%)" + "</font>" 
 		            		: "<font color=green>" + "(+" + J.data.stock.pctChg + "%)" + "</font>";   
 		            //Table
 		            document.getElementById("price").innerHTML =J.data.stock.price;	
@@ -103,11 +128,12 @@
         
         //setInterval(function(){ refreshStock($scope.search); }, 3000);
       }); 
-      
+ </script>     
      
       
       
-    </script>
+
+    
   </head>
 
   <body ng-controller="StockCtrl">
@@ -128,13 +154,13 @@
 	    <h2 id="symbol"></h2>
 	    <h2 id="pctChg"></h2>
     </div>
-    <div class="btnGrp-grey row btnGrp-grey">
-    <div class="btnGrp-grey col-sm-8 btnGrp-grey">
-    <div class="btn-group btnGrp-grey">
-  <button type="button" class="btn btn-grey">1 Month</button>
-  <button type="button" class="btn btn-grey">3 Months</button>
-  <button type="button" class="btn btn-grey">1 Year</button>
-  <button type="button" class="btn btn-grey">3 Years</button>
+    <div class="row">
+    <div class="col-sm-8">
+    <div class="right btn-group">
+  <button type="button" class="btn btn-secondary-outline">1 Month</button>
+  <button type="button" class="btn btn-secondary-outline">3 Months</button>
+  <button type="button" class="btn btn-secondary-outline">1 Year</button>
+  <button type="button" class="btn btn-secondary-outline">3 Years</button>
 </div>
     		<canvas id="myChart" width="790" height="300"></canvas>
     </div>
@@ -203,9 +229,15 @@
 		    </tbody>
 		  </table>
 	  	</div>
+
+
     </div>
     <br>
     <br>
+    	  		  	<button type="button" class="btn btn-primary-outline">Primary</button>
+		<button type="button" class="btn btn-secondary-outline">Secondary</button>
+		<button type="button" class="btn btn-success-outline">Success</button>
+		<button type="button" class="btn btn-warning-outline">Warning</button>
   </div>  
 </div>
   </body>

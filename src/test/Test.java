@@ -57,13 +57,14 @@ public class Test {
 			//1 Month
 			Calendar end = Calendar.getInstance();
 			Calendar start = Calendar.getInstance();
-			start.add(Calendar.MONTH, -1);
-			List<HistoricalQuote> history = stock.getHistory(start, end, Interval.DAILY);
+			//start.add(Calendar.MONTH, -1);
+			List<HistoricalQuote> history = stock.getHistory();
 			Iterator<HistoricalQuote> historyItr = history.iterator();
 			HistoricalQuote current;
 			while (historyItr.hasNext()) {
 				current = historyItr.next();
 				GregorianCalendar g = (GregorianCalendar) current.getDate();
+				System.out.println(g.getTime());
 				dates.add(Integer.toString(g.get(GregorianCalendar.DAY_OF_MONTH)));
 				values.add(current.getAdjClose().setScale(2, RoundingMode.HALF_UP).toString());	
 			}
