@@ -4,13 +4,15 @@
     <meta charset="utf-8">
     <title>Stock App</title>
     <script src="//cdnjs.cloudflare.com/ajax/libs/angular.js/1.2.1/angular.min.js"></script>
+    <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+    <script src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
 	<link href="css/myCss.css" rel="stylesheet">
 	<script src="js/Chart.js"></script>
     <script>    
     
-   
+    var $jq = jQuery.noConflict();
     var nameApp = angular.module('stockApp', []);
       nameApp.controller('StockCtrl', function ($scope, $http){	
     	  $scope.search="GOOGL";
@@ -22,13 +24,9 @@
         $scope.$watch('search', function(newValue, oldValue){
         	if(newValue != "")
         	{   	     
-        		
         		refreshStock(newValue);      
 	        	console.clear();
-        		$scope.$apply();
-        		
-        		
-        		
+        		$scope.$apply();       		
         	} 
         	
           });  
@@ -37,7 +35,10 @@
         	if(newValue != "")
         	{   	     
         		
-        		 
+        		 $jq("button").click(function(){
+        		  	    $jq("button").removeClass('blackButton')
+        		  	        $jq(this).addClass('blackButton');
+        		  	});
         		var canvas = document.getElementById("myChart");
 	        	var ctx = document.getElementById("myChart").getContext("2d");	        	
 	        	ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -67,8 +68,8 @@
            		var values = data.values;
            		var dates = data.dates;
            		//document.getElementById("interval").innerHTML = " (" + data.info.interval + ") ";
-	            document.getElementById("graphDiff").innerHTML = data.info.diff < 0.00 ? "<font color=red>" + "(" +data.info.diff + "%)" + "</font>" 
-	            		: "<font color=green>" + "(+" + data.info.diff + "%)" + "</font>";   
+	            document.getElementById("graphDiff").innerHTML = data.info.diff < 0.00 ? data.info.interval + ": <font color=red>" + "" +data.info.diff + "%" + "</font>" 
+	            		: data.info.interval + ": <font color=green>" + "+" + data.info.diff + "%" + "</font>";   
            		console.log(JSON.stringify(data));
 	        	//console.log(values);
 	        	
@@ -97,7 +98,7 @@
 	        	    animationEasing: "easeOutQuart",
 	        	    pointHitDetectionRadius : -2,
 	        	    showTooltips: false,
-	        	    animation: true      	    
+	        	    animation: false      	    
 	        	
 	        	});	
 	        	
@@ -131,7 +132,7 @@
 		            document.getElementById("avgVolume").innerHTML =J.data.stock.avgVolume;
 		            document.getElementById("peg").innerHTML =J.data.stock.peg;		            
 		            if(!($scope.oldSym === J.data.stock.symbolS)){	
-		            	$scope.graphOption = 1;
+		            	
 		            	
 		           	 	refreshChart(sym, $scope.graphOption);
 		            }
@@ -171,6 +172,10 @@
         }
         setInterval(function(){ refreshStockHeader($scope.oldSym); }, 3000);
       }); 
+      
+
+      
+      
  </script>     
      
       
@@ -179,7 +184,7 @@
     
   </head>
 
-  <body ng-controller="StockCtrl" class="siteBackground">
+  <body ng-controller="StockCtrl">
    <div class="container">
  	 <div class="row">
 		<div class="h3 darkBG col-md-12">Stock App</div>
@@ -202,10 +207,10 @@
     <div id="graphDiff" class="left">
 </div>
     <div class="right btn-group">
-  <button type="button" ng-click="graphOption = 1" class="btn btn-secondary-outline">1m</button>
-  <button type="button" ng-click="graphOption = 2" class="btn btn-secondary-outline">6m</button>
-  <button type="button" ng-click="graphOption = 3" class="btn btn-secondary-outline">1y</button>
-  <button type="button" ng-click="graphOption = 4" class="btn btn-secondary-outline">5y</button>
+  <button type="button" ng-click="graphOption = 1" class="btn">1m</button>
+  <button type="button" ng-click="graphOption = 2" class="btn">6m</button>
+  <button type="button" ng-click="graphOption = 3" class="btn">1y</button>
+  <button type="button" ng-click="graphOption = 4" class="btn">5y</button>
 </div>
     		<canvas id="myChart" width="790" height="300"></canvas>
     </div>
@@ -279,10 +284,6 @@
     </div>
     <br>
     <br>
-    	<button type="button" class="btn btn-primary-outline">Primary</button>
-		<button type="button" class="btn btn-secondary-outline">Secondary</button>
-		<button type="button" class="btn btn-success-outline">Success</button>
-		<button type="button" class="btn btn-warning-outline">Warning</button>
   </div>  
 </div>
   </body>

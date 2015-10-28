@@ -1,4 +1,4 @@
-package test;
+package com.schmader.luke;
 
 import java.io.File;
 import java.io.FileNotFoundException;

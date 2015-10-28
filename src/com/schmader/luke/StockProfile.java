@@ -1,4 +1,4 @@
-package test;
+package com.schmader.luke;
 
 import java.math.BigDecimal;
 
@@ -22,6 +22,7 @@ public class StockProfile {
 	private BigDecimal peg;
 	private String name;
 	private String symbol;
+	private BigDecimal yieldPct;
 	
 	
 	
@@ -133,7 +134,12 @@ public class StockProfile {
 	public void setSymbol(String symbol) {
 		this.symbol = symbol;
 	}
-	
+	public BigDecimal getYieldPct() {
+		return yieldPct;
+	}
+	public void setYieldPct(BigDecimal yieldPct) {
+		this.yieldPct = yieldPct;
+	}
 	
 
 }

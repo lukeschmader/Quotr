@@ -15,5 +15,6 @@
 	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.module.container"/>
 	<classpathentry exported="true" kind="lib" path="E:/development/libraries/finance/YahooFinanceAPI-2.0.0/YahooFinanceAPI-1.4.0.jar"/>
 	<classpathentry kind="lib" path="E:/development/libraries/ejb/javax.ejb-api-3.2.jar"/>
+	<classpathentry kind="lib" path="E:/development/libraries/json/org.json.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>

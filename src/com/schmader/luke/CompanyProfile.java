@@ -1,4 +1,4 @@
-package test;
+package com.schmader.luke;
 
 public class CompanyProfile {
 

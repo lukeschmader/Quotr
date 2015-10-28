@@ -1,4 +1,4 @@
-package test;
+package com.schmader.luke.servlets;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -262,16 +262,16 @@ public class GraphServlet extends HttpServlet {
 			switch(option)
 			{
 			case "1":
-				returnString.append("\"interval\":\"Month \"," );
+				returnString.append("\"interval\":\"Month\"," );
 				break;
 			case "2":
-				returnString.append("\"interval\":\"6 Months \",");
+				returnString.append("\"interval\":\"6 Months\",");
 				break;
 			case "3":
-				returnString.append("\"interval\":\"1 Year \",");
+				returnString.append("\"interval\":\"1 Year\",");
 				break;
 			case "4":
-				returnString.append("\"interval\":\"5 Years \"," );
+				returnString.append("\"interval\":\"5 Years\"," );
 				break;
 			}
 			

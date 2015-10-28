@@ -1,20 +1,289 @@
 <!DOCTYPE html>
-<html>
-<head>
-<meta charset="ISO-8859-1">
-<title>Insert title here</title>
-</head>
-<body>
-var xhttp = new XMLHttpRequest();
-    			  xhttp.onreadystatechange = function() {
-	    			  if (xhttp.readyState == 4 && xhttp.status == 200) {
-	    			     
-	    			     var JSONData = JSON.parse(xhttp.responseText);
-	    			      
-	    			  }
-    			  }
-    			  xhttp.open("GET", "/StockWebApp/StockServlet?symbol="+ angular.uppercase(newValue), true);
-    			  xhttp.send();
-    			  $scope.$apply();
-</body>
+<html ng-app="stockApp" >
+  <head>
+    <meta charset="utf-8">
+    <title>Stock App</title>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/angular.js/1.2.1/angular.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
+	<link href="css/myCss.css" rel="stylesheet">
+	<script src="js/Chart.js"></script>
+    <script>    
+    
+   
+    var nameApp = angular.module('stockApp', []);
+      nameApp.controller('StockCtrl', function ($scope, $http){	
+    	  $scope.search="GOOGL";
+    	  $scope.lineChart = null;
+    	  $scope.oldSym = null;
+    	  $scope.graphPct = 100;
+    	  $scope.graphOption = 1;
+    	  
+        $scope.$watch('search', function(newValue, oldValue){
+        	if(newValue != "")
+        	{   	     
+        		
+        		refreshStock(newValue);      
+	        	console.clear();
+        		$scope.$apply();
+        		
+        		
+        		
+        	} 
+        	
+          });  
+        
+        $scope.$watch('graphOption', function(newValue, oldValue){
+        	if(newValue != "")
+        	{   	     
+        		
+        		 
+        		var canvas = document.getElementById("myChart");
+	        	var ctx = document.getElementById("myChart").getContext("2d");	        	
+	        	ctx.clearRect(0, 0, canvas.width, canvas.height);
+	        	refreshChart($scope.oldSym, newValue);
+        		$scope.$apply();
+        		
+        		
+        		
+        	}
+        });
+        function refreshChart(sym, option)
+        {
+        	
+        	var urls = '/StockWebApp/GraphServlet?symbol=' + angular.uppercase(sym) + "&option=" + option;  	
+        	$http.get(urls).success(function(data){
+           	if(data != undefined)
+       		{
+           		
+           		if($scope.lineChart != null)
+      			{
+           			$scope.lineChart.destroy();
+           			$scope.lineChart.clear();
+      				
+      			}
+           		
+           		console.log("HERE");
+           		var values = data.values;
+           		var dates = data.dates;
+           		//document.getElementById("interval").innerHTML = " (" + data.info.interval + ") ";
+	            document.getElementById("graphDiff").innerHTML = data.info.diff < 0.00 ? "<font color=red>" + "(" +data.info.diff + "%)" + "</font>" 
+	            		: "<font color=green>" + "(+" + data.info.diff + "%)" + "</font>";   
+           		console.log(JSON.stringify(data));
+	        	//console.log(values);
+	        	
+	        	        	
+	        	var data = {
+	        		    labels: dates,
+	        		    datasets: [
+	        		        {
+	        		            
+	        		            fillColor: "rgba(220,220,220,0.2)",
+	        		            strokeColor: "#676767",
+	        		            pointColor: "#676767",
+	        		            pointStrokeColor: "#fff",
+	        		            pointHighlightFill: "#fff",
+	        		            pointHighlightStroke: "rgba(220,220,220,1)",
+	        		            data: values
+	        		        }
+	        		    ]
+	        		};
+	        	var canvas = document.getElementById("myChart");
+	        	var ctx = document.getElementById("myChart").getContext("2d");	        	
+	        	ctx.clearRect(0, 0, canvas.width, canvas.height);	
+	        	lineChart = new Chart(ctx).Line(data, {
+	        	    bezierCurve: false,
+	        	    pointDot : false,
+	        	    animationEasing: "easeOutQuart",
+	        	    pointHitDetectionRadius : -2,
+	        	    showTooltips: false,
+	        	    animation: true      	    
+	        	
+	        	});	
+	        	
+       		}
+        	
+        });
+        }
+        
+        function refreshStock(sym)
+        {
+        	var urls = '/StockWebApp/StockServlet?symbol=' + angular.uppercase(sym);
+        	$scope.search=angular.uppercase($scope.search);
+            $http.get(urls).success(function(data){
+            	if(data != "")
+        		{
+	            	var J =  data;		            	
+		            //Headings	            
+		            document.getElementById("companyName").innerHTML = J.data.stock.name;
+		            document.getElementById("symbol").innerHTML = " (" + J.data.stock.symbol + ") ";
+		            document.getElementById("pctChg").innerHTML = J.data.stock.pctChg < 0.00 ? "<font color=red>" + "(" +J.data.stock.pctChg + "%)" + "</font>" 
+		            		: "<font color=green>" + "(+" + J.data.stock.pctChg + "%)" + "</font>";   
+		            //Table
+		            document.getElementById("price").innerHTML =J.data.stock.price;	
+		            document.getElementById("change").innerHTML =J.data.stock.change;
+		            document.getElementById("dayLow").innerHTML =J.data.stock.dayLow;
+		            document.getElementById("dayHigh").innerHTML =J.data.stock.dayHigh;
+		            document.getElementById("ask").innerHTML =J.data.stock.ask;
+		            document.getElementById("bid").innerHTML =J.data.stock.bid;
+		            document.getElementById("chgFromYearLowPct").innerHTML =J.data.stock.chgFromYearLowPct;
+		            document.getElementById("chgFromYearHighPct").innerHTML =J.data.stock.chgFromYearHighPct;
+		            document.getElementById("avgVolume").innerHTML =J.data.stock.avgVolume;
+		            document.getElementById("peg").innerHTML =J.data.stock.peg;		            
+		            if(!($scope.oldSym === J.data.stock.symbolS)){	
+		            	$scope.graphOption = 1;
+		            	
+		           	 	refreshChart(sym, $scope.graphOption);
+		            }
+		            $scope.oldSym = J.data.stock.symbol;
+		            
+        		}
+            });	 
+        }
+        function refreshStockHeader(sym)
+        {
+        	var urls = '/StockWebApp/StockServlet?symbol=' + angular.uppercase(sym);
+        	$scope.search=angular.uppercase($scope.search);
+            $http.get(urls).success(function(data){
+            	if(data != "")
+        		{
+	            	var J =  data;		            	
+		            //Headings	            
+		            document.getElementById("companyName").innerHTML = J.data.stock.name;
+		            document.getElementById("symbol").innerHTML = " (" + J.data.stock.symbol + ") ";
+		            document.getElementById("pctChg").innerHTML = J.data.stock.pctChg < 0.00 ? "<font color=red>" + "(" +J.data.stock.pctChg + "%)" + "</font>" 
+		            		: "<font color=green>" + "(+" + J.data.stock.pctChg + "%)" + "</font>";   
+		            //Table
+		            document.getElementById("price").innerHTML =J.data.stock.price;	
+		            document.getElementById("change").innerHTML =J.data.stock.change;
+		            document.getElementById("dayLow").innerHTML =J.data.stock.dayLow;
+		            document.getElementById("dayHigh").innerHTML =J.data.stock.dayHigh;
+		            document.getElementById("ask").innerHTML =J.data.stock.ask;
+		            document.getElementById("bid").innerHTML =J.data.stock.bid;
+		            document.getElementById("chgFromYearLowPct").innerHTML =J.data.stock.chgFromYearLowPct;
+		            document.getElementById("chgFromYearHighPct").innerHTML =J.data.stock.chgFromYearHighPct;
+		            document.getElementById("eps").innerHTML =J.data.stock.eps;
+		            document.getElementById("peg").innerHTML =J.data.stock.peg;
+
+		            $scope.$apply();
+        		}
+            });	 
+        }
+        setInterval(function(){ refreshStockHeader($scope.oldSym); }, 3000);
+      }); 
+ </script>     
+     
+      
+      
+
+    
+  </head>
+
+  <body ng-controller="StockCtrl" class="siteBackground">
+   <div class="container">
+ 	 <div class="row">
+		<div class="h3 darkBG col-md-12">Stock App</div>
+	</div>
+	<div class="row">
+		<div class="col-md-9">				
+		</div>
+		<div class="col-md-3">
+		Search:<input ng-model="search" placeholder="Search symbol..."  maxlength="6" type="text"/><br><br><br>
+		</div>
+	</div> 
+	<div class="row">
+	<div class="col-xl-12">
+	    <h2 id="companyName"></h2>
+	    <h2 id="symbol"></h2>
+	    <h2 id="pctChg"></h2>
+    </div>
+    <div class="row">
+    <div class="col-md-8">
+    <div id="graphDiff" class="left">
+</div>
+    <div class="right btn-group">
+  <button type="button" ng-click="graphOption = 1" class="btn btn-secondary-outline">1m</button>
+  <button type="button" ng-click="graphOption = 2" class="btn btn-secondary-outline">6m</button>
+  <button type="button" ng-click="graphOption = 3" class="btn btn-secondary-outline">1y</button>
+  <button type="button" ng-click="graphOption = 4" class="btn btn-secondary-outline">5y</button>
+</div>
+    		<canvas id="myChart" width="790" height="300"></canvas>
+    </div>
+    <br>
+	    <div class="col-md-2">    
+		    <table class=" table">
+		    <thead>
+		    <tr>
+		        <th></th>
+		        <th></th>
+		      </tr>		      
+		    </thead>
+		    <tbody>
+		      <tr>
+		        <td><font color=grey>Price</font></td>
+		        <td id="price"></td>
+		      </tr>
+		      <tr>
+		        <td><font color=grey>Day low</font></td>
+		        <td id="dayLow"></td>
+		      </tr>
+		      <tr>
+		        <td><font color=grey>Ask</font></td>
+		        <td id="ask"></td>
+		      </tr>
+		      <tr>
+		        <td><font color=grey>% yr low</font></td>
+		        <td id ="chgFromYearLowPct"></td>
+		      </tr>
+		      <tr>
+		        <td><font color=grey>Avg Vol</font></td>
+		        <td id="avgVolume"></td>		        
+		      </tr>
+		    </tbody>
+		  </table>
+	  	</div>
+	  	 <div class="col-md-2">    
+		    <table class=" table">
+		    <thead>
+		    <tr>
+		        <th></th>
+		        <th></th>
+		      </tr>		      
+		    </thead>
+		    <tbody>
+		      <tr>
+		        <td><font color=grey>Change</font></td>
+		        <td id="change"></td>
+		      </tr>
+		      <tr>
+		        <td><font color=grey>Day high</font></td>
+		        <td id="dayHigh"></td>
+		      </tr>
+		      <tr>
+		        <td><font color=grey>Bid</font></td>
+		        <td id="bid"></td>
+		      </tr>
+		      <tr>
+		        <td><font color=grey>% yr high</font></td>
+		        <td id="chgFromYearHighPct"></td>
+		      </tr>
+		      <tr>
+		        <td><font color=grey>PEG</font></td>
+		        <td id="peg"></td>
+		      </tr>
+		    </tbody>
+		  </table>
+	  	</div>
+
+
+    </div>
+    <br>
+    <br>
+    	<button type="button" class="btn btn-primary-outline">Primary</button>
+		<button type="button" class="btn btn-secondary-outline">Secondary</button>
+		<button type="button" class="btn btn-success-outline">Success</button>
+		<button type="button" class="btn btn-warning-outline">Warning</button>
+  </div>  
+</div>
+  </body>
 </html>

@@ -1,4 +1,4 @@
-package test;
+package com.schmader.luke.servlets;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -12,6 +12,9 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import com.schmader.luke.CompanyProfile;
+import com.schmader.luke.StockProfile;
 
 import yahoofinance.Stock;
 import yahoofinance.YahooFinance;
@@ -67,6 +70,7 @@ public class StockServlet extends HttpServlet {
 			returnData.append("\"yearLow\":\"" + stock.getYearLow().toString() + "\"," );
 			returnData.append("\"yearHigh\":\"" + stock.getYearHigh().toString() + "\"," );
 			returnData.append("\"eps\":\"" + stock.getEps().toString() + "\"," );
+			returnData.append("\"yieldPct\":\"" + stock.getYieldPct().toString() + "\"," );
 			returnData.append("\"peg\":\"" + stock.getPeg().toString() + "\"}," );
 			
 			//Company Profile Data
@@ -116,7 +120,9 @@ public class StockServlet extends HttpServlet {
 			prof.setYearLow(stock.getQuote().getYearLow().setScale(2, RoundingMode.HALF_UP));
 			prof.setYearHigh(stock.getQuote().getYearHigh().setScale(2, RoundingMode.HALF_UP));
 			prof.setEps(stock.getStats().getEps().setScale(2, RoundingMode.HALF_UP));
-			prof.setPeg(stock.getStats().getPeg().setScale(2, RoundingMode.HALF_UP));			
+			prof.setPeg(stock.getStats().getPeg().setScale(2, RoundingMode.HALF_UP));	
+			prof.setYieldPct(stock.getDividend().getAnnualYieldPercent().setScale(2, RoundingMode.HALF_UP));
+			
 		}
 		
 		return prof;
