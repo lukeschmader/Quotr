@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -34,8 +35,9 @@ public class IndustryServlet extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
-		String symbol = request.getParameter("symbol");
-		BufferedReader reader = new BufferedReader( new FileReader ("CompanyInfo.json"));
+		String symbol = request.getParameter("symbol");	
+		ServletContext servletContext = request.getSession().getServletContext();
+		BufferedReader reader = new BufferedReader( new FileReader (servletContext.getRealPath("CompanyInfo.json")));
 	    String         line = null;
 	    StringBuilder  stringBuilder = new StringBuilder();
 
@@ -150,7 +152,11 @@ public class IndustryServlet extends HttpServlet {
 			 		returnData.append("\"avgVolume\":\""+ avgVolume.divide(bCount, 0, RoundingMode.HALF_UP) + "\",");
 			 		returnData.append("\"avgAvgVolume\":\""+ avgAvgVolume.divide(bCount, 0, RoundingMode.HALF_UP) + "\"");		 
 			 returnData.append("}}");
-		 
+			 
+			 //Write back
+			 response.getWriter().write(returnData.toString());
+			 
+			 
 	} catch (JSONException e) {
 		// TODO Auto-generated catch block
 		e.printStackTrace();

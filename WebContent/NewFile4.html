@@ -49,6 +49,16 @@
         		
         	}
         });
+        function refreshIndustry(sym)
+        {
+        	var urls = '/StockWebApp/IndustryServlet?symbol=' + angular.uppercase(sym);
+        	$http.get(urls).success(function(data){
+        		$scope.companies = data.companies;
+        		$scope.industryStats = data.stats;
+        	});
+        	
+        }
+        
         function refreshChart(sym, option)
         {
         	
@@ -131,10 +141,9 @@
 		            document.getElementById("chgFromYearHighPct").innerHTML =J.data.stock.chgFromYearHighPct;
 		            document.getElementById("avgVolume").innerHTML =J.data.stock.avgVolume;
 		            document.getElementById("peg").innerHTML =J.data.stock.peg;		            
-		            if(!($scope.oldSym === J.data.stock.symbolS)){	
-		            	
-		            	
+		            if(!($scope.oldSym === J.data.stock.symbolS)){		            	
 		           	 	refreshChart(sym, $scope.graphOption);
+		           		refreshIndustry(sym);
 		            }
 		            $scope.oldSym = J.data.stock.symbol;
 		            
@@ -279,9 +288,25 @@
 		    </tbody>
 		  </table>
 	  	</div>
-
-
-    </div>
+   </div>
+   <div class='row'>
+   <div class='col-md-8'>
+   <table>
+      <tr>
+        <th>Company</th>
+        <th>Price</th>
+        <th>Change</th>
+      </tr>
+      <tr ng-repeat="company in companies">
+        <td>{{company.name}} ({{company.symbol}})</td>
+        <td>{{company.price}}    </td>
+        <td>{{company.changePct}}%</td>
+      </tr>
+    </table>
+   
+   </div>
+   
+   </div>
     <br>
     <br>
   </div>  
