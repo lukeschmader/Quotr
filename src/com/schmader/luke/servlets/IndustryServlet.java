@@ -107,8 +107,7 @@ public class IndustryServlet extends HttpServlet {
 			 
 			 StringBuffer returnData = new StringBuffer ("{\"companies\":[");		
 			 for (Map.Entry<String, Stock> stock : stocks.entrySet())
-			 {
-				
+			 {			 
 			  //   System.out.println(stock.getKey() + "/" + stock.getValue());		
 				 k++;
 				 returnData.append("{");
@@ -150,7 +149,8 @@ public class IndustryServlet extends HttpServlet {
 			 		returnData.append("\"avgChangePct\":\""+ avgChangeInPercent.divide(bCount, 2, RoundingMode.HALF_UP) + "\",");
 			 		returnData.append("\"avgOneYearTargetPrice\":\""+ avgTarget.divide(bCount, 2, RoundingMode.HALF_UP) + "\",");
 			 		returnData.append("\"avgVolume\":\""+ avgVolume.divide(bCount, 0, RoundingMode.HALF_UP) + "\",");
-			 		returnData.append("\"avgAvgVolume\":\""+ avgAvgVolume.divide(bCount, 0, RoundingMode.HALF_UP) + "\"");		 
+			 		returnData.append("\"avgAvgVolume\":\""+ avgAvgVolume.divide(bCount, 0, RoundingMode.HALF_UP) + "\",");	
+			 		returnData.append("\"industryCount\":\""+ k + "\"");	
 			 returnData.append("}}");
 			 
 			 //Write back

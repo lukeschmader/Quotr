@@ -55,6 +55,7 @@
         	$http.get(urls).success(function(data){
         		$scope.companies = data.companies;
         		$scope.industryStats = data.stats;
+        		$scope.industryCount = data.stats.industryCount;
         	});
         	
         }
@@ -179,6 +180,18 @@
         		}
             });	 
         }
+        
+        $scope.set_color = function (number) {
+        	  if (number < 0) {
+        	    return { color: "red" }
+        	  }
+        	  else
+       		  {        		  
+        		  return { color: "green" }
+        		  
+       		  }
+        	}
+        
         setInterval(function(){ refreshStockHeader($scope.oldSym); }, 3000);
       }); 
       
@@ -221,11 +234,11 @@
   <button type="button" ng-click="graphOption = 3" class="btn">1y</button>
   <button type="button" ng-click="graphOption = 4" class="btn">5y</button>
 </div>
-    		<canvas id="myChart" width="790" height="300"></canvas>
+    <canvas id="myChart" width=778px height="300"></canvas>
     </div>
     <br>
-	    <div class="col-md-2">    
-		    <table class=" table">
+	    <div class="col-md-2 stockInfoTable">    
+		    <table class=" table"   >
 		    <thead>
 		    <tr>
 		        <th></th>
@@ -256,7 +269,7 @@
 		    </tbody>
 		  </table>
 	  	</div>
-	  	 <div class="col-md-2">    
+	  	 <div class="col-md-2 stockInfoTable">    
 		    <table class=" table">
 		    <thead>
 		    <tr>
@@ -291,19 +304,26 @@
    </div>
    <div class='row'>
    <div class='col-md-8'>
-   <table>
-      <tr>
-        <th>Company</th>
-        <th>Price</th>
-        <th>Change</th>
-      </tr>
-      <tr ng-repeat="company in companies">
-        <td>{{company.name}} ({{company.symbol}})</td>
-        <td>{{company.price}}    </td>
-        <td>{{company.changePct}}%</td>
-      </tr>
-    </table>
-   
+   		<table class="table table-striped noBottom"  >
+	   	<thead bgcolor="lightGrey">
+	      <tr >
+	        <th  width=68%>Company<span class="badge smallBadge">{{industryCount}}</span></th>
+	        <th width=15%>Price</th>
+	        <th width=15%>Change</th>
+	      </tr>
+	      </thead>
+	    </table>
+	   <div class='scrollable noTop'>
+	   <table class="table table-striped noTop">
+	      <tbody>
+	      <tr ng-repeat="company in companies">
+	        <td width=68%>{{company.name}} ({{company.symbol}})</td>
+	        <td width=15%>{{company.price}}    </td>
+	        <td width=13% ng-style="set_color(company.changePct)">{{company.changePct < 0 ? company.changePct : "+" + company.changePct }}%</td>
+	      </tr>
+	      </tbody>
+	    </table>
+	   </div>
    </div>
    
    </div>
