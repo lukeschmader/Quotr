@@ -16,6 +16,7 @@
     var nameApp = angular.module('stockApp', []);
       nameApp.controller('StockCtrl', function ($scope, $http){	
     	  $scope.search="GOOGL";
+    	  $scope.currentProfile="";
     	  $scope.lineChart = null;
     	  $scope.oldSym = null;
     	  $scope.graphPct = 100;
@@ -24,8 +25,7 @@
         $scope.$watch('search', function(newValue, oldValue){
         	if(newValue != "")
         	{   	     
-        		refreshStock(newValue);      
-	        	console.clear();
+        		refreshStock(newValue);     
         		$scope.$apply();       		
         	} 
         	
@@ -109,6 +109,7 @@
 	        	    animationEasing: "easeOutQuart",
 	        	    pointHitDetectionRadius : -2,
 	        	    showTooltips: false,
+	        	    //responsive: true,
 	        	    animation: false      	    
 	        	
 	        	});	
@@ -125,12 +126,16 @@
             $http.get(urls).success(function(data){
             	if(data != "")
         		{
-	            	var J =  data;		            	
+	            	var J =  data;	
+	            	 
 		            //Headings	            
 		            document.getElementById("companyName").innerHTML = J.data.stock.name;
 		            document.getElementById("symbol").innerHTML = " (" + J.data.stock.symbol + ") ";
 		            document.getElementById("pctChg").innerHTML = J.data.stock.pctChg < 0.00 ? "<font color=red>" + "(" +J.data.stock.pctChg + "%)" + "</font>" 
 		            		: "<font color=green>" + "(+" + J.data.stock.pctChg + "%)" + "</font>";   
+		            		
+		          	document.getElementById("profileIndustry").innerHTML = J.data.company.sector + "-" + J.data.company.industry;		
+							           
 		            //Table
 		            document.getElementById("price").innerHTML =J.data.stock.price;	
 		            document.getElementById("change").innerHTML =J.data.stock.change;
@@ -141,8 +146,12 @@
 		            document.getElementById("chgFromYearLowPct").innerHTML =J.data.stock.chgFromYearLowPct;
 		            document.getElementById("chgFromYearHighPct").innerHTML =J.data.stock.chgFromYearHighPct;
 		            document.getElementById("avgVolume").innerHTML =J.data.stock.avgVolume;
+		            document.getElementById("volume").innerHTML =J.data.stock.volume ;
 		            document.getElementById("peg").innerHTML =J.data.stock.peg;		            
-		            if(!($scope.oldSym === J.data.stock.symbolS)){		            	
+		            if(!($scope.oldSym === J.data.stock.symbolS)){	
+		            	$scope.industryCount = "loading..."
+		            	$scope.companies = "";
+		            	$scope.$apply();
 		           	 	refreshChart(sym, $scope.graphOption);
 		           		refreshIndustry(sym);
 		            }
@@ -171,15 +180,25 @@
 		            document.getElementById("dayHigh").innerHTML =J.data.stock.dayHigh;
 		            document.getElementById("ask").innerHTML =J.data.stock.ask;
 		            document.getElementById("bid").innerHTML =J.data.stock.bid;
-		            document.getElementById("chgFromYearLowPct").innerHTML =J.data.stock.chgFromYearLowPct;
-		            document.getElementById("chgFromYearHighPct").innerHTML =J.data.stock.chgFromYearHighPct;
+		            document.getElementById("chgFromYearLowPct").innerHTML =J.data.stock.chgFromYearLowPct + "%";
+		            document.getElementById("chgFromYearHighPct").innerHTML =J.data.stock.chgFromYearHighPct+ "%";
+		            document.getElementById("yieldPct").innerHTML =J.data.stock.yieldPct + "%";
 		            document.getElementById("eps").innerHTML =J.data.stock.eps;
 		            document.getElementById("peg").innerHTML =J.data.stock.peg;
+		            
 
 		            $scope.$apply();
         		}
             });	 
         }
+        
+        
+        $scope.updateSymbol = function (sym) {
+        	$scope.search = sym;
+        	console.print(sym);
+        	 $scope.$apply();
+      	}
+        
         
         $scope.set_color = function (number) {
         	  if (number < 0) {
@@ -224,27 +243,29 @@
 	    <h2 id="symbol"></h2>
 	    <h2 id="pctChg"></h2>
     </div>
+    <div class="col-xl-12">
+	    <h4><font id="profileIndustry" color=lightGrey></font></h4>
+    </div>
     <div class="row">
     <div class="col-md-8">
     <div id="graphDiff" class="left">
 </div>
     <div class="right btn-group">
-  <button type="button" ng-click="graphOption = 1" class="btn">1m</button>
+  <button type="button" ng-click="graphOption = 1" class="btn blackButton">1m</button>
   <button type="button" ng-click="graphOption = 2" class="btn">6m</button>
   <button type="button" ng-click="graphOption = 3" class="btn">1y</button>
   <button type="button" ng-click="graphOption = 4" class="btn">5y</button>
 </div>
-    <canvas id="myChart" width=778px height="300"></canvas>
+    <canvas id="myChart" width=778px height="310"></canvas>
     </div>
     <br>
-	    <div class="col-md-2 stockInfoTable">    
-		    <table class=" table"   >
-		    <thead>
-		    <tr>
-		        <th></th>
-		        <th></th>
-		      </tr>		      
-		    </thead>
+     <div class="col-lg-4 stockTable">  
+     <h4 class = "stockTable">Today</h4>
+     </div>
+
+	    <div class="col-lg-2 stockTable">    
+		    <table class=" table stockTable"   >
+		    
 		    <tbody>
 		      <tr>
 		        <td><font color=grey>Price</font></td>
@@ -258,25 +279,12 @@
 		        <td><font color=grey>Ask</font></td>
 		        <td id="ask"></td>
 		      </tr>
-		      <tr>
-		        <td><font color=grey>% yr low</font></td>
-		        <td id ="chgFromYearLowPct"></td>
-		      </tr>
-		      <tr>
-		        <td><font color=grey>Avg Vol</font></td>
-		        <td id="avgVolume"></td>		        
-		      </tr>
 		    </tbody>
 		  </table>
 	  	</div>
-	  	 <div class="col-md-2 stockInfoTable">    
-		    <table class=" table">
-		    <thead>
-		    <tr>
-		        <th></th>
-		        <th></th>
-		      </tr>		      
-		    </thead>
+	  	 <div class="col-lg-2  stockTable">    
+		    <table class=" table stockTable">
+		    
 		    <tbody>
 		      <tr>
 		        <td><font color=grey>Change</font></td>
@@ -290,6 +298,42 @@
 		        <td><font color=grey>Bid</font></td>
 		        <td id="bid"></td>
 		      </tr>
+		    </tbody>
+		  </table>
+	  	</div>
+	  	<div class="col-lg-4 stockTable">  
+	  	<br>
+     </div>
+	  	<div class="col-lg-4 stockTable">  
+     <h4 class = "stockTable">Stats</h4>
+     </div>
+	  	<div class="col-lg-2 stockTable">    
+		    <table class=" table stockTable"   >
+		    
+		    <tbody>
+		      <tr>
+		        <td><font color=grey>Volume</font></td>
+		        <td id="volume"></td>
+		      </tr>
+		      <tr>
+		        <td><font color=grey>% yr low</font></td>
+		        <td id ="chgFromYearLowPct"></td>
+		      </tr>
+		      <tr>
+		        <td><font color=grey>Dividend Yield</font></td>
+		        <td id="yieldPct"></td>		        
+		      </tr>
+		    </tbody>
+		  </table>
+	  	</div>
+	  	 <div class="col-lg-2  stockTable">    
+		    <table class=" table stockTable">
+		    
+		    <tbody>
+		      <tr>
+		        <td><font color=grey>Avg Volume</font></td>
+		        <td id="avgVolume"></td>
+		      </tr>
 		      <tr>
 		        <td><font color=grey>% yr high</font></td>
 		        <td id="chgFromYearHighPct"></td>
@@ -302,22 +346,50 @@
 		  </table>
 	  	</div>
    </div>
+   <div class='row darkWellRowBoot'>
+   <div class='col-md-2 darkWellBoot'>
+   		<div class="well darkWell">
+   		<h3 class="outlineText">+2.34%</h3>
+   		from average volume
+   		</div>
+   </div>
+    <div class='col-md-2 darkWellBoot'>
+   		<div class="well darkWell">
+   		<h3 class="outlineText">+0.33%</h3>
+   		from average volume
+   		</div>
+   </div>
+    <div class='col-md-2 darkWellBoot'>
+   		<div class="well darkWell">
+   		<h3 class="outlineText">-20.32%</h3>
+   		from average volume
+   		</div>
+   </div>
+    <div class='col-md-2 darkWellBoot'>
+   		<div class="well darkWell">
+   		<h3 class="outlineText">+3.4%</h3>
+   		from average volume
+   		</div>
+   </div>
+   <div class='col-md-4'>
+   </div>
+   </div>
    <div class='row'>
    <div class='col-md-8'>
-   		<table class="table table-striped noBottom"  >
+   		<table class="table table-striped noBottom industryTableTop"  >
 	   	<thead bgcolor="lightGrey">
 	      <tr >
-	        <th  width=68%>Company<span class="badge smallBadge">{{industryCount}}</span></th>
-	        <th width=15%>Price</th>
-	        <th width=15%>Change</th>
+	        <th class="industryHeader" width=68% ng-click="sortField = 'name'; reverse = !reverse ">Companies In Industry<span class="badge smallBadge">{{industryCount}}</span></th>
+	        <th class="industryHeader" width=15%  ng-click="sortField = 'price'; reverse = !reverse">Price</th>
+	        <th class="industryHeader" width=15%  ng-click="sortField = 'changePct'; reverse = !reverse">Change</th>
 	      </tr>
 	      </thead>
 	    </table>
 	   <div class='scrollable noTop'>
-	   <table class="table table-striped noTop">
+	   <table class="table table-striped noTop ">
 	      <tbody>
-	      <tr ng-repeat="company in companies">
-	        <td width=68%>{{company.name}} ({{company.symbol}})</td>
+	      <tr class="industryRow" ng-repeat="company in companies | orderBy:sortField:reverse"">
+	        <td  width=68%><a ng-href='#' ng-click="updateSymbol(company.symbol);">{{company.name}} ({{company.symbol}})</a></td>
 	        <td width=15%>{{company.price}}    </td>
 	        <td width=13% ng-style="set_color(company.changePct)">{{company.changePct < 0 ? company.changePct : "+" + company.changePct }}%</td>
 	      </tr>
@@ -325,11 +397,16 @@
 	    </table>
 	   </div>
    </div>
-   
+   <div class='col-md-4'>
+   </div>
    </div>
     <br>
     <br>
   </div>  
 </div>
   </body>
+   <footer class="foot">
+  <p>Created By: Luke Schmader</p>
+  <p>Email: <a href="mailto:lukeschmader@gmail.com">lukeschmader@gmail.com</a>.</p>
+</footer> 
 </html>

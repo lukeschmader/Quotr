@@ -4,7 +4,12 @@
 .scrollable
 {
 	overflow: auto;
-	height: 300px;
+	height: 298px;
+}
+
+.stockTableHeader
+{
+	font-size: 1px;;
 }
 
 
@@ -15,7 +20,7 @@
 	background: #444444;
 }
 
-h1, h2 {
+h1, h2, h4 {
     display: inline;
 }
 
@@ -25,6 +30,12 @@ h1, h2 {
     right: 0px;
     padding: 0px;
 	width: 200px; height: 20px
+}
+
+.stockTable
+{
+    margin: 0px;
+    padding: 1px;
 }
 
 .smallBadge
@@ -54,6 +65,43 @@ h1, h2 {
  	color: white;
  	background-color:black;	
  }
+  .darkWell
+ {
+	 margin-bottom: 5px;
+	 
+ 	padding-top:5px;
+ 	text-align: center;
+ 	color: white;
+ 	height: 130px;
+ 	border: 1px solid #606060;
+ 	background: #b7b7b7;
+ 	/* Firefox 3.6+ */ background: -moz-linear-gradient(top, #bfbfbf, #a5a5a5);
+ 	font-weight: bold;
+ }
+ 
+.outlineText
+ {
+  	font-weight: bold;
+ 	color: white;
+ 	font-size: 250%;
+ 	text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
+ }
+ 
+   .darkWellBoot
+ {
+ 
+ 	padding: 2px;
+ 	margin: 0px;
+ }
+    .darkWellRowBoot
+ {
+ 
+ 	padding-left: 0px;
+ 	padding-right: 8px;
+ 	
+ 	
+ 	margin: 0px;
+ }
   .blackButton:active
  {
  	color: white;
@@ -65,13 +113,6 @@ h1, h2 {
  	background-color:black;	
  }
 
-.stockInfoTable
-{
-	margin-left = 0px;
-	padding-left = 0px;
-	margin-right = 5px;
-	padding-right = 0px;
-}
 
  .right
  {
@@ -110,9 +151,34 @@ tr {width:100%; }
 }
 
 
+.industryTableTop {
+    border-top: 1px solid #d3d3d3;
+}
+.industryTableBottom {
+    border-bottom: 1px solid #d3d3d3;
+}
 
+.industryRow {
+    border-left: 1px solid #d3d3d3;
+}
 
+.industryHeader {
+	 /* Firefox 3.6+ */ background: -moz-linear-gradient(top, #cbcbcb, #b5b5b5);
+    border: 1px solid #b7b7b7;
+}
+
+.industryHeader:active {
+	 /* Firefox 3.6+ */ background: -moz-linear-gradient(top, #cbcbcb, #ebebeb);
+    background-color: #f4f4f4;
+} 
  
- 
- 
+.foot
+{
+	margin-top: 20px;
+	padding-top: 10px;
+	padding-left: 100px;
+	background: #b7b7b7;
+	 /* Firefox 3.6+ */ background: -moz-linear-gradient(top, #cbcbcb, #b5b5b5);
+    border: 1px solid #b7b7b7;
+}
  

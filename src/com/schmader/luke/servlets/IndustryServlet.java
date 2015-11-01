@@ -114,25 +114,25 @@ public class IndustryServlet extends HttpServlet {
 				 returnData.append("\"symbol\":\"" +  stock.getValue().getSymbol() + "\",");
 				 returnData.append("\"name\":\"" +  stock.getValue().getName() + "\",");
 				 
-				 returnData.append("\"yieldPct\":\"" +  stock.getValue().getDividend().getAnnualYieldPercent().setScale(2, RoundingMode.HALF_UP) + "\",");
+				 returnData.append("\"yieldPct\":" +  stock.getValue().getDividend().getAnnualYieldPercent().setScale(2, RoundingMode.HALF_UP) + ",");
 				 avgYieldPct = avgYieldPct.add(stock.getValue().getDividend().getAnnualYieldPercent());
 				 
-				 returnData.append("\"price\":\"" +  stock.getValue().getQuote().getPrice().setScale(2, RoundingMode.HALF_UP) + "\",");
+				 returnData.append("\"price\":" +  stock.getValue().getQuote().getPrice().setScale(2, RoundingMode.HALF_UP) + ",");
 				 avgPrice = avgPrice.add(stock.getValue().getQuote().getPrice());
 				 
-				 returnData.append("\"change\":\"" +  stock.getValue().getQuote().getChange().setScale(2, RoundingMode.HALF_UP) + "\",");
+				 returnData.append("\"change\":" +  stock.getValue().getQuote().getChange().setScale(2, RoundingMode.HALF_UP) + ",");
 				 avgChange = avgChange.add(stock.getValue().getQuote().getChange());
 				 
-				 returnData.append("\"changePct\":\"" +  stock.getValue().getQuote().getChangeInPercent().setScale(2, RoundingMode.HALF_UP) + "\",");
+				 returnData.append("\"changePct\":" +  stock.getValue().getQuote().getChangeInPercent().setScale(2, RoundingMode.HALF_UP) + ",");
 				 avgChangeInPercent = avgChangeInPercent.add(stock.getValue().getQuote().getChangeInPercent());			 
 				 
-				 returnData.append("\"oneYearTargetPrice\":\"" +  stock.getValue().getStats().getOneYearTargetPrice().setScale(2, RoundingMode.HALF_UP) + "\",");
+				 returnData.append("\"oneYearTargetPrice\":" +  stock.getValue().getStats().getOneYearTargetPrice().setScale(2, RoundingMode.HALF_UP) + ",");
 				 avgTarget = avgTarget.add(stock.getValue().getStats().getOneYearTargetPrice());			 
 				 
-				 returnData.append("\"volume\":\"" +  stock.getValue().getQuote().getVolume() + "\",");
+				 returnData.append("\"volume\":" +  stock.getValue().getQuote().getVolume() + ",");
 				 avgVolume = avgVolume.add(new BigDecimal(stock.getValue().getQuote().getVolume()));
 				 
-				 returnData.append("\"avgVolume\":\"" +  stock.getValue().getQuote().getAvgVolume() + "\"");
+				 returnData.append("\"avgVolume\":" +  stock.getValue().getQuote().getAvgVolume() + "");
 				 avgAvgVolume = avgAvgVolume.add(new BigDecimal(stock.getValue().getQuote().getAvgVolume()));
 				 returnData.append("}");
 				 if(k != (stocks.size()))
