@@ -103,7 +103,7 @@ public class IndustryServlet extends HttpServlet {
 			 BigDecimal avgAvgVolume = new BigDecimal(0);
 			 BigDecimal avgYieldPct = new BigDecimal(0);
 			 BigDecimal avgTarget = new BigDecimal(0);
-			 
+			 BigDecimal avgPeg = new BigDecimal(0);
 			 
 			 StringBuffer returnData = new StringBuffer ("{\"companies\":[");		
 			 for (Map.Entry<String, Stock> stock : stocks.entrySet())
@@ -129,6 +129,9 @@ public class IndustryServlet extends HttpServlet {
 				 returnData.append("\"oneYearTargetPrice\":" +  stock.getValue().getStats().getOneYearTargetPrice().setScale(2, RoundingMode.HALF_UP) + ",");
 				 avgTarget = avgTarget.add(stock.getValue().getStats().getOneYearTargetPrice());			 
 				 
+				 returnData.append("\"peg\":" +  stock.getValue().getStats().getPeg().setScale(2, RoundingMode.HALF_UP) + ",");
+				 avgPeg = avgPeg.add(stock.getValue().getStats().getPeg());	
+				 
 				 returnData.append("\"volume\":" +  stock.getValue().getQuote().getVolume() + ",");
 				 avgVolume = avgVolume.add(new BigDecimal(stock.getValue().getQuote().getVolume()));
 				 
@@ -150,6 +153,8 @@ public class IndustryServlet extends HttpServlet {
 			 		returnData.append("\"avgOneYearTargetPrice\":\""+ avgTarget.divide(bCount, 2, RoundingMode.HALF_UP) + "\",");
 			 		returnData.append("\"avgVolume\":\""+ avgVolume.divide(bCount, 0, RoundingMode.HALF_UP) + "\",");
 			 		returnData.append("\"avgAvgVolume\":\""+ avgAvgVolume.divide(bCount, 0, RoundingMode.HALF_UP) + "\",");	
+			 		returnData.append("\"avgYieldPct\":\""+ avgYieldPct.divide(bCount, 2, RoundingMode.HALF_UP) + "\",");	
+			 		returnData.append("\"avgPeg\":\""+ avgPeg.divide(bCount, 2, RoundingMode.HALF_UP) + "\",");	
 			 		returnData.append("\"industryCount\":\""+ k + "\"");	
 			 returnData.append("}}");
 			 

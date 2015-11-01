@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.math.RoundingMode;
-import java.text.NumberFormat;
 import java.util.Scanner;
 
 import javax.servlet.ServletContext;
@@ -66,8 +65,8 @@ public class StockServlet extends HttpServlet {
 			returnData.append("\"dayLow\":\"" + stock.getDayLow().toString() + "\"," );
 			returnData.append("\"dayHigh\":\"" + stock.getDayHigh().toString() + "\"," );
 			returnData.append("\"open\":\"" + stock.getOpen().toString() + "\"," );
-			returnData.append("\"volume\":\"" + NumberFormat.getInstance().format(stock.getVolume()) + "\"," );
-			returnData.append("\"avgVolume\":\"" + NumberFormat.getInstance().format(stock.getAvgVolume()) + "\"," );
+			returnData.append("\"volume\":\"" + stock.getVolume() + "\"," );
+			returnData.append("\"avgVolume\":\"" + stock.getAvgVolume() + "\"," );
 			returnData.append("\"yearLow\":\"" + stock.getYearLow().toString() + "\"," );
 			returnData.append("\"yearHigh\":\"" + stock.getYearHigh().toString() + "\"," );
 			returnData.append("\"eps\":\"" + stock.getEps().toString() + "\"," );
