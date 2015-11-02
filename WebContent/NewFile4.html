@@ -202,6 +202,10 @@
 		            if(!($scope.oldSym === J.data.stock.symbolS)){	
 		            	if($scope.stockFromIndustry == false)
 		           	 	{
+		            		document.getElementById("indChgPct").innerHTML = "-%";        		
+		    	            document.getElementById("indVolumePct").innerHTML = "-%";
+		               		document.getElementById("indYield").innerHTML = "-%";
+		              		document.getElementById("indPeg").innerHTML = "-%";
 			            	$scope.industryCount = "loading..."
 			            	$scope.companies = "";
 			            	$scope.$apply();
@@ -425,16 +429,18 @@
    </div>
     <div class='col-md-2 darkWellBoot'>
    		<div class="well darkWell">
+   		<h3 id="indPeg" class="outlineText">-%</h3>
+   		PEG vs Industry Average
+   		</div>
+   		
+   </div>
+    <div class='col-md-2 darkWellBoot'>
+   		<div class="well darkWell">
    		<h3 id="indYield" class="outlineText">-%</h3>
    		Dividend Yield vs Industry Average
    		</div>
    </div>
-    <div class='col-md-2 darkWellBoot'>
-   		<div class="well darkWell">
-   		<h3 id="indPeg" class="outlineText">-%</h3>
-   		PEG vs Industry Average
-   		</div>
-   </div>
+   
    <div class='col-md-4'>
    </div>
    </div>

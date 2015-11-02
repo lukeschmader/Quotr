@@ -16,6 +16,7 @@
 
 .darkBG
 {
+	
 	padding-top: 10px;
 	padding-bottom: 10px;
 	margin-top: 10px;
@@ -74,23 +75,38 @@ h1, h2, h4 {
  
  /*firefox background: -moz-linear-gradient(top, #bfbfbf, #a5a5a5);
  */
+
+.inline
+{
+	display: inline-block;
+	vertical-align: middle;
+}
+
+.well-group {
+    display: inline-block;
+    vertical-align: middle;
+}
   .darkWell
  {
 	 margin-bottom: 5px;
-	 
- 	padding-top:5px;
+	 width:16%;
+ 	padding-top:0px;
  	text-align: center;
  	color: black;
+ 	font-size: 90%;
  	height: 130px;
  	border: 1px solid #606060;
- 	background: #d1d1d1;
+ 	background: #e4e4e4;
  	
  }
+ 
+ 
  
 .outlineText
  {
  	color: white;
  	font-size: 150%;
+ 	
  	text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
  }
  
@@ -98,6 +114,7 @@ h1, h2, h4 {
  {
  
  	padding: 2px;
+ 	padding-left: 8px;
  	margin: 0px;
  }
     .darkWellRowBoot

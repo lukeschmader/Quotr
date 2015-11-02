@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+    <link href="http://getbootstrap.com/dist/css/bootstrap.css" rel="stylesheet" type="text/css" />
+<script src="http://cdnjs.cloudflare.com/ajax/libs/angular.js/1.2.1/angular.min.js"></script>
+<script src="js/angular-gauge.js"></script>
+	<script src="js/angular-gauge.min.js"></script>
+	<script src="js/gauge.min.js"></script>
+<!--<script src="../components/gauge.js/dist/gauge.min.js"></script>-->
+
+<script>
+var app = angular.module('gauge', ['gaugejs']);
+
+app.controller('test', ['$scope', '$timeout', function($scope, $timeout) {
+    $scope.animationTime = 10;
+    $scope.value = 3000;
+    $scope.maxValue = 3000;
+	$scope.gaugeType = 'donut';
+
+    $scope.gaugeOptions = {
+        lines: 12,
+        // The number of lines to draw
+        angle: 0.15,
+        // The length of each line
+        lineWidth: 0.44,
+        // The line thickness
+        pointer: {
+            length: 0.9,
+            // The radius of the inner circle
+            strokeWidth: 0.035,
+            // The rotation offset
+            color: '#000000' // Fill color
+        },
+        limitMax: 'false',
+        // If true, the pointer will not go past the end of the gauge
+        colorStart: '#6FADCF',
+        // Colors
+        colorStop: '#8FC0DA',
+        // just experiment with them
+        strokeColor: '#E0E0E0',
+        // to see which ones work best for you
+        generateGradient: true
+    };
+    
+    $scope.donutGaugeOptions = {
+        lines: 12,
+        // The number of lines to draw
+        angle: 0.15,
+        // The length of each line
+        lineWidth: 0.044,
+        // The line thickness
+        pointer: {
+            length: 0.09,
+            // The radius of the inner circle
+            strokeWidth: 0.0035,
+            // The rotation offset
+            color: '#000000' // Fill color
+        },
+        limitMax: 'false',
+        // If true, the pointer will not go past the end of the gauge
+        colorStart: '#6FADCF',
+        // Colors
+        colorStop: '#8FC0DA',
+        // just experiment with them
+        strokeColor: '#E0E0E0',
+        // to see which ones work best for you
+        generateGradient: true
+    };
+
+
+}]);
+
+
+
+</script>
+</head>
+<body ng-app="gauge" class="container">
+  <h2>Gauge.js for angular</h2>
+  <hr />
+  
+  <div ng-controller="test">
+      <canvas gaugejs options="gaugeOptions" value="value" max-value="maxValue" animation-time="animationTime"></canvas>
+      <hr />
+      
+      <canvas gaugejs gauge-type="gaugeType" options="donutGaugeOptions" value="value" max-value="maxValue" animation-time="animationTime"></canvas>
+      <hr />
+      
+      <label for="">Value</label>
+      <input type="number" ng-model="value" />
+  </div>
+  
+
+</body>
+</html>
