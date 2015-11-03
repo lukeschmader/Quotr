@@ -71,6 +71,7 @@ public class StockServlet extends HttpServlet {
 			returnData.append("\"yearHigh\":\"" + stock.getYearHigh().toString() + "\"," );
 			returnData.append("\"eps\":\"" + stock.getEps().toString() + "\"," );
 			returnData.append("\"yieldPct\":\"" + stock.getYieldPct().toString() + "\"," );
+			returnData.append("\"yearTarget\":\"" + stock.getYearTarget().toString() + "\"," );
 			returnData.append("\"peg\":\"" + stock.getPeg().toString() + "\"}," );
 			
 			//Company Profile Data
@@ -121,6 +122,7 @@ public class StockServlet extends HttpServlet {
 			prof.setYearHigh(stock.getQuote().getYearHigh().setScale(2, RoundingMode.HALF_UP));
 			prof.setEps(stock.getStats().getEps().setScale(2, RoundingMode.HALF_UP));
 			prof.setPeg(stock.getStats().getPeg().setScale(2, RoundingMode.HALF_UP));	
+			prof.setYearTarget(stock.getStats().getOneYearTargetPrice().setScale(2, RoundingMode.HALF_UP));
 			prof.setYieldPct(stock.getDividend().getAnnualYieldPercent().setScale(2, RoundingMode.HALF_UP));
 			
 		}

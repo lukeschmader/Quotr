@@ -1,5 +1,16 @@
 @CHARSET "ISO-8859-1";
 
+.sell
+{
+	margin-right:1px;
+	display: inline-block;
+}
+
+.gauge
+{
+	width:100%
+}
+
 
 .scrollable
 {
@@ -110,6 +121,10 @@ h1, h2, h4 {
  	text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
  }
  
+.consensus
+{
+	font-size: 100%;
+} 
    .darkWellBoot
  {
  

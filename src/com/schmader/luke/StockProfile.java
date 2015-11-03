@@ -23,6 +23,7 @@ public class StockProfile {
 	private String name;
 	private String symbol;
 	private BigDecimal yieldPct;
+	private BigDecimal yearTarget;
 	
 	
 	
@@ -139,6 +140,12 @@ public class StockProfile {
 	}
 	public void setYieldPct(BigDecimal yieldPct) {
 		this.yieldPct = yieldPct;
+	}
+	public BigDecimal getYearTarget() {
+		return yearTarget;
+	}
+	public void setYearTarget(BigDecimal yearTarget) {
+		this.yearTarget = yearTarget;
 	}
 	
 

@@ -11,8 +11,8 @@
 	<link href="css/myCss.css" rel="stylesheet">
 	<script src="js/Chart.js"></script>
 	<script src="js/angular-gauge.js"></script>
-	<script src="js/angular-gauge.min.js"></script>
-	<script src="js/gauge.min.js"></script>
+	<!--<script src="../components/gauge.js/dist/gauge.min.js"></script>-->
+	<script src="http://bernii.github.io/gauge.js/dist/gauge.min.js"></script>
 
     <script>    
     
@@ -30,18 +30,20 @@
     	  $scope.currentDivYield = 0;
     	  $scope.currentChangePct = 0;
     	  $scope.currentPeg = 0;
+    	  $scope.currentPrice = 0;
+    	  $scope.currentTarget = 0;
     	  $scope.industryStats = null;
     	  $scope.sortField = 'name';
     	  
     	  $scope.animationTime = 10;
-    	    $scope.value = 2000;
-    	    $scope.maxValue = 3000;
+    	    $scope.gaugeValue = 0;
+    	    $scope.maxValue = 4;
     		$scope.gaugeType = 'donut';
 
     	    $scope.gaugeOptions = {
     	        lines: 12,
     	        // The number of lines to draw
-    	        angle: 0.15,
+    	        angle: 0,
     	        // The length of each line
     	        lineWidth: 0.44,
     	        // The line thickness
@@ -52,41 +54,18 @@
     	            // The rotation offset
     	            color: '#000000' // Fill color
     	        },
+    	        percentColors: [[0.0, "#ff0000" ], [0.50, "#f9c802"], [1.0, "#a9d70b"]],
+    	        
     	        limitMax: 'true',
     	        // If true, the pointer will not go past the end of the gauge
-    	        colorStart: '#6FADCF',
-    	        // Colors
-    	        colorStop: '#8FC0DA',
+    	  
     	        // just experiment with them
     	        strokeColor: '#E0E0E0',
     	        // to see which ones work best for you
     	        generateGradient: true
     	    };
     	    
-    	    $scope.donutGaugeOptions = {
-    	            lines: 12,
-    	            // The number of lines to draw
-    	            angle: 0.15,
-    	            // The length of each line
-    	            lineWidth: 0.044,
-    	            // The line thickness
-    	            pointer: {
-    	                length: 0.09,
-    	                // The radius of the inner circle
-    	                strokeWidth: 0.0035,
-    	                // The rotation offset
-    	                color: '#000000' // Fill color
-    	            },
-    	            limitMax: 'false',
-    	            // If true, the pointer will not go past the end of the gauge
-    	            colorStart: '#6FADCF',
-    	            // Colors
-    	            colorStop: '#8FC0DA',
-    	            // just experiment with them
-    	            strokeColor: '#E0E0E0',
-    	            // to see which ones work best for you
-    	            generateGradient: true
-    	        };
+    	   
 
     	  
         $scope.$watch('search', function(newValue, oldValue){
@@ -133,7 +112,10 @@
         		var indVolpct = $scope.currentVolumePct - (data.stats.avgVolume/data.stats.avgAvgVolume)*100.00;
         		var indYieldPct =$scope.currentDivYield - data.stats.avgYieldPct;
         		var indPeg =  $scope.currentPeg - data.stats.avgPeg;
-        		
+        		var targetChg = ($scope.currentTarget-$scope.currentPrice)/$scope.currentPrice;
+        		$scope.gaugeValue = targetChg+2;
+        		document.getElementById("targetChange").innerHTML = targetChg.toPrecision(3) < 0.00 ? "<font color=red>" + targetChg.toPrecision(3) + "%" + "</font>" 
+	            		: "<font color=green>" + "+" + targetChg.toPrecision(3) + "%" + "</font>";               		
         		document.getElementById("indChgPct").innerHTML = indChangepct.toPrecision(2) < 0.00 ? "<font color=red>" + indChangepct.toPrecision(2) + "%" + "</font>" 
 	            		: "<font color=green>" + "+" + indChangepct.toPrecision(2) + "%" + "</font>";        		
 	            document.getElementById("indVolumePct").innerHTML = indVolpct.toPrecision(4) < 0.00 ? "<font color=red>" + indVolpct.toPrecision(4) + "%" + "</font>" 
@@ -153,7 +135,10 @@
     		var indVolpct = $scope.currentVolumePct - $scope.industryStats.indVolumePct;
     		var indYieldPct =$scope.currentDivYield - $scope.industryStats.indavgYieldPct;
     		var indPeg =  $scope.currentPeg - $scope.industryStats.indPeg;
-        	
+    		var targetChg = ($scope.currentTarget-$scope.currentPrice)/$scope.currentPrice;
+    		$scope.gaugeValue = targetChg+2;
+    		document.getElementById("targetChange").innerHTML = targetChg.toPrecision(3) < 0.00 ? "<font color=red>" + targetChg.toPrecision(3) + "%" + "</font>" 
+            		: "<font color=green>" + "+" + targetChg.toPrecision(3) + "%" + "</font>";      		
         	document.getElementById("indChgPct").innerHTML = indChangepct.toPrecision(2) < 0.00 ? "<font color=red>" + indChangepct.toPrecision(2) + "%" + "</font>" 
             		: "<font color=green>" + "+" + indChangepct.toPrecision(2) + "%" + "</font>";        		
             document.getElementById("indVolumePct").innerHTML = indVolpct.toPrecision(4) < 0.00 ? "<font color=red>" + indVolpct.toPrecision(4) + "%" + "</font>" 
@@ -258,6 +243,8 @@
 			    	$scope.currentDivYield = J.data.stock.yieldPct;
 			    	$scope.currentChangePct = J.data.stock.pctChg;
 			    	$scope.currentPeg = J.data.stock.peg;
+			    	$scope.currentPrice = J.data.stock.price;
+			    	$scope.currentTarget = J.data.stock.yearTarget;
 			    	
 		            if(!($scope.oldSym === J.data.stock.symbolS)){	
 		            	if($scope.stockFromIndustry == false)
@@ -266,6 +253,8 @@
 		    	            document.getElementById("indVolumePct").innerHTML = "-%";
 		               		document.getElementById("indYield").innerHTML = "-%";
 		              		document.getElementById("indPeg").innerHTML = "-%";
+		              		document.getElementById("targetChange").innerHTML = "-%";	
+		              		$scope.gaugeValue = 0;
 			            	$scope.industryCount = "loading..."
 			            	$scope.companies = "";
 			            	$scope.$apply();
@@ -490,30 +479,24 @@
 	   		PEG vs Industry Average
 	   		</div>
 	   		<div class="well darkWell inline">
+	   		<h3 id="targetChange" class="outlineText">-%</h3>
+	   		One Year Target Percent Change
+	   		</div>
+	   		<div class="well darkWell inline">
 	   		<h3 id="indYield" class="outlineText">-%</h3>
 	   		Dividend Yield vs Industry Average
 	   		</div>
 	   		<div class="well darkWell inline">
-	   		<h3 id="new" class="outlineText">-%</h3>
-	   		Dividend Yield vs Industry Average
-	   		</div>
-	   		<div class="well darkWell inline">
-	   		<h3 id="new" class="outlineText">-%</h3>
-	   		Dividend Yield vs Industry Average
+	   		<h3 class="consensus">Potential</h3>
+	   		<canvas class="gauge" gaugejs options="gaugeOptions" value="gaugeValue" max-value="maxValue" min-value="5" animation-time="animationTime"></canvas>
+			<p class="inline sell">Sell</p></p><p class="inline">Buy</p>
 	   		</div>
    		</div>
    </div>
    
    <div class='col-md-4'>
-	 <canvas gaugejs options="gaugeOptions" value="value" max-value="maxValue" animation-time="animationTime"></canvas>
-      <hr />
-      
-      <canvas gaugejs gauge-type="gaugeType" options="donutGaugeOptions" value="value" max-value="maxValue" animation-time="animationTime"></canvas>
-      <hr />
-      
-      <label for="">Value</label>
-      <input type="number" ng-model="value" />
-      
+	 
+
    </div>
    </div>
    <div class='row'>
