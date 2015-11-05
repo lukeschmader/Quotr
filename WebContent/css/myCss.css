@@ -1,5 +1,77 @@
 @CHARSET "ISO-8859-1";
 
+.darkBG
+{
+	color: #ffffff;
+	background: #444444;
+}
+
+.heading
+{
+	
+	position: absolute;
+    left: 4%;
+	
+}
+
+.searchRow
+{
+	margin-top:5px;
+}
+
+.inline
+{
+	display: inline;
+}
+
+.sub-heading
+{
+	margin-top:50px;
+	color: #000000;
+	background: #999999;
+	height:25px;
+	
+}
+
+.heading-title
+{
+	margin-left:100px;
+	top: 50%;
+	position: relative;
+	transform: translateY(-50%);
+	
+
+	
+}
+
+.sub-heading-title
+{
+
+	font-weight: bold;
+	margin-left:100px;
+	top: 50%;
+	position: relative;
+	transform: translateY(-50%);
+	
+
+	
+}
+
+.create-account
+{
+
+	color: #999999;
+	
+    vertical-align: bottom;
+	
+}
+.navbar-right
+{
+	margin:0px;
+	padding:0px;
+	
+}
+
 .sell
 {
 	margin-right:1px;
