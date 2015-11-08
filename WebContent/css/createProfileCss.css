@@ -1,0 +1,115 @@
+@CHARSET "ISO-8859-1";
+
+
+.darkBG
+{color: #ffffff;
+	background: #444444;
+}
+
+.loginTitle
+{
+	color: #FFFFFF;
+	margin-top: 0px;
+	padding-top: 0px;
+	padding-bottom: 0px;
+	padding-left: 5px;
+	background: #FCAB42;
+	margin-bottom: 0px;
+}
+
+.loginInputs
+{
+	
+}
+
+.loginButton
+{
+	position: absolute;
+	right: 5px;
+}
+
+.centerForm
+{
+	
+	margin-left: 5px;
+	margin-right: 5px;
+	
+}
+
+.login-div
+{
+	border-style: solid;
+    	border-width: 1px;
+	left: 50%;
+	position: relative;
+	transform: translateX(-50%);
+	background: #CCCCCC;
+	margin-left: 10px;
+	margin-top: 10px;
+	width: 400px;
+	height: 405px;
+
+	
+}
+
+.heading
+{
+	
+	position: absolute;
+    	left: 4%;
+	
+}
+
+.inline
+{
+	display: inline;
+}
+
+.sub-heading
+{
+	margin-top:50px;
+	color: #000000;
+	
+	background: #999999;
+	height:20px;
+	
+}
+
+.heading-title
+{
+	margin-left:100px;
+	top: 50%;
+	position: relative;
+	transform: translateY(-50%);
+	
+
+	
+}
+
+.sub-heading-title
+{
+
+	font-weight: bold;
+	text-align:center;
+	top: 50%;
+	position: relative;
+	transform: translateY(-50%);
+	
+
+	
+}
+
+.create-account
+{
+
+	color: #999999;
+	
+    vertical-align: bottom;
+	
+}
+.navbar-right
+{
+	margin:0px;
+	padding:0px;
+	
+}
