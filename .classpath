@@ -13,5 +13,6 @@
 	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.module.container"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="/home/luke/Development/servers/apache-tomcat-7.0.65/lib/servlet-api.jar"/>
+	<classpathentry kind="lib" path="/home/luke/Development/libraries/jdbc/mysql-connector-java-5.1.37/mysql-connector-java-5.1.37-bin.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>

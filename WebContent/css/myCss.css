@@ -19,9 +19,10 @@
 	margin-top:5px;
 }
 
-.inline
+.inline-nav
 {
 	display: inline;
+	vertical-align: bottom;
 }
 
 .sub-heading
