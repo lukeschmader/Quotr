@@ -56,6 +56,7 @@ public class Test {
             pst.setString(1, cusername);
             pst.setString(2, cpassword);
             pst.executeUpdate();
+            System.out.println("User added");
 
         } catch (SQLException ex) {
             Logger lgr = Logger.getLogger(Test.class.getName());
@@ -64,6 +65,7 @@ public class Test {
         } finally {
 
             try {
+            	
                 if (pst != null) {
                     pst.close();
                 }

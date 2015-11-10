@@ -1,34 +1,14 @@
 <!DOCTYPE html>
-<html ng-app="createProfile" >
+<html>
   <head>
     <meta charset="utf-8">
     <title>Stock App</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
-	<script src="//cdnjs.cloudflare.com/ajax/libs/angular.js/1.2.1/angular.min.js"></script>
-	<script src="http://malsup.github.io/jquery.blockUI.js"></script>
-    <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
-    <script src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
-	<link href="css/createProfileCss.css" rel="stylesheet">
-	
-   <script>  
-  	var $jq = jQuery.noConflict();
-    var nameApp = angular.module('createProfile', []);
-    nameApp.controller('profileCtrl', ['$scope', '$http', '$timeout', function($scope, $http, $timeout) {	
-  	 	
-    	
-	   	$scope.submitProfile = function () {
-	   		var urls = '/StockWebApp/CreateProfileServlet?username=' + angular.lowercase($scope.user.username) + '&password=' + $scope.user.password + '&organization=' + $scope.user.organization;
-	        $http.get(urls).success(function(data){
-	        	$scope.message = data.message;   	        	
-	        });
-   		}
-    
-    }]);   
-    </script>
+	<link href="../css/createProfileCss.css" rel="stylesheet">
   </head>
 
-  <body ng-controller="profileCtrl">
+  <body>
 
 
 <nav class="navbar navbar-inverse navbar-fixed-top">
@@ -46,10 +26,10 @@
         <div class="navbar-right">
           <form class="navbar-form ">
             <div class="form-group">
-              <input type="text" placeholder="Username" class="form-control" >
+              <input type="text" placeholder="Username" class="form-control">
             </div>
             <div class="form-group">
-              <input type="password" placeholder="Password" class="form-control" >
+              <input type="password" placeholder="Password" class="form-control">
             </div>
             <button type="submit" class="btn btn-warning">Sign in</button>
             <div class="create-account inline">
@@ -68,19 +48,19 @@
 
 <div class="login-div">
 	<h1 class="loginTitle">Create Profile</h1>
-	<form class="centerForm">
+	<form class="centerForm" >
 		<br><br>
 		<div class="loginInputs">
-		Username:<input type="text" name="createUsername" placeholder="username..." class="form-control" ng-model="user.username">
+		Username:<input type="text" name="createUsername" placeholder="username..." class="form-control" >
 		</div><br>
 		<div class="loginInputs">
-		Password:<input type="password" name="createPassword" placeholder="password..." class="form-control" ng-model="user.password" >
+		Password:<input type="password" name="createPassword" placeholder="password..." class="form-control" >
 		</div> <br>
 		<div class="loginInputs">
-		Organization: <font color=grey><i>(optional)</i> </font><input type="text" name="createOrganization" ng-model="user.organization" placeholder="organization..." class="form-control" >
+		Organization: <font color=grey><i>(optional)</i> </font><input type="text" name="createOrganization" placeholder="organization..." class="form-control" >
 		</div> <br>
 		<div class="loginButton">
-		<button  ng-click="submitProfile()" class="btn btn-warning">Sign Up</button><br>
+		<button type="submit" class="btn btn-warning">Sign Up</button><br>
 		</div><br><br><br><br>
 		<div class="loginButton">
 			<a href="#">sign in</a>
