@@ -1,9 +1,11 @@
 @CHARSET "ISO-8859-1";
 
-div.growlUI { background: url(check48.png) no-repeat 10px 10px }
-div.growlUI h1, div.growlUI h2 {
-    color: white; padding: 5px 5px 5px 75px; text-align: left
+input.ng-invalid
+{
+	background: red;
 }
+
+
 .darkBG
 {color: #ffffff;
 	background: #444444;

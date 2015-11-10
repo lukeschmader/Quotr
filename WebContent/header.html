@@ -78,7 +78,7 @@
           });  
         
         $scope.$watch('graphOption', function(newValue, oldValue){
-        	if(newValue != "")
+        	if(newValue != oldValue)
         	{   	     
         		
         		 $jq("button").click(function(){
@@ -402,10 +402,10 @@
     <div id="graphDiff" class="left">
 </div>
     <div class="right btn-group">
-  <button type="button" ng-click="graphOption = 1" class="btn blackButton">1m</button>
-  <button type="button" ng-click="graphOption = 2" class="btn">6m</button>
-  <button type="button" ng-click="graphOption = 3" class="btn">1y</button>
-  <button type="button" ng-click="graphOption = 4" class="btn">5y</button>
+  <button type="button" ng-click="graphOption = 1" class="btn graph-btn blackButton">1m</button>
+  <button type="button" ng-click="graphOption = 2" class="btn graph-btn">6m</button>
+  <button type="button" ng-click="graphOption = 3" class="btn graph-btn">1y</button>
+  <button type="button" ng-click="graphOption = 4" class="btn graph-btn">5y</button>
 </div>
     <canvas id="myChart" width=778px height="310"></canvas>
     </div>

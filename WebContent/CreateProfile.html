@@ -15,12 +15,35 @@
   	var $jq = jQuery.noConflict();
     var nameApp = angular.module('createProfile', []);
     nameApp.controller('profileCtrl', ['$scope', '$http', '$timeout', function($scope, $http, $timeout) {	
-  	 	
+    	$scope.createMessage = "";
+    	$scope.userMessage = "";  
+    	$scope.exists = true;
+    	
+    	$scope.$watch('user.username', function(newValue, oldValue){
+    		if(newValue != "")
+         	{   	     
+    			var urls = '/StockWebApp/UsernameCheckServlet?username=' + angular.lowercase($scope.user.username);
+    	        $http.get(urls).success(function(data){
+    	        	$scope.userMessage = data.message;  
+    	        	
+    	        	if($scope.userMessage === 'new'){    	        	
+    	        		$scope.exists = false;
+    	        	}
+    	        	else{
+    	        		$scope.exists = true;
+   	        		}
+    	        	
+    	        	
+    	        	$scope.$apply(); 
+    	        });         		      		
+         	}   		 
+    	 });
     	
 	   	$scope.submitProfile = function () {
 	   		var urls = '/StockWebApp/CreateProfileServlet?username=' + angular.lowercase($scope.user.username) + '&password=' + $scope.user.password + '&organization=' + $scope.user.organization;
 	        $http.get(urls).success(function(data){
-	        	$scope.message = data.message;   	        	
+	        	$scope.createMessage = data.message;
+	        	$scope.$apply(); 
 	        });
    		}
     
@@ -68,19 +91,33 @@
 
 <div class="login-div">
 	<h1 class="loginTitle">Create Profile</h1>
-	<form class="centerForm">
+	<form class="centerForm" name="myForm" >
 		<br><br>
 		<div class="loginInputs">
-		Username:<input type="text" name="createUsername" placeholder="username..." class="form-control" ng-model="user.username">
+		Username:
+		<span style="color:red; font-weight: bold;" ng-show="myForm.createUsername.$dirty && exists">
+  		<span ng-show="myForm.user.username.$error.required">Exists or Invalid</span>
+  		<span ng-show="myForm.createUsername.$dirty && exists">Username Already Exists</span>
+  		</span>
+  		<span style="color:green;" font-weight: bold;" ng-show="myForm.createUsername.$dirty && !exists">
+  		<span style="color:green;" ng-show="myForm.createUsername.$dirty && !(myForm.createUsername.value === '') && (!(exists))">Available</span>
+  		</span>
+		<br>
+		<input type="text" maxlength="29" name="createUsername"  class="form-control" ng-model="user.username" required>
 		</div><br>
 		<div class="loginInputs">
-		Password:<input type="password" name="createPassword" placeholder="password..." class="form-control" ng-model="user.password" >
+		Password:
+		<br>
+		<input type="password" name="createPassword" maxlength="29" placeholder="password..." class="form-control" ng-model="user.password" >
 		</div> <br>
 		<div class="loginInputs">
-		Organization: <font color=grey><i>(optional)</i> </font><input type="text" name="createOrganization" ng-model="user.organization" placeholder="organization..." class="form-control" >
+		Organization:
+		 <font color=grey><i>(optional)</i> </font>
+		 <br>
+		 <input type="text" name="createOrganization" maxlength="29" ng-model="user.organization" placeholder="organization..." class="form-control" >
 		</div> <br>
 		<div class="loginButton">
-		<button  ng-click="submitProfile()" class="btn btn-warning">Sign Up</button><br>
+		<button  ng-disabled=exists  ng-click="submitProfile()" class="btn btn-warning">Sign Up</button><br>
 		</div><br><br><br><br>
 		<div class="loginButton">
 			<a href="#">sign in</a>
