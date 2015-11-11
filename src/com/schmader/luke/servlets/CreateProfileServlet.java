@@ -32,7 +32,11 @@ public class CreateProfileServlet extends HttpServlet {
 		// TODO Auto-generated method stub
 		String cUsername = request.getParameter("username");	
 		String cPassword = request.getParameter("password");	
-		String cOrganization = request.getParameter("organization");	
+		String cOrganization = request.getParameter("organization");
+		if(cOrganization.equals("undefined"))
+		{
+			cOrganization = null;
+		}
 		
 		System.out.println(cUsername);
 		System.out.println(cPassword);
