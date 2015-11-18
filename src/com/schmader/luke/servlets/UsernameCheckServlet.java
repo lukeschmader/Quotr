@@ -36,7 +36,6 @@ public class UsernameCheckServlet extends HttpServlet {
 				System.out.println(cUsername);
 
 				Connection con = null;
-		        Statement st = null;
 		        ResultSet rs = null;
 		        PreparedStatement pst = null;
 		        
@@ -46,7 +45,7 @@ public class UsernameCheckServlet extends HttpServlet {
 
 		        try {
 
-		            con = DriverManager.getConnection(url, user, password);
+		          
 
 		            
 		            con = DriverManager.getConnection(url, user, password);
