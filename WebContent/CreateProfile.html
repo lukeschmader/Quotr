@@ -112,7 +112,7 @@
 		<br><br>
 		<div class="loginInputs">
 		Username:
-		<span style="color:red; font-weight: bold;" ng-show="myForm.createUsername.$dirty && exists">
+		<span style="color:darkred; font-weight: bold;" ng-show="myForm.createUsername.$dirty && exists">
   		<span ng-show="myForm.createUsername.$error.required">Required</span>
   		<span ng-show="myForm.createUsername.$dirty && exists">Username Already Exists or Invalid</span>
   		</span>
@@ -120,11 +120,11 @@
   		<span style="color:green;" ng-show="myForm.createUsername.$dirty && (!(exists))">Available</span>
   		</span>
 		<br>
-		<input type="text"  maxlength="29" name="createUsername"  class="form-control" ng-model="user.username" required>
+		<input type="text"  maxlength="29" name="createUsername"  placeholder="username..." class="form-control" ng-model="user.username" required>
 		</div><br>
 		<div class="loginInputs">
 		Password:
-		<span style="color:red; font-weight: bold;" ng-show="myForm.createPassword.$dirty && invalidPassword">
+		<span style="color:darkred; font-weight: bold;" ng-show="myForm.createPassword.$dirty && invalidPassword">
   		<span ng-show="myForm.createPassword.$error.required">Passoword Required</span>
   		</span>
   		<span style="color:green; font-weight: bold;" ng-show="myForm.createPassword.$dirty && !invalidPassword">

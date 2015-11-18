@@ -6,11 +6,7 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
 	<link href="css/loginCss.css" rel="stylesheet">
-
-
-
   </head>
-
   <body>
 
 
@@ -51,13 +47,13 @@
 
 <div class="login-div">
 	<h1 class="loginTitle">LOGIN</h1>
-	<form class="centerForm">
+	<form class="centerForm" action="LoginServlet" method="post">
 		<br><br>
 		<div class="loginInputs">
-		Username:<input type="text" placeholder="username..." class="form-control" >
+		Username:<input name="username" type="text" placeholder="username..." class="form-control" >
 		</div><br>
 		<div class="loginInputs">
-		Password:<input type="password" placeholder="password.." class="form-control" >
+		Password:<input name="password" type="password" placeholder="password.." class="form-control" >
 		</div> <br>
 		<div class="loginButton">
 		<button type="submit" class="btn btn-warning">Sign in</button><br>
