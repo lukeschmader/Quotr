@@ -78,20 +78,17 @@ public class LoginServlet extends HttpServlet {
             if (rs.next()) {
                 System.out.println(rs.getString(2));
                 message = "{\"message\":\"success\"}";
-                System.out.println("User logging in");
-                Cookie loginCookie = new Cookie("user",rs.getString(2));
+                System.out.println("{\"user\":\"" + rs.getString(2)+ "\"");
+                Cookie loginCookie = new Cookie("user","{\"user\":\"" + rs.getString(2)+ "\"}");
     	        //setting cookie to expiry in 1 year
     	        loginCookie.setMaxAge(60 * 60 * 24 * 28);
     	        response.addCookie(loginCookie);
-    	        response.sendRedirect("LoginTest.jsp");
+    	        response.sendRedirect("redirectToMain.jsp");
             }
             else
             {
-            	RequestDispatcher rd = getServletContext().getRequestDispatcher("/login.html");
-     	        PrintWriter out= response.getWriter();
-     	        out.println("<font color=red>Either user name or password is wrong.</font>");
-     	        rd.include(request, response);
-            	System.out.println("failed login");
+            	
+     	        response.sendRedirect("FailedLogin.html");
             }
             
             System.out.println(message);

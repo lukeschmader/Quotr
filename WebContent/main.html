@@ -37,6 +37,19 @@
     	  $scope.industryStats = null;
     	  $scope.sortField = 'name';
     	  
+    	  $scope.userCookie = $cookieStore.get('user');
+    	  $scope.user = '';
+          $scope.isLoggedIn = false;
+          var init = function () { 
+          if(typeof $scope.userCookie != 'undefined'){
+        	    console.log($scope.userCookie);
+        	    $scope.user = JSON.parse($scope.userCookie)["user"];
+				$scope.isLoggedIn = true;
+				
+          	}
+          };
+          init();
+    	  
     	  $scope.animationTime = 10;
     	    $scope.gaugeValue = 0;
     	    $scope.maxValue = 4;
@@ -358,16 +371,22 @@
         </div>
         <div id="navbar" class="" >
         <div class="navbar-right">
-          <form class="navbar-form ">
-            <div class="form-group">
-              <input type="text" placeholder="Email" class="form-control">
+          <form class="navbar-form" ng-show="!(isLoggedIn)" action="LoginServlet" method="post">
+            <div class="form-group" >
+              <input type="text" name="username" placeholder="Username" class="form-control">
             </div>
             <div class="form-group">
-              <input type="password" placeholder="Password" class="form-control">
+              <input type="password" name="password" placeholder="Password" class="form-control">
             </div>
             <button type="submit" class="btn btn-warning">Sign in</button>
+            <div class="create-account inline-nav">                                                                                                       
+            or <a href="CreateProfile.html">create account</a>
+            </div>
+          </form>
+          <form class="navbar-form" ng-show="(isLoggedIn)">
+            <div class="create-account inline-nav">Hello {{user}}!&ensp;&ensp;&ensp;&ensp;</div>
             <div class="create-account inline-nav">
-					             		 or <a href="CreateProfile.html">create account</a>
+						<a href="LogoutServlet">Logout</a>
             </div>
           </form>
 
@@ -525,7 +544,7 @@
 	   		<div class="well darkWell inline">
 	   		<h3 class="consensus">Potential</h3>
 	   		<canvas class="gauge" gaugejs options="gaugeOptions" value="gaugeValue" max-value="maxValue" min-value="5" animation-time="animationTime"></canvas>
-			<p class="inline sell">Sell____Buy</p>
+			<p class="inline sell">Sell&ensp;&ensp;&ensp;&ensp;Buy</p>
 	   		</div>
    		</div>
    </div>

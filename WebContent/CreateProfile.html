@@ -58,7 +58,7 @@
 	        	$scope.createMessage = data.message;
 	        	if($scope.createMessage === "success")
         		{
-	        		window.location.href = "header.html";
+	        		window.location.href = "main.html";
         		}
 	        	$scope.$apply(); 
 	        });
@@ -84,18 +84,7 @@
         </div>
         <div id="navbar" class="" >
         <div class="navbar-right">
-          <form class="navbar-form ">
-            <div class="form-group">
-              <input type="text" placeholder="Username" class="form-control" >
-            </div>
-            <div class="form-group">
-              <input type="password" placeholder="Password" class="form-control" >
-            </div>
-            <button type="submit" class="btn btn-warning">Sign in</button>
-            <div class="create-account inline">
-					             		 or <a href="#">create account</a>
-            </div>
-          </form>
+       
          </div>
         </div><!--/.navbar-collapse -->
 
@@ -143,7 +132,7 @@
 		<button  ng-disabled="exists || (myForm.createPassword.$error.required)"  ng-click="submitProfile()" class="btn btn-warning">Sign Up</button><br>
 		</div><br><br><br><br>
 		<div class="loginButton">
-			<a href="#">sign in</a>
+			<a href="Login.html">sign in</a>
 		</div>
 	</form>
 </div>

@@ -28,7 +28,11 @@ public class LogoutServlet extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
-		response.getWriter().append("Served at: ").append(request.getContextPath());
+		Cookie loginCookie = new Cookie("user",null);
+        //setting cookie to expiry in 28 days
+        loginCookie.setMaxAge(0);
+        response.addCookie(loginCookie);
+        response.sendRedirect("main.html");
 	}
 
 	/**
@@ -40,7 +44,7 @@ public class LogoutServlet extends HttpServlet {
         //setting cookie to expiry in 28 days
         loginCookie.setMaxAge(0);
         response.addCookie(loginCookie);
-        response.sendRedirect("LoginTest.jsp");
+        response.sendRedirect("main.html");
 	}
 
 }
