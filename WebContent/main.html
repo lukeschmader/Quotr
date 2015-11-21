@@ -21,7 +21,7 @@
     var $jq = jQuery.noConflict();
     var nameApp = angular.module('stockApp', ['gaugejs', 'ngCookies']);
       nameApp.controller('StockCtrl', ['$scope', '$http', '$timeout', '$cookies','$cookieStore', function($scope, $http, $timeout,$cookies,$cookieStore) {	
-    	  $scope.search="GOOGL";
+    	  $scope.search="";
     	  $scope.currentProfile="";
     	  $scope.lineChart = null;
     	  $scope.oldSym = null;
@@ -36,21 +36,24 @@
     	  $scope.currentTarget = 0;
     	  $scope.industryStats = null;
     	  $scope.sortField = 'name';
-    	  
+    	  $scope.currentSymbol = "";
     	  $scope.userCookie = $cookieStore.get('user');
     	  $scope.user = '';
           $scope.isLoggedIn = false;
+          $scope.favorites;
+		  $scope.favoritesData;
           var init = function () { 
           if(typeof $scope.userCookie != 'undefined'){
         	    console.log($scope.userCookie);
         	    $scope.user = JSON.parse($scope.userCookie)["user"];
-				$scope.isLoggedIn = true;
-				
+				$scope.isLoggedIn = true;		
+				refreshFavorites();
+				$scope.search="";
           	}
           };
           init();
     	  
-    	  $scope.animationTime = 10;
+    	 	$scope.animationTime = 10;
     	    $scope.gaugeValue = 0;
     	    $scope.maxValue = 4;
     		$scope.gaugeType = 'donut';
@@ -129,6 +132,12 @@
         		var indPeg =  $scope.currentPeg - data.stats.avgPeg;
         		var targetChg = ($scope.currentTarget-$scope.currentPrice)/$scope.currentPrice;
         		$scope.gaugeValue = targetChg+2;
+        		if($scope.gaugeValue > 4){
+        			$scope.gaugeValue = 4;
+        		}else if($scope.gaugeValue < 0){
+        			$scope.gaugeValue = 0;
+        		}
+        		
         		document.getElementById("targetChange").innerHTML = targetChg.toPrecision(3) < 0.00 ? "<font color=red>" + targetChg.toPrecision(3) + "%" + "</font>" 
 	            		: "<font color=green>" + "+" + targetChg.toPrecision(3) + "%" + "</font>";               		
         		document.getElementById("indChgPct").innerHTML = indChangepct.toPrecision(2) < 0.00 ? "<font color=red>" + indChangepct.toPrecision(2) + "%" + "</font>" 
@@ -152,6 +161,11 @@
     		var indPeg =  $scope.currentPeg - $scope.industryStats.indPeg;
     		var targetChg = ($scope.currentTarget-$scope.currentPrice)/$scope.currentPrice;
     		$scope.gaugeValue = targetChg+2;
+    		if($scope.gaugeValue > 4){
+    			$scope.gaugeValue = 4;
+    		}else if($scope.gaugeValue < 0){
+    			$scope.gaugeValue = 0;
+    		}
     		document.getElementById("targetChange").innerHTML = targetChg.toPrecision(3) < 0.00 ? "<font color=red>" + targetChg.toPrecision(3) + "%" + "</font>" 
             		: "<font color=green>" + "+" + targetChg.toPrecision(3) + "%" + "</font>";      		
         	document.getElementById("indChgPct").innerHTML = indChangepct.toPrecision(2) < 0.00 ? "<font color=red>" + indChangepct.toPrecision(2) + "%" + "</font>" 
@@ -163,6 +177,7 @@
       		document.getElementById("indPeg").innerHTML = indPeg.toPrecision(2) > 0.00 ? "<font color=red>" +"+"+  indPeg.toPrecision(2) + "</font>" 
 	            		: "<font color=green>"  + indPeg.toPrecision(2) + "</font>";
         }
+        
         function refreshChart(sym, option)
         {
         	
@@ -229,7 +244,7 @@
             	if(data != "")
         		{
 	            	var J =  data;	
-	            	 
+	            	$scope.currentSymbol = J.data.stock.symbol;
 		            //Headings	            
 		            document.getElementById("companyName").innerHTML = J.data.stock.name;
 		            document.getElementById("symbol").innerHTML = " (" + J.data.stock.symbol + ") ";
@@ -271,6 +286,7 @@
 		              		$scope.gaugeValue = 0;
 			            	$scope.industryCount = "loading..."
 			            	$scope.companies = "";
+			            	
 			            	$scope.$apply();
 		           	 	}
 		           	 	refreshChart(sym, $scope.graphOption);
@@ -284,6 +300,22 @@
 		           	 	{
 		           	 		refreshIndustry(sym);
 		           	 	}
+		           	 	var i;
+		           	 	console.log('symbol: ' + sym);
+		           	 	console.log('fav data: ' + $scope.favoritesData);
+		           	 	console.log('favs: ' + $scope.favorites);
+		           	 	console.log('number of favs: ' + $scope.favorites.length);
+		           	 	console.log('fav1: ' + $scope.favorites[1].symbol);
+		           		 $scope.isFavorite = false;
+		           	 	for (i = 0; i < $scope.favorites.length; ++i) {
+		           	 		console.log('fav: ' + $scope.favorites[i].symbol);
+		           	 		
+		           	    	if($scope.favorites[i].symbol === sym){
+		           	    		console.log('isFavorite');
+		           	    		$scope.isFavorite = true;
+		           	    		break;
+		           	    	}
+		           		}
 		            }
 		            $scope.oldSym = J.data.stock.symbol;
 		            
@@ -322,9 +354,34 @@
             });	 
         }
         
+        function refreshFavorites(){        	
+        	var urls = '/StockWebApp/FavoritesRetrieverServlet?username=' + $scope.user;
+        	$http.get(urls).success(function(data){
+        		$scope.favorites = data.favorites;
+        		$scope.favoritesData = data;
+        		console.log('favs: ' + $scope.favorites);
+        		$scope.$apply();
+        	});      	
+        }
+        $scope.addToFavorites = function() {
+        	var urls = '/StockWebApp/AddToFavoritesServlet?user=' + $scope.user + '&symbol=' + angular.uppercase($scope.currentSymbol);
+        	$http.get(urls).success(function(data){
+        		$scope.isFavorite = true;
+        		refreshFavorites();
+        		$scope.$apply();	
+        	});      	
+        }
+        $scope.removeFromFavorites = function() {
+        	var urls = '/StockWebApp/RemoveFromFavoritesServlet?user=' + $scope.user + '&symbol=' + angular.uppercase($scope.currentSymbol);
+        	 $http.get(urls).success(function(data){
+        		 $scope.isFavorite = false;    
+        		 refreshFavorites();
+        		 $scope.$apply();
+        	 });      	
+        }
         
-        $scope.updateSymbol = function (sym) {
-        	$scope.stockFromIndustry = true;
+        $scope.updateSymbol = function (sym, isFromIndustry) {
+        	$scope.stockFromIndustry = isFromIndustry;
         	$scope.search = sym;        	
         	 $scope.$apply();
       	}
@@ -413,7 +470,9 @@
 	<div class="col-xl-12">
 	    <h2 id="companyName"></h2>
 	    <h2 id="symbol"></h2>
-	    <h2 id="pctChg"></h2>
+	    <h2 id="pctChg"></h2> 
+	    <span ng-show="!(isFavorite)"><a ng-click="addToFavorites();" href="#"><img class="favoriteIcon" src="img/GreyStar.png" alt="Not Favorited" height="30" width="30"></a></span>
+	    <span ng-show="isFavorite"><a ng-click="removeFromFavorites();" href="#"><img class="favoriteIcon" src="img/GoldStar.png" alt="Favorited" height="30" width="30" ></a></span>
     </div>
     <div class="col-xl-12">
 	    <h4><font id="profileIndustry" color=lightGrey></font></h4>
@@ -569,7 +628,7 @@
 	   <table class="table table-striped noTop ">
 	      <tbody>
 	      <tr class="industryRow" ng-repeat="company in companies | orderBy:sortField:reverse"">
-	        <td  width=68%><a ng-href='#' ng-click="updateSymbol(company.symbol);">{{company.name}} ({{company.symbol}})</a></td>
+	        <td  width=68%><a ng-href='#' ng-click="updateSymbol(company.symbol, true);">{{company.name}} ({{company.symbol}})</a></td>
 	        <td width=15%>{{company.price}}    </td>
 	        <td width=13% ng-style="set_color(company.changePct)">{{company.changePct < 0 ? company.changePct : "+" + company.changePct }}%</td>
 	      </tr>
@@ -578,6 +637,27 @@
 	   </div>
    </div>
    <div class='col-md-4'>
+
+                                <table class="table table-striped noBottom industryTableTop"  >
+                                <thead bgcolor="lightGrey">
+                      <tr >
+                        <th class="industryHeader" width=68% ng-click="favSortField = 'name'; favReverse = !favReverse "><img src="img/GoldStar.png" class="favoriteIcon" alt="Favorite" height="15" width="15" ng-show=”true”>&ensp;Favorites<span class="badge smallBadge">{{favoriteCount}}</span></th>
+                        <th class="industryHeader" width=15%  ng-click="favSortField = 'price'; favReverse = !favReverse">Price</th>
+                       <th class="industryHeader" width=15%  ng-click="favSortField = 'changePct'; favReverse = !favReverse">Change</th>
+                      </tr>
+                      </thead>
+                    </table>
+                   <div class='scrollable noTop'>
+                   <table class="table table-striped noTop ">
+                      <tbody>
+                      <tr class="industryRow" ng-repeat="favorite in favorites| orderBy:favSortField:favReverse"">
+                        <td  width=68%><a ng-href='#' ng-click="updateSymbol(favorite.symbol, false);">{{favorite.name}}<br>({{favorite.symbol}})</a></td>
+                        <td width=15%>{{favorite.price}}    </td>
+                        <td width=13% ng-style="set_color(favorite.changePct)">{{favorite.changePct < 0 ? favorite.changePct : "+" + favorite.changePct }}%</td>
+                      </tr>
+                      </tbody>
+                    </table>
+                                </div>
    </div>
    </div>
     <br>

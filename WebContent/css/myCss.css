@@ -1,5 +1,10 @@
 @CHARSET "ISO-8859-1";
 
+.favoriteIcon
+{
+	margin-bottom: 5px;
+}
+
 .darkBG
 {
 	color: #ffffff;
