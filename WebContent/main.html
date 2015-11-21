@@ -42,14 +42,17 @@
           $scope.isLoggedIn = false;
           $scope.favorites;
 		  $scope.favoritesData;
+		  $scope.isFavoritesLoaded = false;
           var init = function () { 
           if(typeof $scope.userCookie != 'undefined'){
         	    console.log($scope.userCookie);
         	    $scope.user = JSON.parse($scope.userCookie)["user"];
 				$scope.isLoggedIn = true;		
 				refreshFavorites();
-				$scope.search="";
+				$scope.$apply();		
           	}
+          $scope.search="GOOGL";
+          $scope.searchBox = "GOOGL"
           };
           init();
     	  
@@ -85,7 +88,7 @@
     	    
     	   
 
-    	  
+   	     
         $scope.$watch('search', function(newValue, oldValue){
         	if(newValue != "")
         	{   	     
@@ -94,15 +97,15 @@
         	} 
         	
           });  
-        
+        $jq('.graph-btn').click(function(){
+	  	    $jq('.graph-btn').removeClass('blackButton')
+	  	        $jq(this).addClass('blackButton');
+	  	});
         $scope.$watch('graphOption', function(newValue, oldValue){
         	if(newValue != oldValue)
         	{   	     
         		
-        		 $jq('.graph-btn').click(function(){
-        		  	    $jq('.graph-btn').removeClass('blackButton')
-        		  	        $jq(this).addClass('blackButton');
-        		  	});
+        		 
         		var canvas = document.getElementById("myChart");
 	        	var ctx = document.getElementById("myChart").getContext("2d");	        	
 	        	ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -243,6 +246,7 @@
             $http.get(urls).success(function(data){
             	if(data != "")
         		{
+            		$scope.isFavorite = false;
 	            	var J =  data;	
 	            	$scope.currentSymbol = J.data.stock.symbol;
 		            //Headings	            
@@ -301,15 +305,8 @@
 		           	 		refreshIndustry(sym);
 		           	 	}
 		           	 	var i;
-		           	 	console.log('symbol: ' + sym);
-		           	 	console.log('fav data: ' + $scope.favoritesData);
-		           	 	console.log('favs: ' + $scope.favorites);
-		           	 	console.log('number of favs: ' + $scope.favorites.length);
-		           	 	console.log('fav1: ' + $scope.favorites[1].symbol);
-		           		 $scope.isFavorite = false;
-		           	 	for (i = 0; i < $scope.favorites.length; ++i) {
-		           	 		console.log('fav: ' + $scope.favorites[i].symbol);
-		           	 		
+		           		$scope.isFavorite = false;
+		           	 	for (i = 0; i < $scope.favorites.length; i++) {	           	 		
 		           	    	if($scope.favorites[i].symbol === sym){
 		           	    		console.log('isFavorite');
 		           	    		$scope.isFavorite = true;
@@ -345,7 +342,7 @@
 		            document.getElementById("chgFromYearLowPct").innerHTML =J.data.stock.chgFromYearLowPct + "%";
 		            document.getElementById("chgFromYearHighPct").innerHTML =J.data.stock.chgFromYearHighPct+ "%";
 		            document.getElementById("yieldPct").innerHTML =J.data.stock.yieldPct + "%";
-		            document.getElementById("eps").innerHTML =J.data.stock.eps;
+		            //document.getElementById("eps").innerHTML =J.data.stock.eps;
 		            document.getElementById("peg").innerHTML =J.data.stock.peg;
 		            
 
@@ -356,28 +353,40 @@
         
         function refreshFavorites(){        	
         	var urls = '/StockWebApp/FavoritesRetrieverServlet?username=' + $scope.user;
-        	$http.get(urls).success(function(data){
+
+        	$http.get(urls).success(function(data){        		
         		$scope.favorites = data.favorites;
         		$scope.favoritesData = data;
         		console.log('favs: ' + $scope.favorites);
-        		$scope.$apply();
+        		$scope.isFavoritesLoaded = true;
+        		$scope.isFavorite = false;
+           	 	for (i = 0; i < $scope.favorites.length; i++) {
+           	 		console.log('fav: ' + $scope.favorites[i].symbol);
+           	 		
+           	    	if($scope.favorites[i].symbol === angular.uppercase($scope.currentSymbol)){
+           	    		console.log('isFavorite');
+           	    		$scope.isFavorite = true;
+           	    		break;
+           	    	}
+           		}
         	});      	
         }
         $scope.addToFavorites = function() {
-        	var urls = '/StockWebApp/AddToFavoritesServlet?user=' + $scope.user + '&symbol=' + angular.uppercase($scope.currentSymbol);
+        	var urls = '/StockWebApp/AddToFavoritesServlet?username=' + $scope.user + '&symbol=' + angular.uppercase($scope.currentSymbol);
         	$http.get(urls).success(function(data){
         		$scope.isFavorite = true;
         		refreshFavorites();
         		$scope.$apply();	
-        	});      	
+        	});   
+
         }
         $scope.removeFromFavorites = function() {
-        	var urls = '/StockWebApp/RemoveFromFavoritesServlet?user=' + $scope.user + '&symbol=' + angular.uppercase($scope.currentSymbol);
+        	var urls = '/StockWebApp/RemoveFromFavoritesServlet?username=' + $scope.user + '&symbol=' + angular.uppercase($scope.currentSymbol);
         	 $http.get(urls).success(function(data){
         		 $scope.isFavorite = false;    
         		 refreshFavorites();
         		 $scope.$apply();
-        	 });      	
+        	 });  
         }
         
         $scope.updateSymbol = function (sym, isFromIndustry) {
@@ -446,7 +455,6 @@
 						<a href="LogoutServlet">Logout</a>
             </div>
           </form>
-
          </div>
         </div><!--/.navbar-collapse -->
  
@@ -460,10 +468,14 @@
 	</div>
    <div class="container">
 	<div class="row searchRow">
-		<div class="col-md-9 searchRow">				
+		<div class="col-md-8 searchRow">				
 		</div>
-		<div class="col-md-3 searchRow">
-		Search:<input class="searchRow" ng-model="search" placeholder="Search symbol..."  maxlength="6" type="text"/><br><br>
+		<div class="col-md-4 searchRow">
+		<form ng-submit="updateSymbol(searchBox, false);">
+		<input class="form-control searchRow inline" style="margin-left:50px; width: 60%; vertical-align:bottom;" ng-model="searchBox" placeholder="Search symbol..."  maxlength="6" type="text"/>
+		<button type="submit" class="btn btn-warning inline" style="vertical-align:bottom;">Search</button>
+		<br><br>
+		</form>
 		</div>
 	</div> 
 	<div class="row">
@@ -471,8 +483,8 @@
 	    <h2 id="companyName"></h2>
 	    <h2 id="symbol"></h2>
 	    <h2 id="pctChg"></h2> 
-	    <span ng-show="!(isFavorite)"><a ng-click="addToFavorites();" href="#"><img class="favoriteIcon" src="img/GreyStar.png" alt="Not Favorited" height="30" width="30"></a></span>
-	    <span ng-show="isFavorite"><a ng-click="removeFromFavorites();" href="#"><img class="favoriteIcon" src="img/GoldStar.png" alt="Favorited" height="30" width="30" ></a></span>
+	    <span ng-show="!(isFavorite) && isLoggedIn"><a ng-click="addToFavorites();" href="#"><img class="favoriteIcon" src="img/GreyStar.png" alt="Not Favorited" height="23" width="23"></a></span>
+	    <span ng-show="isFavorite && isLoggedIn"><a ng-click="removeFromFavorites();" href="#"><img class="favoriteIcon" src="img/GoldStar.png" alt="Favorited" height="23" width="23" ></a></span>
     </div>
     <div class="col-xl-12">
 	    <h4><font id="profileIndustry" color=lightGrey></font></h4>
@@ -637,27 +649,26 @@
 	   </div>
    </div>
    <div class='col-md-4'>
-
-                                <table class="table table-striped noBottom industryTableTop"  >
-                                <thead bgcolor="lightGrey">
-                      <tr >
-                        <th class="industryHeader" width=68% ng-click="favSortField = 'name'; favReverse = !favReverse "><img src="img/GoldStar.png" class="favoriteIcon" alt="Favorite" height="15" width="15" ng-show=”true”>&ensp;Favorites<span class="badge smallBadge">{{favoriteCount}}</span></th>
-                        <th class="industryHeader" width=15%  ng-click="favSortField = 'price'; favReverse = !favReverse">Price</th>
-                       <th class="industryHeader" width=15%  ng-click="favSortField = 'changePct'; favReverse = !favReverse">Change</th>
-                      </tr>
-                      </thead>
-                    </table>
-                   <div class='scrollable noTop'>
-                   <table class="table table-striped noTop ">
-                      <tbody>
-                      <tr class="industryRow" ng-repeat="favorite in favorites| orderBy:favSortField:favReverse"">
-                        <td  width=68%><a ng-href='#' ng-click="updateSymbol(favorite.symbol, false);">{{favorite.name}}<br>({{favorite.symbol}})</a></td>
-                        <td width=15%>{{favorite.price}}    </td>
-                        <td width=13% ng-style="set_color(favorite.changePct)">{{favorite.changePct < 0 ? favorite.changePct : "+" + favorite.changePct }}%</td>
-                      </tr>
-                      </tbody>
-                    </table>
-                                </div>
+	  <table class="table table-striped noBottom industryTableTop"  >
+	  <thead bgcolor="lightGrey">
+	   <tr >
+	     <th class="industryHeader" width=68% ng-click="favSortField = 'name'; favReverse = !favReverse "><img src="img/GoldStar.png" class="favoriteIcon" alt="Favorite" height="15" width="15" ng-show=”true”>&ensp;Favorites<span class="badge smallBadge">{{favoriteCount}}</span></th>
+	     <th class="industryHeader" width=15%  ng-click="favSortField = 'price'; favReverse = !favReverse">Price</th>
+	    <th class="industryHeader" width=15%  ng-click="favSortField = 'changePct'; favReverse = !favReverse">Change</th>
+	   </tr>
+	   </thead>
+	 </table>
+	<div class='scrollable noTop'>
+	<table class="table table-striped noTop ">
+	   <tbody>
+	   <tr class="industryRow" ng-repeat="favorite in favorites| orderBy:favSortField:favReverse"">
+	     <td  width=68%><a ng-href='#' ng-click="updateSymbol(favorite.symbol, false);">{{favorite.name}}<br>({{favorite.symbol}})</a></td>
+	     <td width=15%>{{favorite.price}}    </td>
+	     <td width=13% ng-style="set_color(favorite.changePct)">{{favorite.changePct < 0 ? favorite.changePct : "+" + favorite.changePct }}%</td>
+	   </tr>
+	   </tbody>
+	 </table>
+   </div>
    </div>
    </div>
     <br>

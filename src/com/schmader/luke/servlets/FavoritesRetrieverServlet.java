@@ -65,13 +65,18 @@ public class FavoritesRetrieverServlet extends HttpServlet {
             
             String message = "{\"message\":\"fail\"}";
             List<String> symbolList = new ArrayList<String>();
-            
+            boolean hasResults = false;
             while (rs.next()) {
             	symbolList.add(rs.getString(3));
                 System.out.println(rs.getString(3));
                 System.out.println("{\"user\":\"" + rs.getString(2)+ "\"");
-    	        //Get Favorites                
+                hasResults = true;             
             }
+            StringBuffer returnData;
+            if(hasResults)
+            {
+            	
+            
             //Get Quote and Iterate through companies
 			String[] symbols = symbolList.toArray(new String[symbolList.size()]);
 			Map<String, Stock> stocks = YahooFinance.get(symbols, true);
@@ -86,7 +91,7 @@ public class FavoritesRetrieverServlet extends HttpServlet {
 			 BigDecimal avgTarget = new BigDecimal(0);
 			 BigDecimal avgPeg = new BigDecimal(0);
 			 
-			 StringBuffer returnData = new StringBuffer ("{\"favorites\":[");		
+			 returnData = new StringBuffer ("{\"favorites\":[");		
 			 for (Map.Entry<String, Stock> stock : stocks.entrySet())
 			 {			 
 			  //   System.out.println(stock.getKey() + "/" + stock.getValue());		
@@ -138,9 +143,15 @@ public class FavoritesRetrieverServlet extends HttpServlet {
 			 		returnData.append("\"avgPeg\":\""+ avgPeg.divide(bCount, 2, RoundingMode.HALF_UP) + "\",");	
 			 		returnData.append("\"favoritesCount\":\""+ k + "\"");	
 			 returnData.append("}}");
-			 
+            }
+            else
+            {
+            	returnData = new StringBuffer ("{\"favorites\":[],");
+            	returnData.append("\"stats\":{}");
+            	returnData.append("}");
+            }
 			 //Write back
-			// System.out.println(returnData.toString());
+			 System.out.println(returnData.toString());
 			 response.getWriter().write(returnData.toString());
            
             
