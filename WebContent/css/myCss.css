@@ -1,5 +1,5 @@
 @CHARSET "ISO-8859-1";
-
+.ui-autocomplete { height: 100px; overflow-y: scroll; overflow-x: hidden;}
 .favoriteIcon
 {
 	margin-bottom: 5px;

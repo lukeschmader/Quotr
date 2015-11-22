@@ -39,6 +39,7 @@ public class StockServlet extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String symbol = request.getParameter("symbol");
+		System.out.println("===========NEW STOCK: "+ symbol);
 		if(symbol != null && symbol != "")
 		{
 			StringBuffer returnData = null;		
