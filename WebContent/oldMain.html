@@ -6,26 +6,19 @@
     <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.19/angular.js"></script>
   <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.19/angular-cookies.js"></script>
   
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+    <script src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
 	<link href="css/myCss.css" rel="stylesheet">
-	<link href="css/angucomplete.css" rel="stylesheet">
 	<script src="js/Chart.js"></script>
 	<script src="js/angular-gauge.js"></script>
-	<script src="js/angucomplete.js"></script>
 	<!--<script src="../components/gauge.js/dist/gauge.min.js"></script>-->
 	<script src="http://bernii.github.io/gauge.js/dist/gauge.min.js"></script>
- 	<link href="http://code.jquery.com/ui/1.10.4/themes/ui-lightness/jquery-ui.css" rel="stylesheet">
-      <script src="http://code.jquery.com/jquery-1.10.2.js"></script>
-      <script src="http://code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
-    
+
     <script>    
     
     var $jq = jQuery.noConflict();
-    var autoCompleteCompanies= [];
-    
-    
-    
     var nameApp = angular.module('stockApp', ['gaugejs', 'ngCookies']);
       nameApp.controller('StockCtrl', ['$scope', '$http', '$timeout', '$cookies','$cookieStore', function($scope, $http, $timeout,$cookies,$cookieStore) {	
     	  $scope.search="";
@@ -49,7 +42,6 @@
           $scope.isLoggedIn = false;
           $scope.favorites;
 		  $scope.favoritesData;
-		  $scope.autoCompleteCompanies;
 		  $scope.isFavoritesLoaded = false;
           var init = function () { 
           if(typeof $scope.userCookie != 'undefined'){
@@ -60,50 +52,9 @@
 				$scope.$apply();		
           	}
           $scope.search="GOOGL";
-          var urls = 'CompanyAutoComplete.json';
-          $http.get(urls).success(function(data){
-        	  console.log("json Called");
-        	  $scope.autoCompleteCompanies = data.companies;
-        	  console.log("AutoComplete set");
-          });          
-          //$scope.searchBox = "GOOGL"
+          $scope.searchBox = "GOOGL"
           };
           init();
-          var main = function(){
-        	   	var xhttp = new XMLHttpRequest();
-        	    xhttp.onreadystatechange = function() {
-        	    	  if (xhttp.readyState == 4 && xhttp.status == 200) {
-        	    		  //console.log(xhttp.responseText);
-        	    		  autoCompleteCompanies = JSON.parse(xhttp.responseText).companies;
-        	    		  console.log(autoCompleteCompanies);
-        	    		  $jq(function() {
-        	    		        $jq( "#automplete-2" ).autocomplete({
-        	    		           source: autoCompleteCompanies,
-        	    		           autoFocus:true,
-        	    		           minLength: 0,
-        	    		           delay: 500,
-        	    		           select: function( event, ui ) {
-        	    		        	   console.log("hasnt calledUpdate");
-        	    		        	   var splt = ui.item.value.split("(");
-        	    		        	   var splt = splt[1].split(")");
-        	    		        	   console.log(splt);
-        	    		        	   $scope.search = splt[0]; 
-        	    		        	   
-        	    		        	   $scope.$apply();
-        	    		        	   console.log("calledUpdate");
-        	    		         }
-        	    		        });
-        	    		        
-        	    		        
-        	    		        
-        	    		     });
-        	    	  }
-        	    	};
-        	    	xhttp.open("GET", "CompanyAutoComplete.json", true);
-        	    	xhttp.send();
-        	    
-        	    };
-        	    $jq(document).ready(main);
     	  
     	 	$scope.animationTime = 10;
     	    $scope.gaugeValue = 0;
@@ -140,16 +91,7 @@
    	     
         $scope.$watch('search', function(newValue, oldValue){
         	if(newValue != "")
-        	{   
-        		var splt = [];
-        		//if(newValue.indexOf('(') >= 0 && newValue.indexOf(')') >= 0){
-        		//	splt = string.split('(');
-        		//	newValue = splt[1];
-        		//	console.log("splt: " + newValue);
-        		//}
-				
-        		console.log("newValue: " + newValue);
-        		newValue = newValue;
+        	{   	     
         		refreshStock(newValue);     
         		$scope.$apply();       		
         	} 
@@ -167,7 +109,7 @@
         		var canvas = document.getElementById("myChart");
 	        	var ctx = document.getElementById("myChart").getContext("2d");	        	
 	        	ctx.clearRect(0, 0, canvas.width, canvas.height);
-	        	refreshChart($scope.search, newValue);
+	        	refreshChart($scope.oldSym, newValue);
         		$scope.$apply();
         		
         		
@@ -299,13 +241,11 @@
         
         function refreshStock(sym)
         {
-        	
         	var urls = '/StockWebApp/StockServlet?symbol=' + angular.uppercase(sym);
         	$scope.search=angular.uppercase($scope.search);
             $http.get(urls).success(function(data){
             	if(data != "")
         		{
-            		console.log("MADE CALL");
             		$scope.isFavorite = false;
 	            	var J =  data;	
 	            	$scope.currentSymbol = J.data.stock.symbol;
@@ -332,13 +272,13 @@
 		            document.getElementById("peg").innerHTML =J.data.stock.peg;		  
 		            
 		            //Vars
-		            $scope.currentVolumePct = (J.data.stock.volume/J.data.stock.avgVolume)*100.00;
+		             $scope.currentVolumePct = (J.data.stock.volume/J.data.stock.avgVolume)*100.00;
 			    	$scope.currentDivYield = J.data.stock.yieldPct;
 			    	$scope.currentChangePct = J.data.stock.pctChg;
 			    	$scope.currentPeg = J.data.stock.peg;
 			    	$scope.currentPrice = J.data.stock.price;
 			    	$scope.currentTarget = J.data.stock.yearTarget;
-			    	$scope.$apply();
+			    	
 		            if(!($scope.oldSym === J.data.stock.symbolS)){	
 		            	if($scope.stockFromIndustry == false)
 		           	 	{
@@ -375,14 +315,12 @@
 		           		}
 		            }
 		            $scope.oldSym = J.data.stock.symbol;
-		       
 		            
         		}
             });	 
         }
         function refreshStockHeader(sym)
         {
-        	
         	var urls = '/StockWebApp/StockServlet?symbol=' + angular.uppercase(sym);
         	$scope.search=angular.uppercase($scope.search);
             $http.get(urls).success(function(data){
@@ -407,7 +345,7 @@
 		            //document.getElementById("eps").innerHTML =J.data.stock.eps;
 		            document.getElementById("peg").innerHTML =J.data.stock.peg;
 		            
-		 
+
 		            $scope.$apply();
         		}
             });	 
@@ -453,10 +391,8 @@
         
         $scope.updateSymbol = function (sym, isFromIndustry) {
         	$scope.stockFromIndustry = isFromIndustry;
-        	$scope.search = sym;     
-        	
+        	$scope.search = sym;        	
         	 $scope.$apply();
-			console.log("SYM in update: " + sym);
       	}
         
         
@@ -472,10 +408,14 @@
         	}
         
         
-        //setInterval(function(){ refreshStockHeader($scope.search); }, 3000);
-      }]);       
- </script>     
+        setInterval(function(){ refreshStockHeader($scope.oldSym); }, 3000);
+      }]); 
+      
 
+      
+      
+ </script>     
+     
       
       
 
@@ -528,13 +468,12 @@
 	</div>
    <div class="container">
 	<div class="row searchRow">
-
-		<div class="col-md-12 searchRow">
-		<form ng-submit="updateSymbol(searchBox, false);">
-		<label for="tags"></label>
-		<div class="ui-widget">      
-		<input  id="automplete-2" class="form-control" style="margin: auto; width: 60%; border-color: #aaaaaa;" ng-model="searchBox" placeholder="Search..."  type="text"/>
+		<div class="col-md-8 searchRow">				
 		</div>
+		<div class="col-md-4 searchRow">
+		<form ng-submit="updateSymbol(searchBox, false);">
+		<input class="form-control searchRow inline" style="margin-left:50px; width: 60%; vertical-align:bottom;" ng-model="searchBox" placeholder="Search symbol..."  maxlength="6" type="text"/>
+		<button type="submit" class="btn btn-warning inline" style="vertical-align:bottom;">Search</button>
 		<br><br>
 		</form>
 		</div>
@@ -732,7 +671,6 @@
    </div>
    </div>
    </div>
-
     <br>
     <br>
   </div>  

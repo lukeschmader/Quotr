@@ -37,7 +37,9 @@ public class GraphServlet extends HttpServlet {
 		
 		String symbol = request.getParameter("symbol");
 		String option = request.getParameter("option");
-		System.out.println(option);
+		System.out.println("Graph");
+		System.out.println("SYM: " + symbol);
+		System.out.println("Option: " + option);
 		if(symbol != null && symbol != "")
 		{
 			String returnString = "";

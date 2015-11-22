@@ -93,6 +93,7 @@ public class StockServlet extends HttpServlet {
 				returnString = "";
 			}
 			//Write response with JSON data structure
+			System.out.println("====STOCK RETURN STRING: " + returnString);
 			response.getWriter().write(returnString);
 		}
 	}

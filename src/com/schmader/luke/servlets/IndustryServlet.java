@@ -35,7 +35,8 @@ public class IndustryServlet extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
-		String symbol = request.getParameter("symbol");	
+		String symbol = request.getParameter("symbol");
+		System.out.println("!!!!!!IND SYMBOL :" + symbol);
 		ServletContext servletContext = request.getSession().getServletContext();
 		BufferedReader reader = new BufferedReader( new FileReader (servletContext.getRealPath("CompanyInfo.json")));
 	    String         line = null;
@@ -83,7 +84,10 @@ public class IndustryServlet extends HttpServlet {
 		      if(objectInArray.getString("industry").equals(industry) && objectInArray.getString("sector").equals(sector))
 		      {
 		    	  System.out.println(count++);
-		    	  symbolList.add(objectInArray.getString("symbol").trim());
+		    	  if(!(objectInArray.getString("symbol").contains("^") || objectInArray.getString("symbol").contains(".") || objectInArray.getString("symbol").equals("WWWW"))){
+		    		  symbolList.add(objectInArray.getString("symbol").trim());
+		    	  }
+		    	  
 		    	  System.out.println(objectInArray.getString("symbol"));
 		    	  System.out.println(objectInArray.getString("name"));
 		    	  System.out.println(objectInArray.getString("sector"));
@@ -93,6 +97,11 @@ public class IndustryServlet extends HttpServlet {
 		    
 		  //Get Quote and Iterate through companies
 			 String[] symbols = symbolList.toArray(new String[symbolList.size()]);
+			 System.out.println("!!!!!Industry Symbols: "+ symbols);
+			 for(String s : symbols)
+			 {
+				 System.out.println(s);
+			 }
 			 Map<String, Stock> stocks = YahooFinance.get(symbols, true);
 			 int k = 0;
 			 BigDecimal bCount = new BigDecimal(stocks.size());
