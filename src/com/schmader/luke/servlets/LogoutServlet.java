@@ -29,9 +29,14 @@ public class LogoutServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		Cookie loginCookie = new Cookie("user",null);
+		Cookie loginCookie2 = new Cookie("user2",null);
         //setting cookie to expiry in 28 days
         loginCookie.setMaxAge(0);
+        loginCookie2.setMaxAge(0);
+        loginCookie2.setPath("/");
         response.addCookie(loginCookie);
+        response.addCookie(loginCookie2);
+        System.out.println("LOGGING OUT");
         response.sendRedirect("main.html");
 	}
 
@@ -41,9 +46,13 @@ public class LogoutServlet extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		Cookie loginCookie = new Cookie("user",null);
+		Cookie loginCookie2 = new Cookie("user2",null);
         //setting cookie to expiry in 28 days
         loginCookie.setMaxAge(0);
+        loginCookie2.setMaxAge(0);
         response.addCookie(loginCookie);
+        response.addCookie(loginCookie2);
+        System.out.println("LOGGING OUT");
         response.sendRedirect("main.html");
 	}
 

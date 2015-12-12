@@ -80,9 +80,13 @@ public class LoginServlet extends HttpServlet {
                 message = "{\"message\":\"success\"}";
                 System.out.println("{\"user\":\"" + rs.getString(2)+ "\"");
                 Cookie loginCookie = new Cookie("user","{\"user\":\"" + rs.getString(2)+ "\"}");
+                Cookie loginCookie2 = new Cookie("user2",rs.getString(2));
     	        //setting cookie to expiry in 1 year
     	        loginCookie.setMaxAge(60 * 60 * 24 * 28);
     	        response.addCookie(loginCookie);
+    	        loginCookie2.setPath("/");
+    	        loginCookie2.setMaxAge(60 * 60 * 24 * 28);
+    	        response.addCookie(loginCookie2);
     	        response.sendRedirect("redirectToMain.jsp");
             }
             else

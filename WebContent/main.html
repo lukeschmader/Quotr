@@ -4,9 +4,9 @@
     <meta charset="utf-8">
     <title>Stock App</title>
     <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.19/angular.js"></script>
-  <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.19/angular-cookies.js"></script>
+  	<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.19/angular-cookies.js"></script>
   
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+  	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
 	<link href="css/myCss.css" rel="stylesheet">
 	<link href="css/angucomplete.css" rel="stylesheet">
@@ -16,8 +16,8 @@
 	<!--<script src="../components/gauge.js/dist/gauge.min.js"></script>-->
 	<script src="http://bernii.github.io/gauge.js/dist/gauge.min.js"></script>
  	<link href="http://code.jquery.com/ui/1.10.4/themes/ui-lightness/jquery-ui.css" rel="stylesheet">
-      <script src="http://code.jquery.com/jquery-1.10.2.js"></script>
-      <script src="http://code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+    <script src="http://code.jquery.com/jquery-1.10.2.js"></script>
+    <script src="http://code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
     
     <script>    
     
@@ -51,10 +51,23 @@
 		  $scope.favoritesData;
 		  $scope.autoCompleteCompanies;
 		  $scope.isFavoritesLoaded = false;
+		  $scope.isIndustryLoaded = false;
           var init = function () { 
-          if(typeof $scope.userCookie != 'undefined'){
-        	    console.log($scope.userCookie);
-        	    $scope.user = JSON.parse($scope.userCookie)["user"];
+        	  var username = "";
+  			$scope.user = "";
+  			var name = "user2" + "=";
+  		    var ca = document.cookie.split(';');
+  		    for(var i=0; i<ca.length; i++) {
+  		        var c = ca[i];
+  		        while (c.charAt(0)==' ') c = c.substring(1);
+  		        if (c.indexOf(name) == 0) {
+  		        	username = c.substring(name.length,c.length);
+  		        }
+  		    }
+          if(!(username === "")){
+        	    console.log("COOKIE: " + username);
+        	    $scope.user = username;
+        	    
 				$scope.isLoggedIn = true;		
 				refreshFavorites();
 				$scope.$apply();		
@@ -80,8 +93,8 @@
         	    		        $jq( "#automplete-2" ).autocomplete({
         	    		           source: autoCompleteCompanies,
         	    		           autoFocus:true,
-        	    		           minLength: 0,
-        	    		           delay: 500,
+        	    		           minLength: 2,
+        	    		           delay: 1000,
         	    		           select: function( event, ui ) {
         	    		        	   console.log("hasnt calledUpdate");
         	    		        	   var splt = ui.item.value.split("(");
@@ -211,6 +224,7 @@
   	            		: "<font color=green>"  + indPeg.toPrecision(2) + "</font>";
         		$scope.companies = data.companies;
         		$scope.industryCount = data.stats.industryCount;
+        		$scope.isIndustryLoaded = true;
         	});
         	
         }
@@ -243,16 +257,18 @@
         {
         	
         	var urls = '/StockWebApp/GraphServlet?symbol=' + angular.uppercase(sym) + "&option=" + option;  	
+        	document.getElementById("graphDiff").innerHTML = "";  
+        	
         	$http.get(urls).success(function(data){
            	if(data != undefined)
        		{
            		
-           		if($scope.lineChart != null)
-      			{
-           			$scope.lineChart.destroy();
-           			$scope.lineChart.clear();
+           		//if($scope.lineChart != null)
+      			//{
+           		//	$scope.lineChart.destroy();
+           		//	$scope.lineChart.clear();
       				
-      			}
+      			//}
            		
            		var values = data.values;
            		var dates = data.dates;
@@ -350,6 +366,7 @@
 		              		$scope.gaugeValue = 0;
 			            	$scope.industryCount = "loading..."
 			            	$scope.companies = "";
+			            	$scope.isIndustryLoaded = false;
 			            	
 			            	$scope.$apply();
 		           	 	}
@@ -493,7 +510,7 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand heading" href="#">Luke Schmader</a>
+          <a class="navbar-brand heading" href="main.html" >Quotr</a>
         </div>
         <div id="navbar" class="" >
         <div class="navbar-right">
@@ -504,13 +521,15 @@
             <div class="form-group">
               <input type="password" name="password" placeholder="Password" class="form-control">
             </div>
+             <div class="form-group" style="padding-bottom: 4px;">
             <button type="submit" class="btn btn-warning">Sign in</button>
             <div class="create-account inline-nav">                                                                                                       
             or <a href="CreateProfile.html">create account</a>
             </div>
+            </div>
           </form>
           <form class="navbar-form" ng-show="(isLoggedIn)">
-            <div class="create-account inline-nav">Hello {{user}}!&ensp;&ensp;&ensp;&ensp;</div>
+           	<div class="create-account inline-nav" style="margin-right:20px;">Hello {{user}}!</div>
             <div class="create-account inline-nav">
 						<a href="LogoutServlet">Logout</a>
             </div>
@@ -528,12 +547,10 @@
 	</div>
    <div class="container">
 	<div class="row searchRow">
-
 		<div class="col-md-12 searchRow">
 		<form ng-submit="updateSymbol(searchBox, false);">
-		<label for="tags"></label>
-		<div class="ui-widget">      
-		<input  id="automplete-2" class="form-control" style="margin: auto; width: 60%; border-color: #aaaaaa;" ng-model="searchBox" placeholder="Search..."  type="text"/>
+		<div class="ui-widget" style="margin-top: 5px;">      
+		<input  id="automplete-2" class="form-control" style="margin: auto; width: 60%; border-color: #aaaaaa;" ng-model="searchBox" placeholder="Search Symbol or Company..."  type="text"/>
 		</div>
 		<br><br>
 		</form>
@@ -548,19 +565,19 @@
 	    <span ng-show="isFavorite && isLoggedIn"><a ng-click="removeFromFavorites();" href="#"><img class="favoriteIcon" src="img/GoldStar.png" alt="Favorited" height="23" width="23" ></a></span>
     </div>
     <div class="col-xl-12">
-	    <h4><font id="profileIndustry" color=lightGrey></font></h4>
+	    <h4><font id="profileIndustry" color=grey></font></h4>
     </div>
-    <div class="row">
-    <div class="col-md-8">
+    <div class="row" >
+    <div class="col-md-8" style="height: 340px;">
     <div id="graphDiff" class="left">
 </div>
-    <div class="right btn-group">
+    <div class="right btn-group" style="z-index:1">
   <button type="button" ng-click="graphOption = 1" class="btn graph-btn blackButton">1m</button>
   <button type="button" ng-click="graphOption = 2" class="btn graph-btn">6m</button>
   <button type="button" ng-click="graphOption = 3" class="btn graph-btn">1y</button>
   <button type="button" ng-click="graphOption = 4" class="btn graph-btn">5y</button>
 </div>
-    <canvas id="myChart" width=778px height="310"></canvas>
+    <canvas id="myChart" width=778px height="310" style="position:absolute; left:10px; top:20px;  z-index:0" ></canvas>
     </div>
     <br>
      <div class="col-lg-4 stockTable">  
@@ -682,8 +699,9 @@
    </div>
    
    <div class='col-md-4'>
-	 
-
+   <form  action="FavAnalysis.html">
+	 <input ng-disabled="!(isLoggedIn)" type="submit" class="btn btn-warning" style="width: 100%; margin-top: 100px; " value="Favorites Analysis">
+   </form>
    </div>
    </div>
    <div class='row'>
@@ -691,14 +709,14 @@
    		<table class="table table-striped noBottom industryTableTop"  >
 	   	<thead bgcolor="lightGrey">
 	      <tr >
-	        <th class="industryHeader" width=68% ng-click="sortField = 'name'; reverse = !reverse ">Companies In Industry<span class="badge smallBadge">{{industryCount}}</span></th>
-	        <th class="industryHeader" width=15%  ng-click="sortField = 'price'; reverse = !reverse">Price</th>
-	        <th class="industryHeader" width=15%  ng-click="sortField = 'changePct'; reverse = !reverse">Change</th>
+	        <th class="industryHeader unselectable" width=68% ng-click="sortField = 'name'; reverse = !reverse ">Companies In Industry<span class="badge smallBadge">{{industryCount}}</span></th>
+	        <th class="industryHeader unselectable" width=15%  ng-click="sortField = 'price'; reverse = !reverse">Price</th>
+	        <th class="industryHeader unselectable" width=15%  ng-click="sortField = 'changePct'; reverse = !reverse">Change</th>
 	      </tr>
 	      </thead>
 	    </table>
 	   <div class='scrollable noTop'>
-	   <table class="table table-striped noTop ">
+	   <table ng-show="isIndustryLoaded" class="table table-striped noTop ">
 	      <tbody>
 	      <tr class="industryRow" ng-repeat="company in companies | orderBy:sortField:reverse"">
 	        <td  width=68%><a ng-href='#' ng-click="updateSymbol(company.symbol, true);">{{company.name}} ({{company.symbol}})</a></td>
@@ -707,20 +725,21 @@
 	      </tr>
 	      </tbody>
 	    </table>
+	    <img class="center" ng-show="!(isIndustryLoaded)" src="img/loading.gif"  height="270" width="360">
 	   </div>
    </div>
    <div class='col-md-4'>
 	  <table class="table table-striped noBottom industryTableTop"  >
 	  <thead bgcolor="lightGrey">
 	   <tr >
-	     <th class="industryHeader" width=68% ng-click="favSortField = 'name'; favReverse = !favReverse "><img src="img/GoldStar.png" class="favoriteIcon" alt="Favorite" height="15" width="15" ng-show=”true”>&ensp;Favorites<span class="badge smallBadge">{{favoriteCount}}</span></th>
-	     <th class="industryHeader" width=15%  ng-click="favSortField = 'price'; favReverse = !favReverse">Price</th>
-	    <th class="industryHeader" width=15%  ng-click="favSortField = 'changePct'; favReverse = !favReverse">Change</th>
+	     <th class="industryHeader unselectable" width=62% ng-click="favSortField = 'name'; favReverse = !favReverse "><img src="img/GoldStar.png" class="favoriteIcon" alt="Favorite" height="15" width="15" ng-show=”true”>&ensp;Favorites<span class="badge smallBadge">{{favoriteCount}}</span></th>
+	     <th class="industryHeader unselectable" width=18%  ng-click="favSortField = 'price'; favReverse = !favReverse">Price</th>
+	    <th class="industryHeader unselectable" width=17%  ng-click="favSortField = 'changePct'; favReverse = !favReverse">Change</th>
 	   </tr>
 	   </thead>
 	 </table>
 	<div class='scrollable noTop'>
-	<table class="table table-striped noTop ">
+	<table ng-show="isLoggedIn" class="table table-striped noTop ">
 	   <tbody>
 	   <tr class="industryRow" ng-repeat="favorite in favorites| orderBy:favSortField:favReverse"">
 	     <td  width=68%><a ng-href='#' ng-click="updateSymbol(favorite.symbol, false);">{{favorite.name}}<br>({{favorite.symbol}})</a></td>
@@ -729,6 +748,7 @@
 	   </tr>
 	   </tbody>
 	 </table>
+	 <p ng-show="!(isLoggedIn)" class="center" style="text-align: center;" >You are not logged in</p>
    </div>
    </div>
    </div>

@@ -18,7 +18,7 @@ import javax.servlet.http.HttpServletResponse;
 import com.schmader.luke.Test;
 
 /**
- * Servlet implementation class AddToFavoritesServlet
+ * Servlet implementation class AddToFavoritesServlet   
  */
 @WebServlet("/AddToFavoritesServlet")
 public class AddToFavoritesServlet extends HttpServlet {
