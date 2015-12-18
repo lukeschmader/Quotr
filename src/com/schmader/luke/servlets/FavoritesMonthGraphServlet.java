@@ -3,11 +3,19 @@ package com.schmader.luke.servlets;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -15,40 +23,112 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.schmader.luke.Test;
+
 import yahoofinance.Stock;
 import yahoofinance.YahooFinance;
 import yahoofinance.histquotes.HistoricalQuote;
 import yahoofinance.histquotes.Interval;
 
 /**
- * Servlet implementation class GraphServlet
+ * Servlet implementation class FavoritesMonthGraphServlet
  */
-@WebServlet("/GraphServlet")
-public class GraphServlet extends HttpServlet {
+@WebServlet("/FavoritesMonthGraphServlet")
+public class FavoritesMonthGraphServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
+    /**
+     * @see HttpServlet#HttpServlet()
+     */
+    public FavoritesMonthGraphServlet() {
+        super();
+        // TODO Auto-generated constructor stub
+    }
 
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
-		
-		
-		String symbol = request.getParameter("symbol");
-		String option = request.getParameter("option");
-		System.out.println("Graph");
-		System.out.println("SYM: " + symbol);
-		System.out.println("Option: " + option);
-		if(symbol != null && symbol != "")
-		{
-			String returnString = "";
-			returnString = getGraphData(symbol, option);
-			response.getWriter().write(returnString);
+				Connection con = null;
+		        ResultSet rs = null;
+		        PreparedStatement pst = null;        
+		        
+		        String user = request.getParameter("username");
+		        String dburl = "jdbc:mysql://localhost:3306/STOCK_APP";
+		        String dbuser = "webuser";
+		        String dbpassword = "webuser";
 
+		        try {
+		        	
+		            con = DriverManager.getConnection(dburl, dbuser, dbpassword);
+		            pst = con.prepareStatement("SELECT * FROM USER_FAVORITES where USERNAME = ?");
+		            pst.setString(1, user);
+		            
+		            rs = pst.executeQuery();
+		            StringBuffer returnData;
+		            returnData = new StringBuffer ("fail");		
+		            List<String> symbolList = new ArrayList<String>();
+		            boolean hasResults = false;
+		            while (rs.next()) {
+		            	symbolList.add(rs.getString(3));
+		                System.out.println(rs.getString(3));
+		                System.out.println("{\"user\":\"" + rs.getString(2)+ "\"");
+		                hasResults = true;             
+		            }
+		            
+		            if(hasResults)
+		            {
+		            	
+			            
+			            returnData = new StringBuffer ("{\"companies\":[");		
+			            //Get Quote and Iterate through companies
+						String[] symbols = symbolList.toArray(new String[symbolList.size()]);
+						Map<String, Stock> stocks = YahooFinance.get(symbols, true);
+						int count = 0;
+						for (Map.Entry<String, Stock> stock : stocks.entrySet()){
+							count++;
+							returnData.append(getGraphData(stock.getValue().getSymbol(), "1"));
+							if(count < stocks.entrySet().size())
+							{
+								returnData.append(",");
+							}
+							
+						}
+						returnData.append("]}");						
+		            }
+		            else
+		            {
+		            	returnData = new StringBuffer ("{\"favorites\":[],");
+		            	returnData.append("\"stats\":{}");
+		            	returnData.append("}");
+		            }
+		            
+		            System.out.println(returnData.toString());
+					response.getWriter().write(returnData.toString());
+		            
 
-		}
-		
+		        } catch (SQLException ex) {
+		            Logger lgr = Logger.getLogger(Test.class.getName());            
+		            lgr.log(Level.SEVERE, ex.getMessage(), ex);
+
+		        } finally {
+
+		            try {
+		            	
+		                if (pst != null) {
+		                    pst.close();
+		                }
+		                if (con != null) {
+		                    con.close();
+		                }
+		                
+
+		            } catch (SQLException ex) {
+		                Logger lgr = Logger.getLogger(Test.class.getName());
+		                lgr.log(Level.SEVERE, ex.getMessage(), ex);
+		            }
+		        }
 	}
 	
 	private static String getGraphData(String sym, String option) 
@@ -100,99 +180,6 @@ public class GraphServlet extends HttpServlet {
 						
 						//dates.add(Integer.toString(g.get(GregorianCalendar.MONTH)) + "/" + Integer.toString(g.get(GregorianCalendar.DAY_OF_MONTH)));
 						dates.add(Integer.toString(g.get(GregorianCalendar.DAY_OF_MONTH)));
-					}
-					values.add(current.getAdjClose().setScale(2, RoundingMode.HALF_UP).toString());	
-				}
-			}
-			else if(option.equals("2"))
-			{
-				//6 months
-				Calendar end = Calendar.getInstance();
-				Calendar start = Calendar.getInstance();
-				start.add(Calendar.MONTH, -6);
-				List<HistoricalQuote> history = stock.getHistory(start, end, Interval.DAILY);
-				Iterator<HistoricalQuote> historyItr = history.iterator();
-				HistoricalQuote current;
-				while (historyItr.hasNext()) {
-					current = historyItr.next();
-					if(first){//first is last value
-						lastb = current.getAdjClose();
-						first = false;
-						
-					}
-					if(!historyItr.hasNext())
-					{
-						
-						firstb = current.getAdjClose();
-					}
-					GregorianCalendar g = (GregorianCalendar) current.getDate();
-					if(g.get(GregorianCalendar.DAY_OF_WEEK) == GregorianCalendar.WEDNESDAY)
-					{
-					dates.add(Integer.toString(g.get(GregorianCalendar.MONTH)+1) + "/" + Integer.toString(g.get(GregorianCalendar.DAY_OF_MONTH)));
-					}
-					else
-					{
-						dates.add("");
-					}
-					values.add(current.getAdjClose().setScale(2, RoundingMode.HALF_UP).toString());	
-				}
-			}
-			else if(option.equals("3"))
-			{
-				//1 Year
-				Calendar end = Calendar.getInstance();
-				Calendar start = Calendar.getInstance();
-				start.add(Calendar.YEAR, -1);
-				List<HistoricalQuote> history = stock.getHistory(start, end, Interval.WEEKLY);
-				Iterator<HistoricalQuote> historyItr = history.iterator();
-				HistoricalQuote current;
-				while (historyItr.hasNext()) {
-					current = historyItr.next();
-					if(first){//first is last value
-						lastb = current.getAdjClose();
-						first = false;
-						
-					}
-					if(!historyItr.hasNext())
-					{
-						
-						firstb = current.getAdjClose();
-					}
-					GregorianCalendar g = (GregorianCalendar) current.getDate();
-					dates.add(Integer.toString(g.get(GregorianCalendar.MONTH)+1) + "/" + Integer.toString(g.get(GregorianCalendar.DAY_OF_MONTH)));
-					values.add(current.getAdjClose().setScale(2, RoundingMode.HALF_UP).toString());	
-				}
-			}
-			else if(option.equals("4"))
-			{
-				//5 Years
-				Calendar end = Calendar.getInstance();
-				Calendar start = Calendar.getInstance();
-				start.add(Calendar.YEAR, -5);
-				List<HistoricalQuote> history = stock.getHistory(start, end, Interval.MONTHLY);
-				Iterator<HistoricalQuote> historyItr = history.iterator();
-				HistoricalQuote current;
-				
-				while (historyItr.hasNext()) {
-					current = historyItr.next();
-					if(first){//first is last value
-						lastb = current.getAdjClose();
-						first = false;
-						
-					}
-					if(!historyItr.hasNext())
-					{
-						
-						firstb = current.getAdjClose();
-					}
-					GregorianCalendar g = (GregorianCalendar) current.getDate();	
-					if((g.get(GregorianCalendar.MONTH)+1) % 2 == 0)
-					{
-					dates.add(Integer.toString(g.get(GregorianCalendar.MONTH)+1) + "/" + Integer.toString(g.get(GregorianCalendar.YEAR)));
-					}
-					else
-					{
-						dates.add("");
 					}
 					values.add(current.getAdjClose().setScale(2, RoundingMode.HALF_UP).toString());	
 				}
@@ -259,24 +246,16 @@ public class GraphServlet extends HttpServlet {
 			case "1":
 				returnString.append("\"interval\":\"Month\"," );
 				break;
-			case "2":
-				returnString.append("\"interval\":\"6 Months\",");
-				break;
-			case "3":
-				returnString.append("\"interval\":\"1 Year\",");
-				break;
-			case "4":
-				returnString.append("\"interval\":\"5 Years\"," );
-				break;
 			}
-			
+			returnString.append("\"symbol\":\""+stock.getSymbol()+"\"," );
+			returnString.append("\"name\":\""+stock.getName()+"\"," );
 			returnString.append("\"diff\":" + d);
 			
 			returnString.append("}");
 			
 			returnString.append("}");
 			
-			System.out.println(returnString.toString());
+			//System.out.println(returnString.toString());
 			
 			return returnString.toString();
 			}
@@ -288,7 +267,6 @@ public class GraphServlet extends HttpServlet {
 		return "";
 		
 	}
-	
 
-	
+
 }

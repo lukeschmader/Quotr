@@ -212,16 +212,16 @@
         			$scope.gaugeValue = 0;
         		}
         		
-        		document.getElementById("targetChange").innerHTML = targetChg.toPrecision(3) < 0.00 ? "<font color=red>" + targetChg.toPrecision(3) + "%" + "</font>" 
-	            		: "<font color=green>" + "+" + targetChg.toPrecision(3) + "%" + "</font>";               		
-        		document.getElementById("indChgPct").innerHTML = indChangepct.toPrecision(2) < 0.00 ? "<font color=red>" + indChangepct.toPrecision(2) + "%" + "</font>" 
-	            		: "<font color=green>" + "+" + indChangepct.toPrecision(2) + "%" + "</font>";        		
-	            document.getElementById("indVolumePct").innerHTML = indVolpct.toPrecision(4) < 0.00 ? "<font color=red>" + indVolpct.toPrecision(4) + "%" + "</font>" 
-	    	            		: "<font color=green>" + "+" + indVolpct.toPrecision(4) + "%" + "</font>";
-           		document.getElementById("indYield").innerHTML = indYieldPct.toPrecision(2) < 0.00 ? "<font color=red>" + indYieldPct.toPrecision(2) + "%" + "</font>" 
-   	            		: "<font color=green>" + "+" + indYieldPct.toPrecision(2) + "%" + "</font>";
-          		document.getElementById("indPeg").innerHTML = indPeg.toPrecision(2) > 0.00 ? "<font color=red>" +"+"+  indPeg.toPrecision(2) + "</font>" 
-  	            		: "<font color=green>"  + indPeg.toPrecision(2) + "</font>";
+        		document.getElementById("targetChange").innerHTML = targetChg.toFixed(2) < 0.00 ? "<font color=red>" + targetChg.toFixed(2) + "%" + "</font>" 
+	            		: "<font color=green>" + "+" + targetChg.toFixed(2) + "%" + "</font>";               		
+        		document.getElementById("indChgPct").innerHTML = indChangepct.toFixed(2) < 0.00 ? "<font color=red>" + indChangepct.toFixed(2) + "%" + "</font>" 
+	            		: "<font color=green>" + "+" + indChangepct.toFixed(2) + "%" + "</font>";        		
+	            document.getElementById("indVolumePct").innerHTML = indVolpct.toFixed(2) < 0.00 ? "<font color=red>" + indVolpct.toFixed(2) + "%" + "</font>" 
+	    	            		: "<font color=green>" + "+" + indVolpct.toFixed(2) + "%" + "</font>";
+           		document.getElementById("indYield").innerHTML = indYieldPct.toFixed(2) < 0.00 ? "<font color=red>" + indYieldPct.toFixed(2) + "%" + "</font>" 
+   	            		: "<font color=green>" + "+" + indYieldPct.toFixed(2) + "%" + "</font>";
+          		document.getElementById("indPeg").innerHTML = indPeg.toFixed(2) > 0.00 ? "<font color=red>" +"+"+  indPeg.toFixed(2) + "</font>" 
+  	            		: "<font color=green>"  + indPeg.toFixed(2) + "</font>";
         		$scope.companies = data.companies;
         		$scope.industryCount = data.stats.industryCount;
         		$scope.isIndustryLoaded = true;
@@ -241,16 +241,16 @@
     		}else if($scope.gaugeValue < 0){
     			$scope.gaugeValue = 0;
     		}
-    		document.getElementById("targetChange").innerHTML = targetChg.toPrecision(3) < 0.00 ? "<font color=red>" + targetChg.toPrecision(3) + "%" + "</font>" 
-            		: "<font color=green>" + "+" + targetChg.toPrecision(3) + "%" + "</font>";      		
-        	document.getElementById("indChgPct").innerHTML = indChangepct.toPrecision(2) < 0.00 ? "<font color=red>" + indChangepct.toPrecision(2) + "%" + "</font>" 
-            		: "<font color=green>" + "+" + indChangepct.toPrecision(2) + "%" + "</font>";        		
-            document.getElementById("indVolumePct").innerHTML = indVolpct.toPrecision(4) < 0.00 ? "<font color=red>" + indVolpct.toPrecision(4) + "%" + "</font>" 
-    	            		: "<font color=green>" + "+" + indVolpct.toPrecision(4) + "%" + "</font>";
-       		document.getElementById("indYield").innerHTML = indYieldPct.toPrecision(2) < 0.00 ? "<font color=red>" + indYieldPct.toPrecision(2) + "%" + "</font>" 
-	            		: "<font color=green>" + "+" + indYieldPct.toPrecision(2) + "%" + "</font>";
-      		document.getElementById("indPeg").innerHTML = indPeg.toPrecision(2) > 0.00 ? "<font color=red>" +"+"+  indPeg.toPrecision(2) + "</font>" 
-	            		: "<font color=green>"  + indPeg.toPrecision(2) + "</font>";
+    		document.getElementById("targetChange").innerHTML = targetChg.toFixed(2) < 0.00 ? "<font color=red>" + targetChg.toFixed(2) + "%" + "</font>" 
+            		: "<font color=green>" + "+" + targetChg.toFixed(2) + "%" + "</font>";      		
+        	document.getElementById("indChgPct").innerHTML = indChangepct.toFixed(2) < 0.00 ? "<font color=red>" + indChangepct.toFixed(2) + "%" + "</font>" 
+            		: "<font color=green>" + "+" + indChangepct.toFixed(2) + "%" + "</font>";        		
+            document.getElementById("indVolumePct").innerHTML = indVolpct.toFixed(2) < 0.00 ? "<font color=red>" + indVolpct.toFixed(2) + "%" + "</font>" 
+    	            		: "<font color=green>" + "+" + indVolpct.toFixed(2) + "%" + "</font>";
+       		document.getElementById("indYield").innerHTML = indYieldPct.toFixed(2) < 0.00 ? "<font color=red>" + indYieldPct.toFixed(2) + "%" + "</font>" 
+	            		: "<font color=green>" + "+" + indYieldPct.toFixed(2) + "%" + "</font>";
+      		document.getElementById("indPeg").innerHTML = indPeg.toFixed(2) > 0.00 ? "<font color=red>" +"+"+  indPeg.toFixed(2) + "</font>" 
+	            		: "<font color=green>"  + indPeg.toFixed(2) + "</font>";
         }
         
         function refreshChart(sym, option)
