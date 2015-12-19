@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <title>Quoter - Favorites</title>
-	    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.19/angular.js"></script>
-  <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.19/angular-cookies.js"></script>
+	<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.19/angular.js"></script>
+  	<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.19/angular-cookies.js"></script>
   
 	<link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/jquery.slick/1.5.8/slick.css"/>
 	<link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/jquery.slick/1.5.8/slick-theme.css"/>
@@ -16,12 +16,16 @@
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js" integrity="sha512-K1qjQ+NcF2TYO/eI3M6v8EiNYZfA95pQumfvcVrTHtwQVDG+aHRqLi/ETn2uB+1JqwYqVG3LIvdm9lj6imS/pQ==" crossorigin="anonymous"></script>
 	<script src="js/Chart.js"></script>
 	<link href="css/myCss.css" rel="stylesheet">
+	<script type="text/javascript" src="js/slick.min.js"></script>
 <script>
 	
 	var $jq = jQuery.noConflict();
 	var nameApp = angular.module('stockApp', ['ngCookies']);
 	nameApp.controller('StockCtrl', ['$scope', '$http', '$timeout', '$cookies','$cookieStore', function($scope, $http, $timeout,$cookies,$cookieStore) {	
 		$scope.isLoggedIn = false;
+		$scope.isMonthGraphLoaded = false;
+		$scope.isMonthPctGraphLoaded = false;
+		$scope.isFavoritesLoaded = false;
 		var color0="rgb(26,99,60)";
 		var color1="rgb(100,10,100)";
 		var color2="rgb(200,110,255)";
@@ -36,11 +40,14 @@
 		
 		
 		var init = function () { 
-			$jq('.bg').slick({});
+			
+			$jq('.bg').slick({});	
+			
 			var monthCanvas = document.getElementById("monthCanvas");
 			monthCanvas.width = $jq("#monthDiv").width();
 			var monthPctCanvas = document.getElementById("monthPctCanvas");
 			monthPctCanvas.width = $jq("#monthPctDiv").width();
+			
 			var username = "";
 			$scope.user = "";
 			var name = "user2" + "=";
@@ -62,16 +69,33 @@
 	        	  console.log("NO COOKIE :(");
 	        	  window.location = "main.html";
 	          }
-	          
+	        getFavorites();  
 	        createMonthPercentGraph();
 	  		
 	      };
           init();
+          function getFavorites(){
+        	  var urls = '/StockWebApp/FavoritesRetrieverServlet?username=' + $scope.user;
+
+          	$http.get(urls).success(function(data){        		
+          		$scope.favorites = data.favorites;
+          		$scope.favoritesData = data;
+          		$scope.isFavoritesLoaded = true;
+          		var legendHtml = "";
+             	 	for (var i = 0; i < $scope.favorites.length; i++) {
+             	 		legendHtml = legendHtml.concat('<span style="border-style:solid; border-width: 1px; background:' + colorPicker(i) + ';"> &ensp;</span>&ensp;' + $scope.favorites[i].symbol + '<br>' + $scope.favorites[i].name + '<br><br>');
+             	 		
+             	    	}
+             	 	document.getElementById("legend").innerHTML = legendHtml;
+          	});      	
+          }
           function createMonthPercentGraph()
           {
         	var urls = '/StockWebApp/FavoritesMonthGraphServlet?username=' + $scope.user;
           	$http.get(urls).success(function(data){
           		if(data.companies.length !== 0){
+          			
+          			
           			var graphLabels = [];
           			var graphDatasets = [];
       			 	for(var i = 0; i < data.companies.length; i++){
@@ -154,10 +178,13 @@
         	      	  	legendTemplate : "<ul class=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<datasets.length; i++){%><li><span style=\"background-color:<%=datasets[i].strokeColor%>\"></span><%if(datasets[i].label){%><%=datasets[i].label%><%}%></li><%}%></ul>"
         	      	
         	      	});		      	
-          	      	
+        	      	$scope.isMonthGraphLoaded = true;
+            		$scope.isMonthPctGraphLoaded = true;
+            		$jq(".center").hide();
+            		$scope.$apply();
       			}
           	});
-        	  
+          	
   	  		
           }
 	      function colorPicker(number){
@@ -203,56 +230,70 @@
 </style>
 </head>
 <body ng-controller="StockCtrl">
-<nav class="navbar navbar-inverse navbar-fixed-top">
-
-        <div class="navbar-header">
-          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-          <a class="navbar-brand heading" href="main.html" >Quotr</a>
-        </div>
-        <div id="navbar" class="" >
-        <div class="navbar-right">
-          <form class="navbar-form" ng-show="(isLoggedIn)">
-            <div class="create-account inline-nav" style="margin-right:20px;">Hello {{user}}!</div>
-            <div class="create-account inline-nav">
-						<a href="LogoutServlet">Logout</a>
-            </div>
-          </form>
-         </div>
-        </div><!--/.navbar-collapse -->
-</nav>
-<div class="sub-heading">
+	<nav class="navbar navbar-inverse navbar-fixed-top">	
+	        <div class="navbar-header">
+	          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+	            <span class="sr-only">Toggle navigation</span>
+	            <span class="icon-bar"></span>
+	            <span class="icon-bar"></span>
+	            <span class="icon-bar"></span>
+	          </button>
+	          <a class="navbar-brand heading" href="main.html" >Quotr</a>
+	        </div>
+	        <div id="navbar" class="" >
+	        <div class="navbar-right">
+	          <form class="navbar-form" ng-show="(isLoggedIn)">
+	            <div class="create-account inline-nav" style="margin-right:20px;">Hello {{user}}!</div>
+	            <div class="create-account inline-nav">
+				<a href="LogoutServlet">Logout</a>
+	            </div>
+	          </form>
+	         </div>
+	        </div><!--/.navbar-collapse -->
+	</nav>
+	<div class="sub-heading">
 		<div class="sub-heading-title">
 			Favorites Analysis
 		</div>
 	</div>
-	<div class="container">
-		<div class="row">
-			<div class="col-md-12" style="margin-top:10px;">
-				<div style="height: 500px;">
-					<div style="height: 500px;"class="bg" data-slick='{"slidesToShow": 1, "slidesToScroll": 1, "dots":true, "arrows":true}'>
-					  <div id="monthDiv" style="text-align: center;"><h1 >Stock Price Month</h1><br>
-					  <canvas id="monthCanvas" class="favCanv" width=1100 height="310"></canvas><br>
-					  <div id="monthLegend"></div>
-					  </div>
-					  <div id="monthPctDiv" style="text-align: center;"><h1 >Stock Percentage Change Month</h1><br>
-					  <canvas id="monthPctCanvas" class="favCanv" width=1100 height="310"></canvas><br>
-					  <div id="monthPctLegend"></div>
-					  </div>
-					  <div><h3>Market Cap Pi</h3></div>
-					  <div><h3>4</h3></div>
-					  <div><h3>5</h3></div>
-					  <div><h3>6</h3></div>
+		<div class="container">
+			<div class="row" style="margin-top:5px;"">
+				<div class="col-xs-2" style="margin-top:10px; padding-left:0px; padding-right:12px;">
+					<div>
+					<form  action="main.html">
+						<input ng-disabled="!(isLoggedIn)" type="submit" class="btn btn-warning" style="width: 100%; margin-top: 0px; margin-bottom: 10px; " value="Stock Quotes">
+					</form>	
+					</div>
+					<div id="legend" class="legendScrollable">
+					</div>	
+						
+				</div>
+				<div id="caroselDiv" class="col-xs-10" style="margin-top:10px;">
+					<div id="carosel" style="height: 365px;" >
+						<div style="height: 365px;"class="bg" data-slick='{"slidesToShow": 1, "slidesToScroll": 1, "dots":true, "arrows":true}'>
+						  
+						  <div id="monthPctDiv" style="text-align: center;">
+							  <h1 >Stock Percentage Change Month</h1><br>
+							  <img class="center" style:"position=relative; top=0px;"id="monthPctLoading" src="img/loading.gif"  height="310" width="415">
+							  <canvas id="monthPctCanvas" class="favCanv"  height="310" ></canvas>
+							  <hr/>
+						  </div>						  
+						  <div id="monthDiv" style="text-align: center;"><h1 >Stock Price Month</h1><br>
+							  <canvas id="monthCanvas" class="favCanv" width=1100 height="310"></canvas>
+							  <hr/>
+						  </div>
+						  
+						  <div><h3>Market Cap Pi</h3></div>
+						  
+						  <div><h3>4</h3></div>
+						  
+						  <div><h3>5</h3></div>
+						  
+						  <div><h3>6</h3></div>
+						</div>
 					</div>
 				</div>
 			</div>
-		</div>
-	</div>
-	
-<script type="text/javascript" src="js/slick.min.js"></script>
-</body>
+		</div>		
+	</body>
 </html>

@@ -119,6 +119,11 @@
 	overflow: auto;
 	height: 280px;
 }
+.legendScrollable
+{
+	overflow: auto;
+	height: 310px;
+}
 
 .stockTableHeader
 {

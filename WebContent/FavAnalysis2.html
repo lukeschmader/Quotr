@@ -22,7 +22,8 @@
 	var nameApp = angular.module('stockApp', ['ngCookies']);
 	nameApp.controller('StockCtrl', ['$scope', '$http', '$timeout', '$cookies','$cookieStore', function($scope, $http, $timeout,$cookies,$cookieStore) {	
 		$scope.isLoggedIn = false;
-		
+		$scope.monthGraphLoaded = false;
+		$scope.monthPctGraphLoaded = false;
 		var init = function () { 
 			$jq('.bg').slick({});
 			var monthCanvas = document.getElementById("monthCanvas");
