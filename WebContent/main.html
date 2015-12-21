@@ -222,8 +222,10 @@
    	            		: "<font color=green>" + "+" + indYieldPct.toFixed(2) + "%" + "</font>";
           		document.getElementById("indPeg").innerHTML = indPeg.toFixed(2) > 0.00 ? "<font color=red>" +"+"+  indPeg.toFixed(2) + "</font>" 
   	            		: "<font color=green>"  + indPeg.toFixed(2) + "</font>";
-        		$scope.companies = data.companies;
+          		
+	  	        $scope.companies = data.companies;
         		$scope.industryCount = data.stats.industryCount;
+        		
         		$scope.isIndustryLoaded = true;
         	});
         	
@@ -441,7 +443,6 @@
         		$scope.isFavorite = false;
            	 	for (i = 0; i < $scope.favorites.length; i++) {
            	 		console.log('fav: ' + $scope.favorites[i].symbol);
-           	 		
            	    	if($scope.favorites[i].symbol === angular.uppercase($scope.currentSymbol)){
            	    		console.log('isFavorite');
            	    		$scope.isFavorite = true;
@@ -720,8 +721,8 @@
 	      <tbody>
 	      <tr class="industryRow" ng-repeat="company in companies | orderBy:sortField:reverse"">
 	        <td  width=68%><a ng-href='#' ng-click="updateSymbol(company.symbol, true);">{{company.name}} ({{company.symbol}})</a></td>
-	        <td width=15%>{{company.price}}    </td>
-	        <td width=13% ng-style="set_color(company.changePct)">{{company.changePct < 0 ? company.changePct : "+" + company.changePct }}%</td>
+	        <td width=15%>{{company.price.toFixed(2)}}    </td>
+	        <td width=13% ng-style="set_color(company.changePct)">{{company.changePct < 0 ? company.changePct.toFixed(2) : "+" + company.changePct.toFixed(2) }}%</td>
 	      </tr>
 	      </tbody>
 	    </table>
@@ -732,9 +733,9 @@
 	  <table class="table table-striped noBottom industryTableTop"  >
 	  <thead bgcolor="lightGrey">
 	   <tr >
-	     <th class="industryHeader unselectable" width=62% ng-click="favSortField = 'name'; favReverse = !favReverse "><img src="img/GoldStar.png" class="favoriteIcon" alt="Favorite" height="15" width="15" ng-show=”true”>&ensp;Favorites<span class="badge smallBadge">{{favoriteCount}}</span></th>
-	     <th class="industryHeader unselectable" width=18%  ng-click="favSortField = 'price'; favReverse = !favReverse">Price</th>
-	    <th class="industryHeader unselectable" width=17%  ng-click="favSortField = 'changePct'; favReverse = !favReverse">Change</th>
+	     <th class="industryHeader unselectable" width=54% ng-click="favSortField = 'name'; favReverse = !favReverse "><img src="img/GoldStar.png" class="favoriteIcon" alt="Favorite" height="15" width="15" ng-show=”true”>&ensp;Favorites<span class="badge smallBadge">{{favoriteCount}}</span></th>
+	     <th class="industryHeader unselectable" width=16%  ng-click="favSortField = 'price'; favReverse = !favReverse">Price</th>
+	    <th class="industryHeader unselectable" width=21%  ng-click="favSortField = 'changePct'; favReverse = !favReverse">Change</th>
 	   </tr>
 	   </thead>
 	 </table>
@@ -743,8 +744,8 @@
 	   <tbody>
 	   <tr class="industryRow" ng-repeat="favorite in favorites| orderBy:favSortField:favReverse"">
 	     <td  width=68%><a ng-href='#' ng-click="updateSymbol(favorite.symbol, false);">{{favorite.name}}<br>({{favorite.symbol}})</a></td>
-	     <td width=15%>{{favorite.price}}    </td>
-	     <td width=13% ng-style="set_color(favorite.changePct)">{{favorite.changePct < 0 ? favorite.changePct : "+" + favorite.changePct }}%</td>
+	     <td width=17%>{{favorite.price.toFixed(2)}}    </td>
+	     <td width=17% ng-style="set_color(favorite.changePct)">{{favorite.changePct.toFixed < 0 ? favorite.changePct.toFixed(2) : "+" + favorite.changePct.toFixed(2) }}%</td>
 	   </tr>
 	   </tbody>
 	 </table>
