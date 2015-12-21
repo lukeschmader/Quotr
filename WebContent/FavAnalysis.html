@@ -285,245 +285,34 @@
           }
           function createYearGraphs(){
         	  var urls = '/StockWebApp/FavoritesYearGraphServlet?username=' + $scope.user;
-            	$http.get(urls).success(function(data){
-            		if(data.companies.length !== 0){
-            			
-            			var bestVal;
-            			var bestSym;
-            			var worstVal;
-            			var worstSym;
-            			var graphLabels = [];
-            			var graphDatasets = [];
-        			 	for(var i = 0; i < data.companies.length; i++){
-        			 		var compData = {
-        			 				label: data.companies[i].info.name,
-  		      			 		fillColor: "rgba(255,255,255,0)",
-  		  			            strokeColor: colorPicker(i),
-  		  			            pointColor: colorPicker(i),
-  		  			            pointStrokeColor: "#fff",
-  		  			            pointHighlightFill: "#fff",
-  		  			            pointHighlightStroke: colorPicker(i),
-  		  			            data: data.companies[i].values
-        			 				
-        			 		};
-        			 		graphDatasets.push(compData);
-        			 		if(i == 0){
-        			 			graphLabels = data.companies[i].dates;
-        			 		}
-        			 		if(i == 0){
-        			 			bestVal = data.companies[i].values[data.companies[i].values.length-1];
-        			 			worstVal = data.companies[i].values[data.companies[i].values.length-1];
-        			 			bestSym = data.companies[i].info.symbol;
-        			 			worstSym = data.companies[i].info.symbol;
-        			 		}else{
-        			 			if(data.companies[i].values[data.companies[i].values.length-1] > bestVal){
-        			 				bestVal = data.companies[i].values[data.companies[i].values.length-1];
-        			 				bestSym = data.companies[i].info.symbol;
-        			 			}
-        			 			if(data.companies[i].values[data.companies[i].values.length-1] < worstVal){
-        			 				worstVal = data.companies[i].values[data.companies[i].values.length-1];
-        			 				worstSym = data.companies[i].info.symbol;
-        			 			}
-        			 		}
-        			 	}
-        			 		
-            	      	//Best and Worst Table set
-               	 	for (var i = 0; i < $scope.favorites.length; i++) {
-               	 		if(bestSym === $scope.favorites[i].symbol){
-               	 			document.getElementById("bestYear").innerHTML = '<span style="border-style:solid; border-width: 1px; background:' + colorPicker(i) + ';"> &ensp;</span>&ensp;' + $scope.favorites[i].name + '(' + $scope.favorites[i].symbol + ')';
-               	 			document.getElementById("bestYearVal").innerHTML = bestVal;
-               	 		}
-               	 		if(worstSym === $scope.favorites[i].symbol){
-               	 			document.getElementById("worstYear").innerHTML = '<span style="border-style:solid; border-width: 1px; background:' + colorPicker(i) + ';"> &ensp;</span>&ensp;' + $scope.favorites[i].name + '(' + $scope.favorites[i].symbol + ')';
-               	 			document.getElementById("worstYearVal").innerHTML = worstVal;
-               	 		}	
-               	    }
-            			//create Graph
-            			var graphData = {
-            					labels: graphLabels,
-            					datasets: graphDatasets
-            			};
-            			var canvas = document.getElementById("yearCanvas");
-            	      	var ctx = document.getElementById("yearCanvas").getContext("2d");	 
-            	      	var monthChart = new Chart(ctx).Line(graphData, {
-            	      	    bezierCurve: false,
-            	      	    pointDot : false,
-            	      	    animationEasing: "easeOutQuart",
-            	      	    pointHitDetectionRadius : 15,
-            	      	    showTooltips: true,
-            	      	    //responsive: true,
-            	      	    animation: false,
-            	      	  	legendTemplate : "<ul class=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<datasets.length; i++){%><li><span style=\"background-color:<%=datasets[i].strokeColor%>\"></span><%if(datasets[i].label){%><%=datasets[i].label%><%}%></li><%}%></ul>"
-            	      	
-            	      	});		      	
-            	      
-               	 	
-            	      	
-            	      	//PctChange----------------------------------------------------------------
-            	      	var graphPctLabels = [];
-          			var graphPctDatasets = [];
-      			 	for(var i = 0; i < data.companies.length; i++){
-      			 		var startValue = data.companies[i].values[0];
-      			 		for(var j = 0; j < data.companies[i].values.length; j++){
-      			 			data.companies[i].values[j] = (((data.companies[i].values[j] - startValue)/startValue)*100).toFixed(2);
-      			 		}
-      			 		data.companies[i].values[0] = 0.00;
-      			 		var compPctData = {
-      			 				label: data.companies[i].info.name,
-  		      			 		fillColor: "rgba(255,255,255,0)",
-  		  			            strokeColor: colorPicker(i),
-  		  			            pointColor: colorPicker(i),
-  		  			            pointStrokeColor: "#fff",
-  		  			            pointHighlightFill: "#fff",
-  		  			            pointHighlightStroke: colorPicker(i),
-  		  			            data: data.companies[i].values
-      			 				
-      			 		};
-      			 		graphPctDatasets.push(compPctData);
-      			 		if(i == 0){
-      			 			graphPctLabels = data.companies[i].dates;
-      			 		}
-      			 		if(i == 0){
-        			 			bestVal = data.companies[i].values[data.companies[i].values.length-1];
-        			 			worstVal = data.companies[i].values[data.companies[i].values.length-1];
-        			 			bestSym = data.companies[i].info.symbol;
-        			 			worstSym = data.companies[i].info.symbol;
-        			 		}else{
-        			 			if(data.companies[i].values[data.companies[i].values.length-1] > bestVal){
-        			 				bestVal = data.companies[i].values[data.companies[i].values.length-1];
-        			 				bestSym = data.companies[i].info.symbol;
-        			 			}
-        			 			if(data.companies[i].values[data.companies[i].values.length-1] < worstVal){
-        			 				worstVal = data.companies[i].values[data.companies[i].values.length-1];
-        			 				worstSym = data.companies[i].info.symbol;
-        			 			}
-        			 		}
-      			 	}
-      			 	//Best and Worst Table set
-               	 	for (var i = 0; i < $scope.favorites.length; i++) {
-               	 		if(bestSym === $scope.favorites[i].symbol){
-               	 			document.getElementById("bestPctYear").innerHTML = '<span style="border-style:solid; border-width: 1px; background:' + colorPicker(i) + ';"> &ensp;</span>&ensp;' + $scope.favorites[i].name + '(' + $scope.favorites[i].symbol + ')';
-               	 			document.getElementById("bestPctYearVal").innerHTML = bestVal < 0.00 ? "<font color=red>" + bestVal + "%" + "</font>" 
-          		            		: "<font color=green>" + "+" + bestVal + "%" + "</font>";  
-               	 		}
-               	 		if(worstSym === $scope.favorites[i].symbol){
-               	 			document.getElementById("worstPctYear").innerHTML = '<span style="border-style:solid; border-width: 1px; background:' + colorPicker(i) + ';"> &ensp;</span>&ensp;' + $scope.favorites[i].name + '(' + $scope.favorites[i].symbol + ')';
-               	 			document.getElementById("worstPctYearVal").innerHTML = worstVal < 0.00 ? "<font color=red>" + worstVal + "%" + "</font>" 
-          		            		: "<font color=green>" + "+" + worstVal + "%" + "</font>"; 
-               	 		}	
-               	    }
-          			//create Graph
-          			var graphPctData = {
-          					labels: graphPctLabels,
-          					datasets: graphPctDatasets
-          			};
-          			var pctcanvas = document.getElementById("yearPctCanvas");
-          	      	var pctctx = document.getElementById("yearPctCanvas").getContext("2d");	 
-          	      	var monthPctChart = new Chart(pctctx).Line(graphPctData, {
-          	      	    bezierCurve: false,
-          	      	    pointDot : false,
-          	      	    animationEasing: "easeOutQuart",
-          	      	    pointHitDetectionRadius : 15,
-          	      	    showTooltips: true,
-          	      	    //responsive: true,
-          	      	    animation: false,
-          	      	  	legendTemplate : "<ul class=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<datasets.length; i++){%><li><span style=\"background-color:<%=datasets[i].strokeColor%>\"></span><%if(datasets[i].label){%><%=datasets[i].label%><%}%></li><%}%></ul>"
-          	      	
-          	      	});		      	
-          	      	$scope.isMonthGraphLoaded = true;
-              		$scope.isMonthPctGraphLoaded = true;
-              		$jq(".year").hide();
-              		$scope.$apply();
-        			}
-            	});
-          }
-          function createMonthGraphs()
-          {
-        	var urls = '/StockWebApp/FavoritesMonthGraphServlet?username=' + $scope.user;
-          	$http.get(urls).success(function(data){
-          		if(data.companies.length !== 0){
-          			
-          			var bestVal;
-          			var bestSym;
-          			var worstVal;
-          			var worstSym;
-          			var graphLabels = [];
-          			var graphDatasets = [];
-      			 	for(var i = 0; i < data.companies.length; i++){
-      			 		var compData = {
-      			 				label: data.companies[i].info.name,
-		      			 		fillColor: "rgba(255,255,255,0)",
-		  			            strokeColor: colorPicker(i),
-		  			            pointColor: colorPicker(i),
-		  			            pointStrokeColor: "#fff",
-		  			            pointHighlightFill: "#fff",
-		  			            pointHighlightStroke: colorPicker(i),
-		  			            data: data.companies[i].values
-      			 				
-      			 		};
-      			 		graphDatasets.push(compData);
-      			 		if(i == 0){
-      			 			graphLabels = data.companies[i].dates;
-      			 		}
-      			 		if(i == 0){
-      			 			bestVal = data.companies[i].values[data.companies[i].values.length-1];
-      			 			worstVal = data.companies[i].values[data.companies[i].values.length-1];
-      			 			bestSym = data.companies[i].info.symbol;
-      			 			worstSym = data.companies[i].info.symbol;
-      			 		}else{
-      			 			if(data.companies[i].values[data.companies[i].values.length-1] > bestVal){
-      			 				bestVal = data.companies[i].values[data.companies[i].values.length-1];
-      			 				bestSym = data.companies[i].info.symbol;
-      			 			}
-      			 			if(data.companies[i].values[data.companies[i].values.length-1] < worstVal){
-      			 				worstVal = data.companies[i].values[data.companies[i].values.length-1];
-      			 				worstSym = data.companies[i].info.symbol;
-      			 			}
-      			 		}
-      			 	}
-      			 		
-          	      	//Best and Worst Table set
-             	 	for (var i = 0; i < $scope.favorites.length; i++) {
-             	 		if(bestSym === $scope.favorites[i].symbol){
-             	 			document.getElementById("bestMonth").innerHTML = '<span style="border-style:solid; border-width: 1px; background:' + colorPicker(i) + ';"> &ensp;</span>&ensp;' + $scope.favorites[i].name + '(' + $scope.favorites[i].symbol + ')';
-             	 			document.getElementById("bestMonthVal").innerHTML = bestVal;
-             	 		}
-             	 		if(worstSym === $scope.favorites[i].symbol){
-             	 			document.getElementById("worstMonth").innerHTML = '<span style="border-style:solid; border-width: 1px; background:' + colorPicker(i) + ';"> &ensp;</span>&ensp;' + $scope.favorites[i].name + '(' + $scope.favorites[i].symbol + ')';
-             	 			document.getElementById("worstMonthVal").innerHTML = worstVal;
-             	 		}	
-             	    }
-          			//create Graph
-          			var graphData = {
-          					labels: graphLabels,
-          					datasets: graphDatasets
-          			};
-          			var canvas = document.getElementById("monthCanvas");
-          	      	var ctx = document.getElementById("monthCanvas").getContext("2d");	 
-          	      	var monthChart = new Chart(ctx).Line(graphData, {
-          	      	    bezierCurve: false,
-          	      	    pointDot : false,
-          	      	    animationEasing: "easeOutQuart",
-          	      	    pointHitDetectionRadius : 15,
-          	      	    showTooltips: true,
-          	      	    //responsive: true,
-          	      	    animation: false,
-          	      	  	legendTemplate : "<ul class=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<datasets.length; i++){%><li><span style=\"background-color:<%=datasets[i].strokeColor%>\"></span><%if(datasets[i].label){%><%=datasets[i].label%><%}%></li><%}%></ul>"
-          	      	
-          	      	});		      	
-          	      
-             	 	
-          	      	
-          	      	//PctChange----------------------------------------------------------------
-          	      	var graphPctLabels = [];
-        			var graphPctDatasets = [];
-    			 	for(var i = 0; i < data.companies.length; i++){
-    			 		var startValue = data.companies[i].values[0];
-    			 		for(var j = 0; j < data.companies[i].values.length; j++){
-    			 			data.companies[i].values[j] = (((data.companies[i].values[j] - startValue)/startValue)*100).toFixed(2);
+        		$http.get(urls).success(function(data){
+        		if(data.companies.length !== 0){
+        			
+        			var bestVal;
+        			var bestSym;
+        			var worstVal;
+        			var worstSym;
+        			var graphLabels = [];
+        			var graphDatasets = [];
+        			var largestDataLength = 0;
+        			var graphDates;
+        			var companyStartValue = [];
+        			for(var i = 0; i < data.companies.length; i++){
+        				if(data.companies[i].values.length > largestDataLength){
+        					largestDataLength = data.companies[i].values.length;
+        					graphDates = data.companies[i].dates;
     			 		}
-    			 		data.companies[i].values[0] = 0.00;
-    			 		var compPctData = {
+        			}
+    			 	for(var i = 0; i < data.companies.length; i++){
+    			 		companyStartValue.push(data.companies[i].values[0]);
+    			 		if(data.companies[i].values.length < largestDataLength){
+    			 			var temp = largestDataLength-data.companies[i].values.length;
+    			 			//data.companies[i].values.unshift(Array.apply(null, Array(largestDataLength-data.companies[i].values.length)).map(Number.prototype.valueOf,data.companies[i].values[0]));
+    			 			for(var j = 0; j < temp; j++){
+    			 				data.companies[i].values.unshift(null);
+    			 			}
+    			 		}
+    			 		var compData = {
     			 				label: data.companies[i].info.name,
 		      			 		fillColor: "rgba(255,255,255,0)",
 		  			            strokeColor: colorPicker(i),
@@ -534,47 +323,45 @@
 		  			            data: data.companies[i].values
     			 				
     			 		};
-    			 		graphPctDatasets.push(compPctData);
+    			 		graphDatasets.push(compData);
+    			 		
     			 		if(i == 0){
-    			 			graphPctLabels = data.companies[i].dates;
+    			 			graphLabels = graphDates;
+    			 			bestVal = data.companies[i].values[data.companies[i].values.length-1];
+    			 			worstVal = data.companies[i].values[data.companies[i].values.length-1];
+    			 			bestSym = data.companies[i].info.symbol;
+    			 			worstSym = data.companies[i].info.symbol;
+    			 		}else{
+    			 			if(data.companies[i].values[data.companies[i].values.length-1] > bestVal){
+    			 				bestVal = data.companies[i].values[data.companies[i].values.length-1];
+    			 				bestSym = data.companies[i].info.symbol;
+    			 			}
+    			 			if(data.companies[i].values[data.companies[i].values.length-1] < worstVal){
+    			 				worstVal = data.companies[i].values[data.companies[i].values.length-1];
+    			 				worstSym = data.companies[i].info.symbol;
+    			 			}
     			 		}
-    			 		if(i == 0){
-      			 			bestVal = data.companies[i].values[data.companies[i].values.length-1];
-      			 			worstVal = data.companies[i].values[data.companies[i].values.length-1];
-      			 			bestSym = data.companies[i].info.symbol;
-      			 			worstSym = data.companies[i].info.symbol;
-      			 		}else{
-      			 			if(data.companies[i].values[data.companies[i].values.length-1] > bestVal){
-      			 				bestVal = data.companies[i].values[data.companies[i].values.length-1];
-      			 				bestSym = data.companies[i].info.symbol;
-      			 			}
-      			 			if(data.companies[i].values[data.companies[i].values.length-1] < worstVal){
-      			 				worstVal = data.companies[i].values[data.companies[i].values.length-1];
-      			 				worstSym = data.companies[i].info.symbol;
-      			 			}
-      			 		}
     			 	}
-    			 	//Best and Worst Table set
-             	 	for (var i = 0; i < $scope.favorites.length; i++) {
-             	 		if(bestSym === $scope.favorites[i].symbol){
-             	 			document.getElementById("bestPctMonth").innerHTML = '<span style="border-style:solid; border-width: 1px; background:' + colorPicker(i) + ';"> &ensp;</span>&ensp;' + $scope.favorites[i].name + '(' + $scope.favorites[i].symbol + ')';
-             	 			document.getElementById("bestPctMonthVal").innerHTML = bestVal < 0.00 ? "<font color=red>" + bestVal + "%" + "</font>" 
-        		            		: "<font color=green>" + "+" + bestVal + "%" + "</font>";  
-             	 		}
-             	 		if(worstSym === $scope.favorites[i].symbol){
-             	 			document.getElementById("worstPctMonth").innerHTML = '<span style="border-style:solid; border-width: 1px; background:' + colorPicker(i) + ';"> &ensp;</span>&ensp;' + $scope.favorites[i].name + '(' + $scope.favorites[i].symbol + ')';
-             	 			document.getElementById("worstPctMonthVal").innerHTML = worstVal < 0.00 ? "<font color=red>" + worstVal + "%" + "</font>" 
-        		            		: "<font color=green>" + "+" + worstVal + "%" + "</font>"; 
-             	 		}	
-             	    }
+    			 		
+        	      	//Best and Worst Table set
+           	 	for (var i = 0; i < $scope.favorites.length; i++) {
+           	 		if(bestSym === $scope.favorites[i].symbol){
+           	 			document.getElementById("bestYear").innerHTML = '<span style="border-style:solid; border-width: 1px; background:' + colorPicker(i) + ';"> &ensp;</span>&ensp;' + $scope.favorites[i].name + '(' + $scope.favorites[i].symbol + ')';
+           	 			document.getElementById("bestYearVal").innerHTML = bestVal;
+           	 		}
+           	 		if(worstSym === $scope.favorites[i].symbol){
+           	 			document.getElementById("worstYear").innerHTML = '<span style="border-style:solid; border-width: 1px; background:' + colorPicker(i) + ';"> &ensp;</span>&ensp;' + $scope.favorites[i].name + '(' + $scope.favorites[i].symbol + ')';
+           	 			document.getElementById("worstYearVal").innerHTML = worstVal;
+           	 		}	
+           	    }
         			//create Graph
-        			var graphPctData = {
-        					labels: graphPctLabels,
-        					datasets: graphPctDatasets
+        			var graphData = {
+        					labels: graphLabels,
+        					datasets: graphDatasets
         			};
-        			var pctcanvas = document.getElementById("monthPctCanvas");
-        	      	var pctctx = document.getElementById("monthPctCanvas").getContext("2d");	 
-        	      	var monthPctChart = new Chart(pctctx).Line(graphPctData, {
+        			var canvas = document.getElementById("yearCanvas");
+        	      	var ctx = document.getElementById("yearCanvas").getContext("2d");	 
+        	      	var monthChart = new Chart(ctx).Line(graphData, {
         	      	    bezierCurve: false,
         	      	    pointDot : false,
         	      	    animationEasing: "easeOutQuart",
@@ -585,13 +372,275 @@
         	      	  	legendTemplate : "<ul class=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<datasets.length; i++){%><li><span style=\"background-color:<%=datasets[i].strokeColor%>\"></span><%if(datasets[i].label){%><%=datasets[i].label%><%}%></li><%}%></ul>"
         	      	
         	      	});		      	
-        	      	$scope.isMonthGraphLoaded = true;
-            		$scope.isMonthPctGraphLoaded = true;
-            		$jq(".month").hide();
-            		$scope.$apply();
-      			}
-          	});
-          	
+        	      
+           	 	
+        	      	
+        	      	//PctChange----------------------------------------------------------------
+        	      	var graphPctLabels = [];
+      			var graphPctDatasets = [];
+  			 	for(var i = 0; i < data.companies.length; i++){
+  			 		//var startValue = data.companies[i].values[0];
+  			 		for(var j = 0; j < data.companies[i].values.length; j++){
+  			 			if(data.companies[i].values[j] != null){
+	 			 				//if(j == 0){
+	    			 			//		data.companies[i].values[0] = 0.00;
+	   			 				//}else{
+	    			 				//data.companies[i].values[j] = (((data.companies[i].values[j] - companyStartValue[i])/companyStartValue[i])*100).toFixed(2);
+	    			 				data.companies[i].values[j] = (((data.companies[i].values[j] - companyStartValue[i])/companyStartValue[i])*100).toFixed(2);
+	   			 				//}
+ 			 				}
+  			 		}
+  			 		
+  			 			
+  			 		
+  			 		var compPctData = {
+  			 				label: data.companies[i].info.name,
+		      			 		fillColor: "rgba(255,255,255,0)",
+		  			            strokeColor: colorPicker(i),
+		  			            pointColor: colorPicker(i),
+		  			            pointStrokeColor: "#fff",
+		  			            pointHighlightFill: "#fff",
+		  			            pointHighlightStroke: colorPicker(i),
+		  			            data: data.companies[i].values
+  			 				
+  			 		};
+  			 		graphPctDatasets.push(compPctData);
+  			 		if(i == 0){
+  			 			graphPctLabels = data.companies[i].dates;
+  			 		}
+  			 		if(i == 0){
+    			 			bestVal = data.companies[i].values[data.companies[i].values.length-1];
+    			 			worstVal = data.companies[i].values[data.companies[i].values.length-1];
+    			 			bestSym = data.companies[i].info.symbol;
+    			 			worstSym = data.companies[i].info.symbol;
+    			 		}else{
+    			 			if(data.companies[i].values[data.companies[i].values.length-1] > bestVal){
+    			 				bestVal = data.companies[i].values[data.companies[i].values.length-1];
+    			 				bestSym = data.companies[i].info.symbol;
+    			 			}
+    			 			if(data.companies[i].values[data.companies[i].values.length-1] < worstVal){
+    			 				worstVal = data.companies[i].values[data.companies[i].values.length-1];
+    			 				worstSym = data.companies[i].info.symbol;
+    			 			}
+    			 		}
+  			 	}
+  			 	//Best and Worst Table set
+           	 	for (var i = 0; i < $scope.favorites.length; i++) {
+           	 		if(bestSym === $scope.favorites[i].symbol){
+           	 			document.getElementById("bestPctYear").innerHTML = '<span style="border-style:solid; border-width: 1px; background:' + colorPicker(i) + ';"> &ensp;</span>&ensp;' + $scope.favorites[i].name + '(' + $scope.favorites[i].symbol + ')';
+           	 			document.getElementById("bestPctYearVal").innerHTML = bestVal < 0.00 ? "<font color=red>" + bestVal + "%" + "</font>" 
+      		            		: "<font color=green>" + "+" + bestVal + "%" + "</font>";  
+           	 		}
+           	 		if(worstSym === $scope.favorites[i].symbol){
+           	 			document.getElementById("worstPctYear").innerHTML = '<span style="border-style:solid; border-width: 1px; background:' + colorPicker(i) + ';"> &ensp;</span>&ensp;' + $scope.favorites[i].name + '(' + $scope.favorites[i].symbol + ')';
+           	 			document.getElementById("worstPctYearVal").innerHTML = worstVal < 0.00 ? "<font color=red>" + worstVal + "%" + "</font>" 
+      		            		: "<font color=green>" + "+" + worstVal + "%" + "</font>"; 
+           	 		}	
+           	    }
+      			//create Graph
+      			var graphPctData = {
+      					labels: graphPctLabels,
+      					datasets: graphPctDatasets
+      			};
+      			var pctcanvas = document.getElementById("yearPctCanvas");
+      	      	var pctctx = document.getElementById("yearPctCanvas").getContext("2d");	 
+      	      	var monthPctChart = new Chart(pctctx).Line(graphPctData, {
+      	      	    bezierCurve: false,
+      	      	    pointDot : false,
+      	      	    animationEasing: "easeOutQuart",
+      	      	    pointHitDetectionRadius : 15,
+      	      	    showTooltips: true,
+      	      	    //responsive: true,
+      	      	    animation: false,
+      	      	  	legendTemplate : "<ul class=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<datasets.length; i++){%><li><span style=\"background-color:<%=datasets[i].strokeColor%>\"></span><%if(datasets[i].label){%><%=datasets[i].label%><%}%></li><%}%></ul>"
+      	      	
+      	      	});		      	
+      	      	$scope.isMonthGraphLoaded = true;
+          		$scope.isMonthPctGraphLoaded = true;
+          		$jq(".year").hide();
+          		$scope.$apply();
+    			}
+        	});
+          }
+          function createMonthGraphs()
+          {
+        	  var urls = '/StockWebApp/FavoritesMonthGraphServlet?username=' + $scope.user;
+        		$http.get(urls).success(function(data){
+        		if(data.companies.length !== 0){
+        			
+        			var bestVal;
+        			var bestSym;
+        			var worstVal;
+        			var worstSym;
+        			var graphLabels = [];
+        			var graphDatasets = [];
+        			var largestDataLength = 0;
+        			var graphDates;
+        			var companyStartValue = [];
+        			for(var i = 0; i < data.companies.length; i++){
+        				if(data.companies[i].values.length > largestDataLength){
+        					largestDataLength = data.companies[i].values.length;
+        					graphDates = data.companies[i].dates;
+    			 		}
+        			}
+    			 	for(var i = 0; i < data.companies.length; i++){
+    			 		companyStartValue.push(data.companies[i].values[0]);
+    			 		if(data.companies[i].values.length < largestDataLength){
+    			 			var temp = largestDataLength-data.companies[i].values.length;
+    			 			//data.companies[i].values.unshift(Array.apply(null, Array(largestDataLength-data.companies[i].values.length)).map(Number.prototype.valueOf,data.companies[i].values[0]));
+    			 			for(var j = 0; j < temp; j++){
+    			 				data.companies[i].values.unshift(null);
+    			 			}
+    			 		}
+    			 		var compData = {
+    			 				label: data.companies[i].info.name,
+		      			 		fillColor: "rgba(255,255,255,0)",
+		  			            strokeColor: colorPicker(i),
+		  			            pointColor: colorPicker(i),
+		  			            pointStrokeColor: "#fff",
+		  			            pointHighlightFill: "#fff",
+		  			            pointHighlightStroke: colorPicker(i),
+		  			            data: data.companies[i].values
+    			 				
+    			 		};
+    			 		graphDatasets.push(compData);
+    			 		
+    			 		if(i == 0){
+    			 			graphLabels = graphDates;
+    			 			bestVal = data.companies[i].values[data.companies[i].values.length-1];
+    			 			worstVal = data.companies[i].values[data.companies[i].values.length-1];
+    			 			bestSym = data.companies[i].info.symbol;
+    			 			worstSym = data.companies[i].info.symbol;
+    			 		}else{
+    			 			if(data.companies[i].values[data.companies[i].values.length-1] > bestVal){
+    			 				bestVal = data.companies[i].values[data.companies[i].values.length-1];
+    			 				bestSym = data.companies[i].info.symbol;
+    			 			}
+    			 			if(data.companies[i].values[data.companies[i].values.length-1] < worstVal){
+    			 				worstVal = data.companies[i].values[data.companies[i].values.length-1];
+    			 				worstSym = data.companies[i].info.symbol;
+    			 			}
+    			 		}
+    			 	}
+    			 		
+        	      	//Best and Worst Table set
+           	 	for (var i = 0; i < $scope.favorites.length; i++) {
+           	 		if(bestSym === $scope.favorites[i].symbol){
+           	 			document.getElementById("bestMonth").innerHTML = '<span style="border-style:solid; border-width: 1px; background:' + colorPicker(i) + ';"> &ensp;</span>&ensp;' + $scope.favorites[i].name + '(' + $scope.favorites[i].symbol + ')';
+           	 			document.getElementById("bestMonthVal").innerHTML = bestVal;
+           	 		}
+           	 		if(worstSym === $scope.favorites[i].symbol){
+           	 			document.getElementById("worstMonth").innerHTML = '<span style="border-style:solid; border-width: 1px; background:' + colorPicker(i) + ';"> &ensp;</span>&ensp;' + $scope.favorites[i].name + '(' + $scope.favorites[i].symbol + ')';
+           	 			document.getElementById("worstMonthVal").innerHTML = worstVal;
+           	 		}	
+           	    }
+        			//create Graph
+        			var graphData = {
+        					labels: graphLabels,
+        					datasets: graphDatasets
+        			};
+        			var canvas = document.getElementById("monthCanvas");
+        	      	var ctx = document.getElementById("monthCanvas").getContext("2d");	 
+        	      	var monthChart = new Chart(ctx).Line(graphData, {
+        	      	    bezierCurve: false,
+        	      	    pointDot : false,
+        	      	    animationEasing: "easeOutQuart",
+        	      	    pointHitDetectionRadius : 15,
+        	      	    showTooltips: true,
+        	      	    //responsive: true,
+        	      	    animation: false,
+        	      	  	legendTemplate : "<ul class=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<datasets.length; i++){%><li><span style=\"background-color:<%=datasets[i].strokeColor%>\"></span><%if(datasets[i].label){%><%=datasets[i].label%><%}%></li><%}%></ul>"
+        	      	
+        	      	});		      	
+        	      
+           	 	
+        	      	
+        	      	//PctChange----------------------------------------------------------------
+        	      	var graphPctLabels = [];
+      			var graphPctDatasets = [];
+  			 	for(var i = 0; i < data.companies.length; i++){
+  			 		//var startValue = data.companies[i].values[0];
+  			 		for(var j = 0; j < data.companies[i].values.length; j++){
+  			 			if(data.companies[i].values[j] != null){
+	 			 				//if(j == 0){
+	    			 			//		data.companies[i].values[0] = 0.00;
+	   			 				//}else{
+	    			 				//data.companies[i].values[j] = (((data.companies[i].values[j] - companyStartValue[i])/companyStartValue[i])*100).toFixed(2);
+	    			 				data.companies[i].values[j] = (((data.companies[i].values[j] - companyStartValue[i])/companyStartValue[i])*100).toFixed(2);
+	   			 				//}
+ 			 				}
+  			 		}
+  			 		
+  			 			
+  			 		
+  			 		var compPctData = {
+  			 				label: data.companies[i].info.name,
+		      			 		fillColor: "rgba(255,255,255,0)",
+		  			            strokeColor: colorPicker(i),
+		  			            pointColor: colorPicker(i),
+		  			            pointStrokeColor: "#fff",
+		  			            pointHighlightFill: "#fff",
+		  			            pointHighlightStroke: colorPicker(i),
+		  			            data: data.companies[i].values
+  			 				
+  			 		};
+  			 		graphPctDatasets.push(compPctData);
+  			 		if(i == 0){
+  			 			graphPctLabels = data.companies[i].dates;
+  			 		}
+  			 		if(i == 0){
+    			 			bestVal = data.companies[i].values[data.companies[i].values.length-1];
+    			 			worstVal = data.companies[i].values[data.companies[i].values.length-1];
+    			 			bestSym = data.companies[i].info.symbol;
+    			 			worstSym = data.companies[i].info.symbol;
+    			 		}else{
+    			 			if(data.companies[i].values[data.companies[i].values.length-1] > bestVal){
+    			 				bestVal = data.companies[i].values[data.companies[i].values.length-1];
+    			 				bestSym = data.companies[i].info.symbol;
+    			 			}
+    			 			if(data.companies[i].values[data.companies[i].values.length-1] < worstVal){
+    			 				worstVal = data.companies[i].values[data.companies[i].values.length-1];
+    			 				worstSym = data.companies[i].info.symbol;
+    			 			}
+    			 		}
+  			 	}
+  			 	//Best and Worst Table set
+           	 	for (var i = 0; i < $scope.favorites.length; i++) {
+           	 		if(bestSym === $scope.favorites[i].symbol){
+           	 			document.getElementById("bestPctMonth").innerHTML = '<span style="border-style:solid; border-width: 1px; background:' + colorPicker(i) + ';"> &ensp;</span>&ensp;' + $scope.favorites[i].name + '(' + $scope.favorites[i].symbol + ')';
+           	 			document.getElementById("bestPctMonthVal").innerHTML = bestVal < 0.00 ? "<font color=red>" + bestVal + "%" + "</font>" 
+      		            		: "<font color=green>" + "+" + bestVal + "%" + "</font>";  
+           	 		}
+           	 		if(worstSym === $scope.favorites[i].symbol){
+           	 			document.getElementById("worstPctMonth").innerHTML = '<span style="border-style:solid; border-width: 1px; background:' + colorPicker(i) + ';"> &ensp;</span>&ensp;' + $scope.favorites[i].name + '(' + $scope.favorites[i].symbol + ')';
+           	 			document.getElementById("worstPctMonthVal").innerHTML = worstVal < 0.00 ? "<font color=red>" + worstVal + "%" + "</font>" 
+      		            		: "<font color=green>" + "+" + worstVal + "%" + "</font>"; 
+           	 		}	
+           	    }
+      			//create Graph
+      			var graphPctData = {
+      					labels: graphPctLabels,
+      					datasets: graphPctDatasets
+      			};
+      			var pctcanvas = document.getElementById("monthPctCanvas");
+      	      	var pctctx = document.getElementById("monthPctCanvas").getContext("2d");	 
+      	      	var monthPctChart = new Chart(pctctx).Line(graphPctData, {
+      	      	    bezierCurve: false,
+      	      	    pointDot : false,
+      	      	    animationEasing: "easeOutQuart",
+      	      	    pointHitDetectionRadius : 15,
+      	      	    showTooltips: true,
+      	      	    //responsive: true,
+      	      	    animation: false,
+      	      	  	legendTemplate : "<ul class=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<datasets.length; i++){%><li><span style=\"background-color:<%=datasets[i].strokeColor%>\"></span><%if(datasets[i].label){%><%=datasets[i].label%><%}%></li><%}%></ul>"
+      	      	
+      	      	});		      	
+      	      	$scope.isMonthGraphLoaded = true;
+          		$scope.isMonthPctGraphLoaded = true;
+          		$jq(".month").hide();
+          		$scope.$apply();
+    			}
+        	});
   	  		
           }
 	      function colorPicker(number){
