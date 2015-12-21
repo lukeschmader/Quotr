@@ -2,9 +2,9 @@
 <html ng-app="stockApp" >
 <head>
 <meta charset="UTF-8">
-<title>Insert title here</title>
-	    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.19/angular.js"></script>
-  <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.19/angular-cookies.js"></script>
+<title>Quoter - Favorites</title>
+	<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.19/angular.js"></script>
+  	<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.19/angular-cookies.js"></script>
   
 	<link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/jquery.slick/1.5.8/slick.css"/>
 	<link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/jquery.slick/1.5.8/slick-theme.css"/>
@@ -16,18 +16,49 @@
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js" integrity="sha512-K1qjQ+NcF2TYO/eI3M6v8EiNYZfA95pQumfvcVrTHtwQVDG+aHRqLi/ETn2uB+1JqwYqVG3LIvdm9lj6imS/pQ==" crossorigin="anonymous"></script>
 	<script src="js/Chart.js"></script>
 	<link href="css/myCss.css" rel="stylesheet">
+	<script type="text/javascript" src="js/slick.min.js"></script>
 <script>
 	
 	var $jq = jQuery.noConflict();
 	var nameApp = angular.module('stockApp', ['ngCookies']);
 	nameApp.controller('StockCtrl', ['$scope', '$http', '$timeout', '$cookies','$cookieStore', function($scope, $http, $timeout,$cookies,$cookieStore) {	
 		$scope.isLoggedIn = false;
-		$scope.monthGraphLoaded = false;
-		$scope.monthPctGraphLoaded = false;
+		$scope.favorites;
+		$scope.favoritesData;
+		$scope.isMonthGraphLoaded = false;
+		$scope.isMonthPctGraphLoaded = false;
+		$scope.isFavoritesLoaded = false;
+		var color0="rgb(26,99,60)";
+		var color1="rgb(100,10,100)";
+		var color2="rgb(200,110,255)";
+		var color3="rgb(200,10,10)";
+		var color4="rgb(0,110,100)";
+		var color5="rgb(200,10,0)";
+		var color6="rgb(200,255,10)";
+		var color7="rgb(200,190,100)";
+		var color8="rgb(90,190,99)";
+		var color9="rgb(9,99,100)";
+		
+		
+		
 		var init = function () { 
-			$jq('.bg').slick({});
+			$scope.favorites = null;
+			$scope.favoritesData = null;
+			$jq('.bg').slick({});	
+			
 			var monthCanvas = document.getElementById("monthCanvas");
 			monthCanvas.width = $jq("#monthDiv").width();
+			var monthPctCanvas = document.getElementById("monthPctCanvas");
+			monthPctCanvas.width = $jq("#monthPctDiv").width();
+			var monthCanvas = document.getElementById("yearCanvas");
+			monthCanvas.width = $jq("#yearDiv").width();
+			var monthPctCanvas = document.getElementById("yearPctCanvas");
+			monthPctCanvas.width = $jq("#yearPctDiv").width();
+			var monthCanvas = document.getElementById("year5Canvas");
+			monthCanvas.width = $jq("#year5Div").width();
+			var monthPctCanvas = document.getElementById("year5PctCanvas");
+			monthPctCanvas.width = $jq("#year5PctDiv").width();
+			
 			var username = "";
 			$scope.user = "";
 			var name = "user2" + "=";
@@ -49,52 +80,598 @@
 	        	  console.log("NO COOKIE :(");
 	        	  window.location = "main.html";
 	          }
-	          
-	  		
-	  		var data = {
-	  			    labels: ["January", "February", "March", "April", "May", "June", "July"],
-	  			    datasets: [
-	  			        {
-	  			            label: "My First dataset",
-	  			            fillColor: "rgba(220,220,220,0.2)",
-	  			            strokeColor: "rgba(220,220,220,1)",
-	  			            pointColor: "rgba(220,220,220,1)",
-	  			            pointStrokeColor: "#fff",
-	  			            pointHighlightFill: "#fff",
-	  			            pointHighlightStroke: "rgba(220,220,220,1)",
-	  			            data: [0.65, -0.59, 0.80, 0.81, 0.56, 0.55, 0.40]
-	  			        },
-	  			        {
-	  			            label: "My Second dataset",
-	  			            fillColor: "rgba(151,187,205,0.2)",
-	  			            strokeColor: "rgba(151,187,205,1)",
-	  			            pointColor: "rgba(151,187,205,1)",
-	  			            pointStrokeColor: "#fff",
-	  			            pointHighlightFill: "#fff",
-	  			            pointHighlightStroke: "rgba(151,187,205,1)",
-	  			            data: [0.28, 0.48, 0.40, 0.19, 0.86, 0.27, 0.90]
-	  			        }
-	  			    ]
-	  			};
-
-	  		var canvas = document.getElementById("monthCanvas");
-	      	var ctx = document.getElementById("monthCanvas").getContext("2d");	 
-	      	var lineChart = new Chart(ctx).Line(data, {
-	      	    bezierCurve: false,
-	      	    pointDot : true,
-	      	    animationEasing: "easeOutQuart",
-	      	    pointHitDetectionRadius : 0,
-	      	    showTooltips: true,
-	      	    //responsive: true,
-	      	    animation: true      	    
-	      	
-	      	});	
-	      	
-	      	document.getElementById("monthLegend").innerHTML = myLineChart.generateLegend();
+	        getFavorites();  
+	        
 	  		
 	      };
           init();
-	          
+          function getFavorites(){
+        	  var urls = '/StockWebApp/FavoritesRetrieverServlet?username=' + $scope.user;
+
+          	$http.get(urls).success(function(data){        		
+          		$scope.favorites = data.favorites;
+          		$scope.favoritesData = data;
+          		$scope.isFavoritesLoaded = true;
+          		createMonthGraphs();
+    	        createYearGraphs();
+    	        createYear5Graphs();
+          		var legendHtml = "";
+             	 	for (var i = 0; i < $scope.favorites.length; i++) {
+             	 		legendHtml = legendHtml.concat('<span style="border-style:solid; border-width: 1px; background:' + colorPicker(i) + ';"> &ensp;</span>&ensp;' + $scope.favorites[i].symbol + '<br>' + $scope.favorites[i].name + '<br><br>');
+             	 		
+             	    	}
+             	 	document.getElementById("legend").innerHTML = legendHtml;
+             	 	
+          	});      	
+          }
+          function createYear5Graphs(){
+        	  var urls = '/StockWebApp/FavoritesYear5GraphServlet?username=' + $scope.user;
+          		$http.get(urls).success(function(data){
+          		if(data.companies.length !== 0){
+          			
+          			var bestVal;
+          			var bestSym;
+          			var worstVal;
+          			var worstSym;
+          			var graphLabels = [];
+          			var graphDatasets = [];
+          			var largestDataLength = 0;
+          			var graphDates;
+          			var companyStartValue = [];
+          			for(var i = 0; i < data.companies.length; i++){
+          				if(data.companies[i].values.length > largestDataLength){
+          					largestDataLength = data.companies[i].values.length;
+          					graphDates = data.companies[i].dates;
+      			 		}
+          			}
+      			 	for(var i = 0; i < data.companies.length; i++){
+      			 		companyStartValue.push(data.companies[i].values[0]);
+      			 		if(data.companies[i].values.length < largestDataLength){
+      			 			var temp = largestDataLength-data.companies[i].values.length;
+      			 			//data.companies[i].values.unshift(Array.apply(null, Array(largestDataLength-data.companies[i].values.length)).map(Number.prototype.valueOf,data.companies[i].values[0]));
+      			 			for(var j = 0; j < temp; j++){
+      			 				data.companies[i].values.unshift(null);
+      			 			}
+      			 		}
+      			 		var compData = {
+      			 				label: data.companies[i].info.name,
+		      			 		fillColor: "rgba(255,255,255,0)",
+		  			            strokeColor: colorPicker(i),
+		  			            pointColor: colorPicker(i),
+		  			            pointStrokeColor: "#fff",
+		  			            pointHighlightFill: "#fff",
+		  			            pointHighlightStroke: colorPicker(i),
+		  			            data: data.companies[i].values
+      			 				
+      			 		};
+      			 		graphDatasets.push(compData);
+      			 		
+      			 		if(i == 0){
+      			 			graphLabels = graphDates;
+      			 			bestVal = data.companies[i].values[data.companies[i].values.length-1];
+      			 			worstVal = data.companies[i].values[data.companies[i].values.length-1];
+      			 			bestSym = data.companies[i].info.symbol;
+      			 			worstSym = data.companies[i].info.symbol;
+      			 		}else{
+      			 			if(data.companies[i].values[data.companies[i].values.length-1] > bestVal){
+      			 				bestVal = data.companies[i].values[data.companies[i].values.length-1];
+      			 				bestSym = data.companies[i].info.symbol;
+      			 			}
+      			 			if(data.companies[i].values[data.companies[i].values.length-1] < worstVal){
+      			 				worstVal = data.companies[i].values[data.companies[i].values.length-1];
+      			 				worstSym = data.companies[i].info.symbol;
+      			 			}
+      			 		}
+      			 	}
+      			 		
+          	      	//Best and Worst Table set
+             	 	for (var i = 0; i < $scope.favorites.length; i++) {
+             	 		if(bestSym === $scope.favorites[i].symbol){
+             	 			document.getElementById("bestYear5").innerHTML = '<span style="border-style:solid; border-width: 1px; background:' + colorPicker(i) + ';"> &ensp;</span>&ensp;' + $scope.favorites[i].name + '(' + $scope.favorites[i].symbol + ')';
+             	 			document.getElementById("bestYear5Val").innerHTML = bestVal;
+             	 		}
+             	 		if(worstSym === $scope.favorites[i].symbol){
+             	 			document.getElementById("worstYear5").innerHTML = '<span style="border-style:solid; border-width: 1px; background:' + colorPicker(i) + ';"> &ensp;</span>&ensp;' + $scope.favorites[i].name + '(' + $scope.favorites[i].symbol + ')';
+             	 			document.getElementById("worstYear5Val").innerHTML = worstVal;
+             	 		}	
+             	    }
+          			//create Graph
+          			var graphData = {
+          					labels: graphLabels,
+          					datasets: graphDatasets
+          			};
+          			var canvas = document.getElementById("year5Canvas");
+          	      	var ctx = document.getElementById("year5Canvas").getContext("2d");	 
+          	      	var monthChart = new Chart(ctx).Line(graphData, {
+          	      	    bezierCurve: false,
+          	      	    pointDot : false,
+          	      	    animationEasing: "easeOutQuart",
+          	      	    pointHitDetectionRadius : 15,
+          	      	    showTooltips: true,
+          	      	    //responsive: true,
+          	      	    animation: false,
+          	      	  	legendTemplate : "<ul class=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<datasets.length; i++){%><li><span style=\"background-color:<%=datasets[i].strokeColor%>\"></span><%if(datasets[i].label){%><%=datasets[i].label%><%}%></li><%}%></ul>"
+          	      	
+          	      	});		      	
+          	      
+             	 	
+          	      	
+          	      	//PctChange----------------------------------------------------------------
+          	      	var graphPctLabels = [];
+        			var graphPctDatasets = [];
+    			 	for(var i = 0; i < data.companies.length; i++){
+    			 		//var startValue = data.companies[i].values[0];
+    			 		for(var j = 0; j < data.companies[i].values.length; j++){
+    			 			if(data.companies[i].values[j] != null){
+	 			 				//if(j == 0){
+	    			 			//		data.companies[i].values[0] = 0.00;
+	   			 				//}else{
+	    			 				//data.companies[i].values[j] = (((data.companies[i].values[j] - companyStartValue[i])/companyStartValue[i])*100).toFixed(2);
+	    			 				data.companies[i].values[j] = (((data.companies[i].values[j] - companyStartValue[i])/companyStartValue[i])*100).toFixed(2);
+	   			 				//}
+   			 				}
+    			 		}
+    			 		
+    			 			
+    			 		
+    			 		var compPctData = {
+    			 				label: data.companies[i].info.name,
+		      			 		fillColor: "rgba(255,255,255,0)",
+		  			            strokeColor: colorPicker(i),
+		  			            pointColor: colorPicker(i),
+		  			            pointStrokeColor: "#fff",
+		  			            pointHighlightFill: "#fff",
+		  			            pointHighlightStroke: colorPicker(i),
+		  			            data: data.companies[i].values
+    			 				
+    			 		};
+    			 		graphPctDatasets.push(compPctData);
+    			 		if(i == 0){
+    			 			graphPctLabels = data.companies[i].dates;
+    			 		}
+    			 		if(i == 0){
+      			 			bestVal = data.companies[i].values[data.companies[i].values.length-1];
+      			 			worstVal = data.companies[i].values[data.companies[i].values.length-1];
+      			 			bestSym = data.companies[i].info.symbol;
+      			 			worstSym = data.companies[i].info.symbol;
+      			 		}else{
+      			 			if(data.companies[i].values[data.companies[i].values.length-1] > bestVal){
+      			 				bestVal = data.companies[i].values[data.companies[i].values.length-1];
+      			 				bestSym = data.companies[i].info.symbol;
+      			 			}
+      			 			if(data.companies[i].values[data.companies[i].values.length-1] < worstVal){
+      			 				worstVal = data.companies[i].values[data.companies[i].values.length-1];
+      			 				worstSym = data.companies[i].info.symbol;
+      			 			}
+      			 		}
+    			 	}
+    			 	//Best and Worst Table set
+             	 	for (var i = 0; i < $scope.favorites.length; i++) {
+             	 		if(bestSym === $scope.favorites[i].symbol){
+             	 			document.getElementById("bestPctYear5").innerHTML = '<span style="border-style:solid; border-width: 1px; background:' + colorPicker(i) + ';"> &ensp;</span>&ensp;' + $scope.favorites[i].name + '(' + $scope.favorites[i].symbol + ')';
+             	 			document.getElementById("bestPctYear5Val").innerHTML = bestVal < 0.00 ? "<font color=red>" + bestVal + "%" + "</font>" 
+        		            		: "<font color=green>" + "+" + bestVal + "%" + "</font>";  
+             	 		}
+             	 		if(worstSym === $scope.favorites[i].symbol){
+             	 			document.getElementById("worstPctYear5").innerHTML = '<span style="border-style:solid; border-width: 1px; background:' + colorPicker(i) + ';"> &ensp;</span>&ensp;' + $scope.favorites[i].name + '(' + $scope.favorites[i].symbol + ')';
+             	 			document.getElementById("worstPctYear5Val").innerHTML = worstVal < 0.00 ? "<font color=red>" + worstVal + "%" + "</font>" 
+        		            		: "<font color=green>" + "+" + worstVal + "%" + "</font>"; 
+             	 		}	
+             	    }
+        			//create Graph
+        			var graphPctData = {
+        					labels: graphPctLabels,
+        					datasets: graphPctDatasets
+        			};
+        			var pctcanvas = document.getElementById("year5PctCanvas");
+        	      	var pctctx = document.getElementById("year5PctCanvas").getContext("2d");	 
+        	      	var monthPctChart = new Chart(pctctx).Line(graphPctData, {
+        	      	    bezierCurve: false,
+        	      	    pointDot : false,
+        	      	    animationEasing: "easeOutQuart",
+        	      	    pointHitDetectionRadius : 15,
+        	      	    showTooltips: true,
+        	      	    //responsive: true,
+        	      	    animation: false,
+        	      	  	legendTemplate : "<ul class=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<datasets.length; i++){%><li><span style=\"background-color:<%=datasets[i].strokeColor%>\"></span><%if(datasets[i].label){%><%=datasets[i].label%><%}%></li><%}%></ul>"
+        	      	
+        	      	});		      	
+        	      	$scope.isMonthGraphLoaded = true;
+            		$scope.isMonthPctGraphLoaded = true;
+            		$jq(".year5").hide();
+            		$scope.$apply();
+      			}
+          	});
+          }
+          function createYearGraphs(){
+        	  var urls = '/StockWebApp/FavoritesYearGraphServlet?username=' + $scope.user;
+        		$http.get(urls).success(function(data){
+        		if(data.companies.length !== 0){
+        			
+        			var bestVal;
+        			var bestSym;
+        			var worstVal;
+        			var worstSym;
+        			var graphLabels = [];
+        			var graphDatasets = [];
+        			var largestDataLength = 0;
+        			var graphDates;
+        			var companyStartValue = [];
+        			for(var i = 0; i < data.companies.length; i++){
+        				if(data.companies[i].values.length > largestDataLength){
+        					largestDataLength = data.companies[i].values.length;
+        					graphDates = data.companies[i].dates;
+    			 		}
+        			}
+    			 	for(var i = 0; i < data.companies.length; i++){
+    			 		companyStartValue.push(data.companies[i].values[0]);
+    			 		if(data.companies[i].values.length < largestDataLength){
+    			 			var temp = largestDataLength-data.companies[i].values.length;
+    			 			//data.companies[i].values.unshift(Array.apply(null, Array(largestDataLength-data.companies[i].values.length)).map(Number.prototype.valueOf,data.companies[i].values[0]));
+    			 			for(var j = 0; j < temp; j++){
+    			 				data.companies[i].values.unshift(null);
+    			 			}
+    			 		}
+    			 		var compData = {
+    			 				label: data.companies[i].info.name,
+		      			 		fillColor: "rgba(255,255,255,0)",
+		  			            strokeColor: colorPicker(i),
+		  			            pointColor: colorPicker(i),
+		  			            pointStrokeColor: "#fff",
+		  			            pointHighlightFill: "#fff",
+		  			            pointHighlightStroke: colorPicker(i),
+		  			            data: data.companies[i].values
+    			 				
+    			 		};
+    			 		graphDatasets.push(compData);
+    			 		
+    			 		if(i == 0){
+    			 			graphLabels = graphDates;
+    			 			bestVal = data.companies[i].values[data.companies[i].values.length-1];
+    			 			worstVal = data.companies[i].values[data.companies[i].values.length-1];
+    			 			bestSym = data.companies[i].info.symbol;
+    			 			worstSym = data.companies[i].info.symbol;
+    			 		}else{
+    			 			if(data.companies[i].values[data.companies[i].values.length-1] > bestVal){
+    			 				bestVal = data.companies[i].values[data.companies[i].values.length-1];
+    			 				bestSym = data.companies[i].info.symbol;
+    			 			}
+    			 			if(data.companies[i].values[data.companies[i].values.length-1] < worstVal){
+    			 				worstVal = data.companies[i].values[data.companies[i].values.length-1];
+    			 				worstSym = data.companies[i].info.symbol;
+    			 			}
+    			 		}
+    			 	}
+    			 		
+        	      	//Best and Worst Table set
+           	 	for (var i = 0; i < $scope.favorites.length; i++) {
+           	 		if(bestSym === $scope.favorites[i].symbol){
+           	 			document.getElementById("bestYear").innerHTML = '<span style="border-style:solid; border-width: 1px; background:' + colorPicker(i) + ';"> &ensp;</span>&ensp;' + $scope.favorites[i].name + '(' + $scope.favorites[i].symbol + ')';
+           	 			document.getElementById("bestYearVal").innerHTML = bestVal;
+           	 		}
+           	 		if(worstSym === $scope.favorites[i].symbol){
+           	 			document.getElementById("worstYear").innerHTML = '<span style="border-style:solid; border-width: 1px; background:' + colorPicker(i) + ';"> &ensp;</span>&ensp;' + $scope.favorites[i].name + '(' + $scope.favorites[i].symbol + ')';
+           	 			document.getElementById("worstYearVal").innerHTML = worstVal;
+           	 		}	
+           	    }
+        			//create Graph
+        			var graphData = {
+        					labels: graphLabels,
+        					datasets: graphDatasets
+        			};
+        			var canvas = document.getElementById("yearCanvas");
+        	      	var ctx = document.getElementById("yearCanvas").getContext("2d");	 
+        	      	var monthChart = new Chart(ctx).Line(graphData, {
+        	      	    bezierCurve: false,
+        	      	    pointDot : false,
+        	      	    animationEasing: "easeOutQuart",
+        	      	    pointHitDetectionRadius : 15,
+        	      	    showTooltips: true,
+        	      	    //responsive: true,
+        	      	    animation: false,
+        	      	  	legendTemplate : "<ul class=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<datasets.length; i++){%><li><span style=\"background-color:<%=datasets[i].strokeColor%>\"></span><%if(datasets[i].label){%><%=datasets[i].label%><%}%></li><%}%></ul>"
+        	      	
+        	      	});		      	
+        	      
+           	 	
+        	      	
+        	      	//PctChange----------------------------------------------------------------
+        	      	var graphPctLabels = [];
+      			var graphPctDatasets = [];
+  			 	for(var i = 0; i < data.companies.length; i++){
+  			 		//var startValue = data.companies[i].values[0];
+  			 		for(var j = 0; j < data.companies[i].values.length; j++){
+  			 			if(data.companies[i].values[j] != null){
+	 			 				//if(j == 0){
+	    			 			//		data.companies[i].values[0] = 0.00;
+	   			 				//}else{
+	    			 				//data.companies[i].values[j] = (((data.companies[i].values[j] - companyStartValue[i])/companyStartValue[i])*100).toFixed(2);
+	    			 				data.companies[i].values[j] = (((data.companies[i].values[j] - companyStartValue[i])/companyStartValue[i])*100).toFixed(2);
+	   			 				//}
+ 			 				}
+  			 		}
+  			 		
+  			 			
+  			 		
+  			 		var compPctData = {
+  			 				label: data.companies[i].info.name,
+		      			 		fillColor: "rgba(255,255,255,0)",
+		  			            strokeColor: colorPicker(i),
+		  			            pointColor: colorPicker(i),
+		  			            pointStrokeColor: "#fff",
+		  			            pointHighlightFill: "#fff",
+		  			            pointHighlightStroke: colorPicker(i),
+		  			            data: data.companies[i].values
+  			 				
+  			 		};
+  			 		graphPctDatasets.push(compPctData);
+  			 		if(i == 0){
+  			 			graphPctLabels = data.companies[i].dates;
+  			 		}
+  			 		if(i == 0){
+    			 			bestVal = data.companies[i].values[data.companies[i].values.length-1];
+    			 			worstVal = data.companies[i].values[data.companies[i].values.length-1];
+    			 			bestSym = data.companies[i].info.symbol;
+    			 			worstSym = data.companies[i].info.symbol;
+    			 		}else{
+    			 			if(data.companies[i].values[data.companies[i].values.length-1] > bestVal){
+    			 				bestVal = data.companies[i].values[data.companies[i].values.length-1];
+    			 				bestSym = data.companies[i].info.symbol;
+    			 			}
+    			 			if(data.companies[i].values[data.companies[i].values.length-1] < worstVal){
+    			 				worstVal = data.companies[i].values[data.companies[i].values.length-1];
+    			 				worstSym = data.companies[i].info.symbol;
+    			 			}
+    			 		}
+  			 	}
+  			 	//Best and Worst Table set
+           	 	for (var i = 0; i < $scope.favorites.length; i++) {
+           	 		if(bestSym === $scope.favorites[i].symbol){
+           	 			document.getElementById("bestPctYear").innerHTML = '<span style="border-style:solid; border-width: 1px; background:' + colorPicker(i) + ';"> &ensp;</span>&ensp;' + $scope.favorites[i].name + '(' + $scope.favorites[i].symbol + ')';
+           	 			document.getElementById("bestPctYearVal").innerHTML = bestVal < 0.00 ? "<font color=red>" + bestVal + "%" + "</font>" 
+      		            		: "<font color=green>" + "+" + bestVal + "%" + "</font>";  
+           	 		}
+           	 		if(worstSym === $scope.favorites[i].symbol){
+           	 			document.getElementById("worstPctYear").innerHTML = '<span style="border-style:solid; border-width: 1px; background:' + colorPicker(i) + ';"> &ensp;</span>&ensp;' + $scope.favorites[i].name + '(' + $scope.favorites[i].symbol + ')';
+           	 			document.getElementById("worstPctYearVal").innerHTML = worstVal < 0.00 ? "<font color=red>" + worstVal + "%" + "</font>" 
+      		            		: "<font color=green>" + "+" + worstVal + "%" + "</font>"; 
+           	 		}	
+           	    }
+      			//create Graph
+      			var graphPctData = {
+      					labels: graphPctLabels,
+      					datasets: graphPctDatasets
+      			};
+      			var pctcanvas = document.getElementById("yearPctCanvas");
+      	      	var pctctx = document.getElementById("yearPctCanvas").getContext("2d");	 
+      	      	var monthPctChart = new Chart(pctctx).Line(graphPctData, {
+      	      	    bezierCurve: false,
+      	      	    pointDot : false,
+      	      	    animationEasing: "easeOutQuart",
+      	      	    pointHitDetectionRadius : 15,
+      	      	    showTooltips: true,
+      	      	    //responsive: true,
+      	      	    animation: false,
+      	      	  	legendTemplate : "<ul class=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<datasets.length; i++){%><li><span style=\"background-color:<%=datasets[i].strokeColor%>\"></span><%if(datasets[i].label){%><%=datasets[i].label%><%}%></li><%}%></ul>"
+      	      	
+      	      	});		      	
+      	      	$scope.isMonthGraphLoaded = true;
+          		$scope.isMonthPctGraphLoaded = true;
+          		$jq(".year").hide();
+          		$scope.$apply();
+    			}
+        	});
+          }
+          function createMonthGraphs()
+          {
+        	  var urls = '/StockWebApp/FavoritesMonthGraphServlet?username=' + $scope.user;
+        		$http.get(urls).success(function(data){
+        		if(data.companies.length !== 0){
+        			
+        			var bestVal;
+        			var bestSym;
+        			var worstVal;
+        			var worstSym;
+        			var graphLabels = [];
+        			var graphDatasets = [];
+        			var largestDataLength = 0;
+        			var graphDates;
+        			var companyStartValue = [];
+        			for(var i = 0; i < data.companies.length; i++){
+        				if(data.companies[i].values.length > largestDataLength){
+        					largestDataLength = data.companies[i].values.length;
+        					graphDates = data.companies[i].dates;
+    			 		}
+        			}
+    			 	for(var i = 0; i < data.companies.length; i++){
+    			 		companyStartValue.push(data.companies[i].values[0]);
+    			 		if(data.companies[i].values.length < largestDataLength){
+    			 			var temp = largestDataLength-data.companies[i].values.length;
+    			 			//data.companies[i].values.unshift(Array.apply(null, Array(largestDataLength-data.companies[i].values.length)).map(Number.prototype.valueOf,data.companies[i].values[0]));
+    			 			for(var j = 0; j < temp; j++){
+    			 				data.companies[i].values.unshift(null);
+    			 			}
+    			 		}
+    			 		var compData = {
+    			 				label: data.companies[i].info.name,
+		      			 		fillColor: "rgba(255,255,255,0)",
+		  			            strokeColor: colorPicker(i),
+		  			            pointColor: colorPicker(i),
+		  			            pointStrokeColor: "#fff",
+		  			            pointHighlightFill: "#fff",
+		  			            pointHighlightStroke: colorPicker(i),
+		  			            data: data.companies[i].values
+    			 				
+    			 		};
+    			 		graphDatasets.push(compData);
+    			 		
+    			 		if(i == 0){
+    			 			graphLabels = graphDates;
+    			 			bestVal = data.companies[i].values[data.companies[i].values.length-1];
+    			 			worstVal = data.companies[i].values[data.companies[i].values.length-1];
+    			 			bestSym = data.companies[i].info.symbol;
+    			 			worstSym = data.companies[i].info.symbol;
+    			 		}else{
+    			 			if(data.companies[i].values[data.companies[i].values.length-1] > bestVal){
+    			 				bestVal = data.companies[i].values[data.companies[i].values.length-1];
+    			 				bestSym = data.companies[i].info.symbol;
+    			 			}
+    			 			if(data.companies[i].values[data.companies[i].values.length-1] < worstVal){
+    			 				worstVal = data.companies[i].values[data.companies[i].values.length-1];
+    			 				worstSym = data.companies[i].info.symbol;
+    			 			}
+    			 		}
+    			 	}
+    			 		
+        	      	//Best and Worst Table set
+           	 	for (var i = 0; i < $scope.favorites.length; i++) {
+           	 		if(bestSym === $scope.favorites[i].symbol){
+           	 			document.getElementById("bestMonth").innerHTML = '<span style="border-style:solid; border-width: 1px; background:' + colorPicker(i) + ';"> &ensp;</span>&ensp;' + $scope.favorites[i].name + '(' + $scope.favorites[i].symbol + ')';
+           	 			document.getElementById("bestMonthVal").innerHTML = bestVal;
+           	 		}
+           	 		if(worstSym === $scope.favorites[i].symbol){
+           	 			document.getElementById("worstMonth").innerHTML = '<span style="border-style:solid; border-width: 1px; background:' + colorPicker(i) + ';"> &ensp;</span>&ensp;' + $scope.favorites[i].name + '(' + $scope.favorites[i].symbol + ')';
+           	 			document.getElementById("worstMonthVal").innerHTML = worstVal;
+           	 		}	
+           	    }
+        			//create Graph
+        			var graphData = {
+        					labels: graphLabels,
+        					datasets: graphDatasets
+        			};
+        			var canvas = document.getElementById("monthCanvas");
+        	      	var ctx = document.getElementById("monthCanvas").getContext("2d");	 
+        	      	var monthChart = new Chart(ctx).Line(graphData, {
+        	      	    bezierCurve: false,
+        	      	    pointDot : false,
+        	      	    animationEasing: "easeOutQuart",
+        	      	    pointHitDetectionRadius : 15,
+        	      	    showTooltips: true,
+        	      	    //responsive: true,
+        	      	    animation: false,
+        	      	  	legendTemplate : "<ul class=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<datasets.length; i++){%><li><span style=\"background-color:<%=datasets[i].strokeColor%>\"></span><%if(datasets[i].label){%><%=datasets[i].label%><%}%></li><%}%></ul>"
+        	      	
+        	      	});		      	
+        	      
+           	 	
+        	      	
+        	      	//PctChange----------------------------------------------------------------
+        	      	var graphPctLabels = [];
+      			var graphPctDatasets = [];
+  			 	for(var i = 0; i < data.companies.length; i++){
+  			 		//var startValue = data.companies[i].values[0];
+  			 		for(var j = 0; j < data.companies[i].values.length; j++){
+  			 			if(data.companies[i].values[j] != null){
+	 			 				//if(j == 0){
+	    			 			//		data.companies[i].values[0] = 0.00;
+	   			 				//}else{
+	    			 				//data.companies[i].values[j] = (((data.companies[i].values[j] - companyStartValue[i])/companyStartValue[i])*100).toFixed(2);
+	    			 				data.companies[i].values[j] = (((data.companies[i].values[j] - companyStartValue[i])/companyStartValue[i])*100).toFixed(2);
+	   			 				//}
+ 			 				}
+  			 		}
+  			 		
+  			 			
+  			 		
+  			 		var compPctData = {
+  			 				label: data.companies[i].info.name,
+		      			 		fillColor: "rgba(255,255,255,0)",
+		  			            strokeColor: colorPicker(i),
+		  			            pointColor: colorPicker(i),
+		  			            pointStrokeColor: "#fff",
+		  			            pointHighlightFill: "#fff",
+		  			            pointHighlightStroke: colorPicker(i),
+		  			            data: data.companies[i].values
+  			 				
+  			 		};
+  			 		graphPctDatasets.push(compPctData);
+  			 		if(i == 0){
+  			 			graphPctLabels = data.companies[i].dates;
+  			 		}
+  			 		if(i == 0){
+    			 			bestVal = data.companies[i].values[data.companies[i].values.length-1];
+    			 			worstVal = data.companies[i].values[data.companies[i].values.length-1];
+    			 			bestSym = data.companies[i].info.symbol;
+    			 			worstSym = data.companies[i].info.symbol;
+    			 		}else{
+    			 			if(data.companies[i].values[data.companies[i].values.length-1] > bestVal){
+    			 				bestVal = data.companies[i].values[data.companies[i].values.length-1];
+    			 				bestSym = data.companies[i].info.symbol;
+    			 			}
+    			 			if(data.companies[i].values[data.companies[i].values.length-1] < worstVal){
+    			 				worstVal = data.companies[i].values[data.companies[i].values.length-1];
+    			 				worstSym = data.companies[i].info.symbol;
+    			 			}
+    			 		}
+  			 	}
+  			 	//Best and Worst Table set
+           	 	for (var i = 0; i < $scope.favorites.length; i++) {
+           	 		if(bestSym === $scope.favorites[i].symbol){
+           	 			document.getElementById("bestPctMonth").innerHTML = '<span style="border-style:solid; border-width: 1px; background:' + colorPicker(i) + ';"> &ensp;</span>&ensp;' + $scope.favorites[i].name + '(' + $scope.favorites[i].symbol + ')';
+           	 			document.getElementById("bestPctMonthVal").innerHTML = bestVal < 0.00 ? "<font color=red>" + bestVal + "%" + "</font>" 
+      		            		: "<font color=green>" + "+" + bestVal + "%" + "</font>";  
+           	 		}
+           	 		if(worstSym === $scope.favorites[i].symbol){
+           	 			document.getElementById("worstPctMonth").innerHTML = '<span style="border-style:solid; border-width: 1px; background:' + colorPicker(i) + ';"> &ensp;</span>&ensp;' + $scope.favorites[i].name + '(' + $scope.favorites[i].symbol + ')';
+           	 			document.getElementById("worstPctMonthVal").innerHTML = worstVal < 0.00 ? "<font color=red>" + worstVal + "%" + "</font>" 
+      		            		: "<font color=green>" + "+" + worstVal + "%" + "</font>"; 
+           	 		}	
+           	    }
+      			//create Graph
+      			var graphPctData = {
+      					labels: graphPctLabels,
+      					datasets: graphPctDatasets
+      			};
+      			var pctcanvas = document.getElementById("monthPctCanvas");
+      	      	var pctctx = document.getElementById("monthPctCanvas").getContext("2d");	 
+      	      	var monthPctChart = new Chart(pctctx).Line(graphPctData, {
+      	      	    bezierCurve: false,
+      	      	    pointDot : false,
+      	      	    animationEasing: "easeOutQuart",
+      	      	    pointHitDetectionRadius : 15,
+      	      	    showTooltips: true,
+      	      	    //responsive: true,
+      	      	    animation: false,
+      	      	  	legendTemplate : "<ul class=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<datasets.length; i++){%><li><span style=\"background-color:<%=datasets[i].strokeColor%>\"></span><%if(datasets[i].label){%><%=datasets[i].label%><%}%></li><%}%></ul>"
+      	      	
+      	      	});		      	
+      	      	$scope.isMonthGraphLoaded = true;
+          		$scope.isMonthPctGraphLoaded = true;
+          		$jq(".month").hide();
+          		$scope.$apply();
+    			}
+        	});
+  	  		
+          }
+	      function colorPicker(number){
+	    	  switch(number) {
+	    	  	case 0:
+	    	    	return color0;  
+	    	  	case 1:
+	    	        return color1;
+	    	    case 2:
+	    	        return color2;
+	    	    case 3:
+	    	    	return color3;
+	    	    case 4:
+	    	    	return color4;
+	    	    case 5:
+	    	    	return color5;
+	    	    case 6:
+	    	    	return color6;
+	    	    case 7:
+	    	    	return color7;
+	    	    case 8:
+	    	    	return color8;
+	    	    case 9:
+	    	    	return color9;
+	    	    default:
+	    	    	return "#ffffff" 
+	    	    	
+	    	    	
+	    	}
+	    	  
+	      }
 	}]);
 
 </script>
@@ -106,56 +683,271 @@
 {
 	
 }
+
+.month
+{
+}
+.year
+{
+}
+.year5
+{
+}
+.graph{
+}
 </style>
 </head>
 <body ng-controller="StockCtrl">
-<nav class="navbar navbar-inverse navbar-fixed-top">
-
-        <div class="navbar-header">
-          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-          <a class="navbar-brand heading" href="main.html" >Quotr</a>
-        </div>
-        <div id="navbar" class="" >
-        <div class="navbar-right">
-          <form class="navbar-form" ng-show="(isLoggedIn)">
-            <div class="create-account inline-nav" style="margin-right:20px;">Hello {{user}}!</div>
-            <div class="create-account inline-nav">
-						<a href="LogoutServlet">Logout</a>
-            </div>
-          </form>
-         </div>
-        </div><!--/.navbar-collapse -->
-</nav>
-<div class="sub-heading">
+	<nav class="navbar navbar-inverse navbar-fixed-top">	
+	        <div class="navbar-header">
+	          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+	            <span class="sr-only">Toggle navigation</span>
+	            <span class="icon-bar"></span>
+	            <span class="icon-bar"></span>
+	            <span class="icon-bar"></span>
+	          </button>
+	          <a class="navbar-brand heading" href="main.html" >Quotr</a>
+	        </div>
+	        <div id="navbar" class="" >
+	        <div class="navbar-right">
+	          <form class="navbar-form" ng-show="(isLoggedIn)">
+	            <div class="create-account inline-nav" style="margin-right:20px;">Hello {{user}}!</div>
+	            <div class="create-account inline-nav">
+				<a href="LogoutServlet">Logout</a>
+	            </div>
+	          </form>
+	         </div>
+	        </div><!--/.navbar-collapse -->
+	</nav>
+	<div class="sub-heading">
 		<div class="sub-heading-title">
 			Favorites Analysis
 		</div>
 	</div>
-	<div class="container">
-		<div class="row">
-			<div class="col-md-12" style="margin-top:10px;">
-				<div style="height: 500px;">
-					<div style="height: 500px;"class="bg" data-slick='{"slidesToShow": 1, "slidesToScroll": 1, "dots":true, "arrows":true}'>
-					  <div id="monthDiv" style="text-align: center;"><h1 >Stock percentage change Month</h1><br>
-					  <canvas id="monthCanvas" class="favCanv" width=1100 height="310"></canvas><br>
-					  <div id="monthLegend"></div>
-					  </div>
-					  <div><h3>Stock Activity vs Industry</h3></div>
-					  <div><h3>Market Cap Pi</h3></div>
-					  <div><h3>4</h3></div>
-					  <div><h3>5</h3></div>
-					  <div><h3>6</h3></div>
+		<div class="container">
+			<div class="row" style="margin-top:5px;"">
+				<div class="col-xs-2" style="margin-top:10px; padding-left:0px; padding-right:12px;">
+					<div>
+					<form  action="main.html">
+						<input ng-disabled="!(isLoggedIn)" type="submit" class="btn btn-warning" style="width: 100%; margin-top: 0px; margin-bottom: 10px; " value="Stock Quotes">
+					</form>	
+					</div>
+					<div style="text-align: center; margin-top:5px;">
+						<h3 style="text-align: center; margin-top:5px;">
+						Favorites
+						</h3>
+					</div>
+					<div id="legend" class="legendScrollable">
+					</div>	
+					<hr/>						
+				</div>
+				<div id="caroselDiv" class="col-xs-10" style="margin-top:10px;">
+					<div id="carosel" style="height: 500px;" >
+						<div style="height: 500px;"class="bg" data-slick='{"slidesToShow": 1, "slidesToScroll": 1, "dots":true, "arrows":true}'>
+						  
+						  <div id="monthPctDiv" style="text-align: center;">
+							  <h1 >1 Month Percent Change</h1><br>
+							  <img class="center month graph" style:"position=relative; top=0px;"id="monthPctLoading" src="img/loading.gif"  height="310" width="415">
+							  <canvas id="monthPctCanvas" class="favCanv"  height="310" ></canvas>
+							  <div>
+								<table class="table stockTable" style="text-align:left; ">		    
+								      <thead bgcolor="lightGrey">
+									      <tr >
+									        <th ></th>
+									        <th  >Company</th>
+									        <th  >% Change in Month</th>
+									      </tr>
+									      </thead>
+								      <tbody>
+								      <tr>
+								        <td style="width: 160px; padding-right=0px;"><font color=grey>Best Performance:</font></td>
+								        <td id="bestPctMonth" style="width: 200px;"></td>
+								        <td id="bestPctMonthVal" ></td>
+								      </tr>
+								      <tr>
+								        <td style="width: 160px; padding-right=0px;"><font color=grey>Worst Performance:</font></td>
+								        <td id="worstPctMonth" style="width: 200px;"></td>
+								        <td id="worstPctMonthVal" style="text-align:left"></td>
+								      </tr>
+								    </tbody>
+								  </table>
+								  <table class=" table stockTable" style="text-align:left;">		    
+								    <tbody>
+								      
+								    </tbody>
+								  </table>
+							  </div>
+						  </div>						  
+						   <div id="yearPctDiv" style="text-align: center;">
+							  <h1 >52 Week Percent Change</h1><br>
+							  <img class="center year graph" style:"position=relative; top=0px;"id="yearPctLoading" src="img/loading.gif"  height="310" width="415">
+							  <canvas id="yearPctCanvas" class="favCanv"  height="310" ></canvas>
+							  <div>
+								<table class="table stockTable" style="text-align:left; ">		    
+								      <thead bgcolor="lightGrey">
+									      <tr >
+									        <th ></th>
+									        <th  >Company</th>
+									        <th  >% Change in 52 Weeks</th>
+									      </tr>
+									      </thead>
+								      <tbody>
+								      <tr>
+								        <td style="width: 160px; padding-right=0px;"><font color=grey>Best Performance:</font></td>
+								        <td id="bestPctYear" style="width: 200px;"></td>
+								        <td id="bestPctYearVal" ></td>
+								      </tr>
+								      <tr>
+								        <td style="width: 160px; padding-right=0px;"><font color=grey>Worst Performance:</font></td>
+								        <td id="worstPctYear" style="width: 200px;"></td>
+								        <td id="worstPctYearVal" style="text-align:left"></td>
+								      </tr>
+								    </tbody>
+								  </table>
+								  <table class=" table stockTable" style="text-align:left;">		    
+								    <tbody>
+								      
+								    </tbody>
+								  </table>
+							  </div>
+						  </div>
+						  <div id="year5PctDiv" style="text-align: center;">
+							  <h1 >5 Year Percent Change</h1><br>
+							  <img class="center year5 graph" style:"position=relative; top=0px;"id="year5PctLoading" src="img/loading.gif"  height="310" width="415">
+							  <canvas id="year5PctCanvas" class="favCanv"  height="310" ></canvas>
+							  <div>
+								<table class="table stockTable" style="text-align:left; ">		    
+								      <thead bgcolor="lightGrey">
+									      <tr >
+									        <th ></th>
+									        <th  >Company</th>
+									        <th  >% Change in 5 Years</th>
+									      </tr>
+									      </thead>
+								      <tbody>
+								      <tr>
+								        <td style="width: 160px; padding-right=0px;"><font color=grey>Best Performance:</font></td>
+								        <td id="bestPctYear5" style="width: 200px;"></td>
+								        <td id="bestPctYear5Val" ></td>
+								      </tr>
+								      <tr>
+								        <td style="width: 160px; padding-right=0px;"><font color=grey>Worst Performance:</font></td>
+								        <td id="worstPctYear5" style="width: 200px;"></td>
+								        <td id="worstPctYear5Val" style="text-align:left"></td>
+								      </tr>
+								    </tbody>
+								  </table>
+								  <table class=" table stockTable" style="text-align:left;">		    
+								    <tbody>
+								      
+								    </tbody>
+								  </table>
+							  </div>
+						  </div>		
+						  
+						  <div id="monthDiv" style="text-align: center;">
+						  	  <h1 >1 Month Stock Price</h1><br>
+							  <img class="center month graph" style:"position=relative; top=0px;"id="monthLoading" src="img/loading.gif"  height="310" width="415">
+							  <canvas id="monthCanvas" class="favCanv" width=1100 height="310"></canvas>
+							  <div>
+								<table class="table stockTable" style="text-align:left; ">		    
+								      <thead bgcolor="lightGrey">
+									      <tr >
+									        <th ></th>
+									        <th  >Company</th>
+									        <th  >Todays Value</th>
+									      </tr>
+									      </thead>
+								      <tbody>
+								      <tr>
+								        <td style="width: 160px; padding-right=0px;"><font color=grey>Highest Current Value:</font></td>
+								        <td id="bestMonth" style="width: 200px;"></td>
+								        <td id="bestMonthVal" ></td>
+								      </tr>
+								      <tr>
+								        <td style="width: 160px; padding-right=0px;"><font color=grey>Lowest Current Value:</font></td>
+								        <td id="worstMonth" style="width: 200px;"></td>
+								        <td id="worstMonthVal" style="text-align:left"></td>
+								      </tr>
+								    </tbody>
+								  </table>
+								  <table class=" table stockTable" style="text-align:left;">		    
+								    <tbody>
+								      
+								    </tbody>
+								  </table>
+							  </div>							  
+						  </div>
+						  <div id="yearDiv" style="text-align: center;">
+						  	  <h1 >52 Week Stock Price</h1><br>
+							  <img class="center year graph" style:"position=relative; top=0px;"id="yearLoading" src="img/loading.gif"  height="310" width="415">
+							  <canvas id="yearCanvas" class="favCanv" width=1100 height="310"></canvas>
+							  <div>
+								<table class="table stockTable" style="text-align:left; ">		    
+								      <thead bgcolor="lightGrey">
+									      <tr >
+									        <th ></th>
+									        <th  >Company</th>
+									        <th  >Todays Value</th>
+									      </tr>
+									      </thead>
+								      <tbody>
+								      <tr>
+								        <td style="width: 160px; padding-right=0px;"><font color=grey>Highest Current Value:</font></td>
+								        <td id="bestYear" style="width: 200px;"></td>
+								        <td id="bestYearVal" ></td>
+								      </tr>
+								      <tr>
+								        <td style="width: 160px; padding-right=0px;"><font color=grey>Lowest Current Value:</font></td>
+								        <td id="worstYear" style="width: 200px;"></td>
+								        <td id="worstYearVal" style="text-align:left"></td>
+								      </tr>
+								    </tbody>
+								  </table>
+								  <table class=" table stockTable" style="text-align:left;">		    
+								    <tbody>
+								      
+								    </tbody>
+								  </table>
+							  </div>							  
+						  </div>
+						  <div id="year5Div" style="text-align: center;">
+						  	  <h1 >5 Year Stock Price</h1><br>
+							  <img class="center year5 graph" style:"position=relative; top=0px;"id="year5Loading" src="img/loading.gif"  height="310" width="415">
+							  <canvas id="year5Canvas" class="favCanv" width=1100 height="310"></canvas>
+							  <div>
+								<table class="table stockTable" style="text-align:left; ">		    
+								      <thead bgcolor="lightGrey">
+									      <tr >
+									        <th ></th>
+									        <th  >Company</th>
+									        <th  >Todays Value</th>
+									      </tr>
+									      </thead>
+								      <tbody>
+								      <tr>
+								        <td style="width: 160px; padding-right=0px;"><font color=grey>Highest Current Value:</font></td>
+								        <td id="bestYear5" style="width: 200px;"></td>
+								        <td id="bestYear5Val" ></td>
+								      </tr>
+								      <tr>
+								        <td style="width: 160px; padding-right=0px;"><font color=grey>Lowest Current Value:</font></td>
+								        <td id="worstYear5" style="width: 200px;"></td>
+								        <td id="worstYear5Val" style="text-align:left"></td>
+								      </tr>
+								    </tbody>
+								  </table>
+								  <table class=" table stockTable" style="text-align:left;">		    
+								    <tbody>
+								      
+								    </tbody>
+								  </table>
+							  </div>							  
+						  </div>
+						</div>
 					</div>
 				</div>
 			</div>
-		</div>
-	</div>
-	
-<script type="text/javascript" src="js/slick.min.js"></script>
-</body>
+		</div>		
+	</body>
 </html>
