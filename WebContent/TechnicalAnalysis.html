@@ -24,56 +24,69 @@
 	nameApp.controller('StockCtrl', ['$scope', '$http', '$timeout', '$cookies','$cookieStore', function($scope, $http, $timeout,$cookies,$cookieStore) {	
 		$scope.isLoggedIn = false;
 		$scope.stockData = null;
-		var init = function () { 
-			$scope.favorites = null;
-			$scope.favoritesData = null;
-			
-			
-			var username = "";
-			$scope.user = "";
-			var name = "user2" + "=";
-		    var ca = document.cookie.split(';');
-		    for(var i=0; i<ca.length; i++) {
-		        var c = ca[i];
-		        while (c.charAt(0)==' ') c = c.substring(1);
-		        if (c.indexOf(name) == 0) {
-		        	username = c.substring(name.length,c.length);
-		        }
-		    }
-	          if(!(username === "")){
-	        	    console.log(username + " success!");
-	        	    $scope.user = username;
-					$scope.isLoggedIn = true;		
-					$scope.$apply();		
-	          }
-	          else{
-	        	  console.log("NO COOKIE :(");
-	        	  window.location = "main.html";
-	          }
-	          populateChart();
-	          $scope.$apply();
+		$scope.stockTradeResults = null;
+		$scope.stockCurrentDecisions = [];
+		$scope.groups = [];
+		$scope.prices = [];
+		var init = function () { 			
+			  populateIndicatorTable();
+	          $scope.$apply();	          
 	      };
+	      function populateGraphs(){
+	    	  
+	      }
+	      function getTradeResults(){
+	    	  var urls = '/StockWebApp/TradeResultServlet';
+	          	$http.get(urls).success(function(data){        		
+	          		$scope.stockTradeResults = data.Decisions;
+	          		//Populate Chart for Trades
+	          		$scope.$apply();
+	          	}); 
+	          	populateGraphs();
+	      }
+	      function getCurrentDecisions(){
+	    	  var urls = '/StockWebApp/CurrentDecisionsServlet';
+	          	$http.get(urls).success(function(data){        		
+	          		$scope.stockCurrentDecisions = data.Decisions;
+	          		$scope.$apply();
+	          		getTradeResults();
+	          	});  	    	  
+	      }
+	      
           init();
-          function populateChart(){        	
+          function populateIndicatorTable(){        	
           	var urls = '/StockWebApp/AnalysisServlet';
 
           	$http.get(urls).success(function(data){        		
           		$scope.stockData = data.Analysis;
           		$scope.$apply();
+          		for(var row in $scope.stockData) {
+          			if(row.Interval !== null){
+          				$scope.groups.push(row.Group);
+          				$scope.prices.push(row.Price);
+          			}
+          		}
+          		getCurrentDecisions();
           	});      	
           }
           $scope.set_color = function (number) {
         	  
         	  if (number < 0) {
-        	    return { background: "red" }
+        		  if(number < -3){
+        			  return { background: "red" }
+        		  }
+        	    return { background: "pink" }
         	  }
         	  else if(number > 0)
-       		  {        		  
-        		  return { background: "green" }
+       		  {        	
+        		  if(number > 3){
+        			  return { background: "green" }
+        		  }
+        		  return { background: "lightGreen" }
         		  
        		  }
         	  else{
-        		  return { background: "grey" }
+        		  return { background: "lightGrey" }
         	  }
         	}
 	
@@ -110,16 +123,15 @@
 	</nav>
 	<div class="sub-heading">
 		<div class="sub-heading-title">
-			Favorites Analysis
+			Technical Analysis For Algorithm
 		</div>
 	</div>
-		<div class="container" style="margin-left:0px; margin-right:0px;">
-			<div class="row" style="margin-top:5px;margin-right:0px;">
-				<div style="margin-top:10px;">
+				<div style="margin-top:10px;margin-bottom:0px;">
 					<table class="table  noTop ">
-				   	<thead style="margin-left:15px;" bgcolor="lightGrey">
-					      <tr style="margin-left:15px;">
-					      	<th class="industryHeader unselectable" style="width=100px;" >&ensp;</th>
+				   	<thead style="margin-bottom:0px;margin-left:15px;" bgcolor="lightGrey">
+					      <tr style="margin-left:15px; margin-bottom:0px;">
+					      	<th class="industryHeader unselectable" style="width=120px;" >&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;</th>
+					        <th class="industryHeader unselectable" width=4.1%  >|||||||||||||||||||||</th>
 					        <th class="industryHeader unselectable" width=4.1%  >Sumry</th>
 					        <th class="industryHeader unselectable" width=4.1%  >MovS</th>
 					        <th class="industryHeader unselectable" width=4.1%  >TechS</th>
@@ -141,42 +153,16 @@
 					        <th class="industryHeader unselectable" width=4.1%  >ROC</th>
 					        <th class="industryHeader unselectable" width=4.1%  >WillR</th>
 					        <th class="industryHeader unselectable" width=4.1%  >BllBr</th>
+					      	<th class="industryHeader unselectable" width=1%  >|</th>
 					      </tr>
 					      </thead>
 				    </table>
-					   <div class='scrollable noTop' style="height: 800px;">
+					   <div class='scrollable noTop' style="height: 500px;">
 				   	<table class="table  noTop ">
-				   	<thead bgcolor="lightGrey">
-					      <tr >
-					        <th class="industryHeader unselectable" width=4.1% >Grp</th>
-					        <th class="industryHeader unselectable" width=4.1% >Int</th>
-					        <th class="industryHeader unselectable" width=4.1% >CAPTURED</th>
-					        <th class="industryHeader unselectable" width=4.1%  >Sumry</th>
-					        <th class="industryHeader unselectable" width=4.1%  >MovS</th>
-					        <th class="industryHeader unselectable" width=4.1%  >TechS</th>
-					        <th class="industryHeader unselectable" width=4.1%  >MA5</th>
-					        <th class="industryHeader unselectable" width=4.1% >MA10</th>
-					        <th class="industryHeader unselectable" width=4.1%  >MA20</th>
-					        <th class="industryHeader unselectable" width=4.1% >MA50</th>
-					        <th class="industryHeader unselectable" width=4.1%  >MA100</th>
-					        <th class="industryHeader unselectable" width=4.1% >MA200</th>
-					        <th class="industryHeader unselectable" width=4.1%  >RSI</th>
-					        <th class="industryHeader unselectable" width=4.1%  >STOCH</th>
-					        <th class="industryHeader unselectable" width=4.1%  >STCHSI</th>
-					        <th class="industryHeader unselectable" width=4.1%  >MACD</th>
-					        <th class="industryHeader unselectable" width=4.1% >ATR</th>
-					        <th class="industryHeader unselectable" width=4.1% >ADX</th>
-					        <th class="industryHeader unselectable" width=4.1% >CCI</th>
-					        <th class="industryHeader unselectable" width=4.1%  >H/L</th>
-					        <th class="industryHeader unselectable" width=4.1%  >UO</th>
-					        <th class="industryHeader unselectable" width=4.1%  >ROC</th>
-					        <th class="industryHeader unselectable" width=4.1%  >WillR</th>
-					        <th class="industryHeader unselectable" width=4.1%  >BllBr</th>
-					      </tr>
-					      </thead>
+				   
 					      <tbody>
 					      <tr class="" ng-repeat="row in stockData ">
-					        <td  width=4.1% >({{row.Group}})</td>
+					        <td  width=4.1% >{{row.Group}}</td>
 					        <td width=4.1% >{{row.Interval}}</td>
 					        <td width=4.1% >{{row.Captured}}</td>
 					        <td width=4.1%  ng-style="set_color(row.Sumry)">{{row.Sumry < 0 ? row.Sumry : "+" + row.Sumry }}</td>
@@ -205,7 +191,6 @@
 				    </table>	
 					
 				</div>
-			</div>
-		</div>		
+	
 	</body>
 </html>

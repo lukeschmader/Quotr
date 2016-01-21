@@ -57,7 +57,7 @@ public class AnalysisServlet extends HttpServlet {
 		        try {
 		        	
 		            con = DriverManager.getConnection(dburl, dbuser, dbpassword);
-		            pst = con.prepareStatement("SELECT TIME_INTERVAL,SUMMARY,MOVING_AVERAGES,TECH_INDICATORS,MA5_EXP,MA10_EXP,MA20_EXP,MA50_EXP,MA100_EXP,MA200_EXP,RSI14,STOCH96,STOCHRSI14,MACD1226,ATR14,ADX14,CCI14,HIGHS_LOWS_14,UO,ROC,WILLIAMSR,BULLBEAR13, ID_GROUP, DT_CAPTURED FROM TECH_ANLYSS_HST");
+		            pst = con.prepareStatement("SELECT TIME_INTERVAL,SUMMARY,MOVING_AVERAGES,TECH_INDICATORS,MA5_EXP,MA10_EXP,MA20_EXP,MA50_EXP,MA100_EXP,MA200_EXP,RSI14,STOCH96,STOCHRSI14,MACD1226,ATR14,ADX14,CCI14,HIGHS_LOWS_14,UO,ROC,WILLIAMSR,BULLBEAR13, ID_GROUP, DT_CAPTURED, PRICE FROM TECH_ANLYSS_ONGOING");
 		            rs = pst.executeQuery();
 		            
 		            List<String> recordList = new ArrayList<String>();
@@ -92,7 +92,8 @@ public class AnalysisServlet extends HttpServlet {
 		            	returnData.append("\"WillR\":\"" + rs.getInt(21) + "\",");//WilliamsR());
 		            	returnData.append("\"BllBr\":\"" + rs.getInt(22) + "\",");//BullBear13());
 		            	returnData.append("\"Group\":\"" + rs.getInt(23) + "\",");//Group());  
-		            	returnData.append("\"Captured\":\"" + rs.getTimestamp((24)).toString() + "\"");//Captured
+		            	returnData.append("\"Captured\":\"" + rs.getInt(24) + "\",");//Group());  
+		            	returnData.append("\"Price\":\"" + rs.getDouble(25) + "\"");//Captured
 			            
 			            returnData.append("}");
 						 if(rs.next())

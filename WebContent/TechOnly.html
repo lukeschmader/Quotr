@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html ng-app="stockApp" >
+<head>
+<meta charset="UTF-8">
+<title>Quoter - Favorites</title>
+	<link rel="icon"  href="img/favicon.ico" />
+	<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.19/angular.js"></script>
+  	<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.19/angular-cookies.js"></script>
+	<link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/jquery.slick/1.5.8/slick.css"/>
+	<link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/jquery.slick/1.5.8/slick-theme.css"/>
+ 	<link href="http://code.jquery.com/ui/1.10.4/themes/ui-lightness/jquery-ui.css" rel="stylesheet">
+    <script src="http://code.jquery.com/jquery-1.10.2.js"></script>
+    <script src="http://code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+   	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js" integrity="sha512-K1qjQ+NcF2TYO/eI3M6v8EiNYZfA95pQumfvcVrTHtwQVDG+aHRqLi/ETn2uB+1JqwYqVG3LIvdm9lj6imS/pQ==" crossorigin="anonymous"></script>
+	<script src="js/Chart.js"></script>
+	<link href="css/myCss.css" rel="stylesheet">
+	<script type="text/javascript" src="js/slick.min.js"></script>
+<script>
+	
+	var $jq = jQuery.noConflict();
+	var nameApp = angular.module('stockApp', ['ngCookies']);
+	nameApp.controller('StockCtrl', ['$scope', '$http', '$timeout', '$cookies','$cookieStore', function($scope, $http, $timeout,$cookies,$cookieStore) {	
+		$scope.isLoggedIn = false;
+		$scope.stockData = null;
+		var init = function () { 			
+			
+	          populateChart();
+	          $scope.$apply();
+	          
+	      };
+	      function populateGraph(){
+	    	  
+	    	  var arrayLength = $scope.stockData.length/7;
+	    	  for (var i = 0; i < arrayLength; i++) {
+	    	      for(var k = 0; k < 7; k++){
+	    	    	  if(k == 6){
+	    	    		  continue;
+	    	    	  }else{
+	    	    		  if(i == 0){
+	    	    		  	console.log($scope.stockData[i].Sumry );
+	    	    		  }
+	    	    	  }
+	    	      }
+	    	      
+	    	  }
+	      }
+	      
+          init();
+          function populateChart(){        	
+          	var urls = '/StockWebApp/AnalysisServlet';
+
+          	$http.get(urls).success(function(data){        		
+          		$scope.stockData = data.Analysis;
+          		$scope.$apply();
+          		//populateChart();
+          	});      	
+          }
+          $scope.set_color = function (number) {
+        	  
+        	  if (number < 0) {
+        		  if(number < -3){
+        			  return { background: "red" }
+        		  }
+        	    return { background: "pink" }
+        	  }
+        	  else if(number > 0)
+       		  {        	
+        		  if(number > 3){
+        			  return { background: "green" }
+        		  }
+        		  return { background: "lightGreen" }
+        		  
+       		  }
+        	  else{
+        		  return { background: "lightGrey" }
+        	  }
+        	}
+	
+	
+	}]);
+
+</script>
+<style>
+
+
+</style>
+</head>
+<body ng-controller="StockCtrl">
+	<nav class="navbar navbar-inverse navbar-fixed-top">	
+	        <div class="navbar-header">
+	          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+	            <span class="sr-only">Toggle navigation</span>
+	            <span class="icon-bar"></span>
+	            <span class="icon-bar"></span>
+	            <span class="icon-bar"></span>
+	          </button>
+	          <a class="navbar-brand heading" href="main.html" >Quotr</a>
+	        </div>
+	        <div id="navbar" class="" >
+	        <div class="navbar-right">
+	          <form class="navbar-form" ng-show="(isLoggedIn)">
+	            <div class="create-account inline-nav" style="margin-right:20px;">Hello {{user}}!</div>
+	            <div class="create-account inline-nav">
+				<a href="LogoutServlet">Logout</a>
+	            </div>
+	          </form>
+	         </div>
+	        </div><!--/.navbar-collapse -->
+	</nav>
+	<div class="sub-heading">
+		<div class="sub-heading-title">
+			Technical Analysis For Algorithm
+		</div>
+	</div>
+				<div style="margin-top:10px;margin-bottom:0px;">
+					<table class="table  noTop ">
+				   	<thead style="margin-bottom:0px;margin-left:15px;" bgcolor="lightGrey">
+					      <tr style="margin-left:15px; margin-bottom:0px;">
+					      	<th class="industryHeader unselectable" style="width=120px;" >&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;</th>
+					        <th class="industryHeader unselectable" width=4.1%  >||||||||||||||||||||||</th>
+					        <th class="industryHeader unselectable" width=4.1%  >Sumry</th>
+					        <th class="industryHeader unselectable" width=4.1%  >MovS</th>
+					        <th class="industryHeader unselectable" width=4.1%  >TechS</th>
+					        <th class="industryHeader unselectable" width=4.1%  >MA5</th>
+					        <th class="industryHeader unselectable" width=4.1% >MA10</th>
+					        <th class="industryHeader unselectable" width=4.1%  >MA20</th>
+					        <th class="industryHeader unselectable" width=4.1% >MA50</th>
+					        <th class="industryHeader unselectable" width=4.1%  >MA100</th>
+					        <th class="industryHeader unselectable" width=4.1% >MA200</th>
+					        <th class="industryHeader unselectable" width=4.1%  >RSI</th>
+					        <th class="industryHeader unselectable" width=4.1%  >STOCH</th>
+					        <th class="industryHeader unselectable" width=4.1%  >STCHSI</th>
+					        <th class="industryHeader unselectable" width=4.1%  >MACD</th>
+					        <th class="industryHeader unselectable" width=4.1% >ATR</th>
+					        <th class="industryHeader unselectable" width=4.1% >ADX</th>
+					        <th class="industryHeader unselectable" width=4.1% >CCI</th>
+					        <th class="industryHeader unselectable" width=4.1%  >H/L</th>
+					        <th class="industryHeader unselectable" width=4.1%  >UO</th>
+					        <th class="industryHeader unselectable" width=4.1%  >ROC</th>
+					        <th class="industryHeader unselectable" width=4.1%  >WillR</th>
+					        <th class="industryHeader unselectable" width=4.1%  >BllBr</th>
+					      	<th class="industryHeader unselectable" width=1%  >|</th>
+					      </tr>
+					      </thead>
+				    </table>
+					   <div class='scrollable noTop' style="height: 600px;">
+				   	<table class="table  noTop ">
+				   	<thead bgcolor="lightGrey">
+					      <tr >
+					        <th class="industryHeader unselectable" width=4.1% >Grp</th>
+					        <th class="industryHeader unselectable" width=4.1% >Int</th>
+					        <th class="industryHeader unselectable" width=4.1% >CAPTURED</th>
+					        <th class="industryHeader unselectable" width=4.1%  >Sumry</th>
+					        <th class="industryHeader unselectable" width=4.1%  >MovS</th>
+					        <th class="industryHeader unselectable" width=4.1%  >TechS</th>
+					        <th class="industryHeader unselectable" width=4.1%  >MA5</th>
+					        <th class="industryHeader unselectable" width=4.1% >MA10</th>
+					        <th class="industryHeader unselectable" width=4.1%  >MA20</th>
+					        <th class="industryHeader unselectable" width=4.1% >MA50</th>
+					        <th class="industryHeader unselectable" width=4.1%  >MA100</th>
+					        <th class="industryHeader unselectable" width=4.1% >MA200</th>
+					        <th class="industryHeader unselectable" width=4.1%  >RSI</th>
+					        <th class="industryHeader unselectable" width=4.1%  >STOCH</th>
+					        <th class="industryHeader unselectable" width=4.1%  >STCHSI</th>
+					        <th class="industryHeader unselectable" width=4.1%  >MACD</th>
+					        <th class="industryHeader unselectable" width=4.1% >ATR</th>
+					        <th class="industryHeader unselectable" width=4.1% >ADX</th>
+					        <th class="industryHeader unselectable" width=4.1% >CCI</th>
+					        <th class="industryHeader unselectable" width=4.1%  >H/L</th>
+					        <th class="industryHeader unselectable" width=4.1%  >UO</th>
+					        <th class="industryHeader unselectable" width=4.1%  >ROC</th>
+					        <th class="industryHeader unselectable" width=4.1%  >WillR</th>
+					        <th class="industryHeader unselectable" width=4.1%  >BllBr</th>
+					      </tr>
+					      </thead>
+					      <tbody>
+					      <tr class="" ng-repeat="row in stockData ">
+					        <td  width=4.1% >{{row.Group}}</td>
+					        <td width=4.1% >{{row.Interval}}</td>
+					        <td width=4.1% >{{row.Captured}}</td>
+					        <td width=4.1%  ng-style="set_color(row.Sumry)">{{row.Sumry < 0 ? row.Sumry : "+" + row.Sumry }}</td>
+					        <td width=4.1%  ng-style="set_color(row.MovS)">{{row.MovS < 0 ? row.MovS : "+" + row.MovS }}</td>
+					        <td width=4.1%  ng-style="set_color(row.TechS)">{{row.TechS < 0 ? row.TechS : "+" + row.TechS }}</td>
+					        <td width=4.1%  ng-style="set_color(row.MA5)">{{row.MA5 < 0 ? row.MA5 : "+" + row.MA5 }}</td>
+					        <td width=4.1%  ng-style="set_color(row.MA10)">{{row.MA10 < 0 ? row.MA10 : "+" + row.MA10 }}</td>
+					        <td width=4.1%  ng-style="set_color(row.MA20)">{{row.MA20 < 0 ? row.MA20 : "+" + row.MA20 }}</td>
+					        <td width=4.1%  ng-style="set_color(row.MA50)">{{row.MA50 < 0 ? row.MA50 : "+" + row.MA50 }}</td>
+					        <td width=4.1%  ng-style="set_color(row.MA100)">{{row.MA100 < 0 ? row.MA100 : "+" + row.MA100 }}</td>
+					        <td width=4.1%  ng-style="set_color(row.MA200)">{{row.MA200 < 0 ? row.MA200 : "+" + row.MA200 }}</td>
+					        <td width=4.1%  ng-style="set_color(row.RSI)">{{row.RSI < 0 ? row.RSI : "+" + row.RSI }}</td>
+					        <td width=4.1%  ng-style="set_color(row.STOCH)">{{row.STOCH < 0 ? row.STOCH : "+" + row.STOCH }}</td>
+					        <td width=4.1%  ng-style="set_color(row.STCHSI)">{{row.STCHSI < 0 ? row.STCHSI : "+" + row.STCHSI }}</td>
+					        <td width=4.1%  ng-style="set_color(row.MACD)">{{row.MACD < 0 ? row.MACD : "+" + row.MACD }}</td>
+					        <td width=4.1%  ng-style="set_color(row.ATR)">{{row.ATR < 0 ? row.ATR : "+" + row.ATR }}</td>
+					        <td width=4.1%  ng-style="set_color(row.ADX)">{{row.ADX < 0 ? row.ADX : "+" + row.ADX }}</td>
+					        <td width=4.1%  ng-style="set_color(row.CCI)">{{row.CCI < 0 ? row.CCI : "+" + row.CCI }}</td>
+					        <td width=4.1%  ng-style="set_color(row.HL)">{{row.HL < 0 ? row.HL : "+" + row.HL }}</td>
+					        <td width=4.1%  ng-style="set_color(row.UO)">{{row.UO < 0 ? row.UO : "+" + row.UO }}</td>
+					        <td width=4.1%  ng-style="set_color(row.ROC)">{{row.ROC < 0 ? row.ROC : "+" + row.ROC }}</td>
+					        <td width=4.1%  ng-style="set_color(row.WillR)">{{row.WillR < 0 ? row.WillR : "+" + row.WillR }}</td>
+					        <td width=4.1%  ng-style="set_color(row.BllBr)">{{row.BllBr < 0 ? row.BllBr : "+" + row.BllBr }}</td>
+					      </tr>
+					      </tbody>
+				    </table>	
+					
+				</div>
+	
+	</body>
+</html>
