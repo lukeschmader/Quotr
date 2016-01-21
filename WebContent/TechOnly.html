@@ -24,37 +24,49 @@
 	nameApp.controller('StockCtrl', ['$scope', '$http', '$timeout', '$cookies','$cookieStore', function($scope, $http, $timeout,$cookies,$cookieStore) {	
 		$scope.isLoggedIn = false;
 		$scope.stockData = null;
+		$scope.stockTradeResults = null;
+		$scope.stockCurrentDecisions = [];
+		$scope.groups = [];
+		$scope.prices = [];
 		var init = function () { 			
-			
-	          populateChart();
-	          $scope.$apply();
-	          
+			  populateIndicatorTable();
+	          $scope.$apply();	          
 	      };
-	      function populateGraph(){
+	      function populateGraphs(){
 	    	  
-	    	  var arrayLength = $scope.stockData.length/7;
-	    	  for (var i = 0; i < arrayLength; i++) {
-	    	      for(var k = 0; k < 7; k++){
-	    	    	  if(k == 6){
-	    	    		  continue;
-	    	    	  }else{
-	    	    		  if(i == 0){
-	    	    		  	console.log($scope.stockData[i].Sumry );
-	    	    		  }
-	    	    	  }
-	    	      }
-	    	      
-	    	  }
+	      }
+	      function getTradeResults(){
+	    	  var urls = '/StockWebApp/TradeResultServlet';
+	          	$http.get(urls).success(function(data){        		
+	          		$scope.stockTradeResults = data.Trades;
+	          		//Populate Chart for Trades
+	          		$scope.$apply();
+	          	}); 
+	          	populateGraphs();
+	      }
+	      function getCurrentDecisions(){
+	    	  var urls = '/StockWebApp/CurrentDecisionsServlet';
+	          	$http.get(urls).success(function(data){        		
+	          		$scope.stockCurrentDecisions = data.Decisions;
+	          		$scope.$apply();
+	          		getTradeResults();
+	          	});  	    	  
 	      }
 	      
           init();
-          function populateChart(){        	
+          function populateIndicatorTable(){        	
           	var urls = '/StockWebApp/AnalysisServlet';
 
           	$http.get(urls).success(function(data){        		
           		$scope.stockData = data.Analysis;
           		$scope.$apply();
-          		//populateChart();
+          		for(var row in $scope.stockData) {
+          			if(row.Interval !== null){
+          				$scope.groups.push(row.Group);
+          				$scope.prices.push(row.Price);
+          			}
+          		}
+          		getCurrentDecisions();
           	});      	
           }
           $scope.set_color = function (number) {
@@ -119,7 +131,7 @@
 				   	<thead style="margin-bottom:0px;margin-left:15px;" bgcolor="lightGrey">
 					      <tr style="margin-left:15px; margin-bottom:0px;">
 					      	<th class="industryHeader unselectable" style="width=120px;" >&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;</th>
-					        <th class="industryHeader unselectable" width=4.1%  >||||||||||||||||||||||</th>
+					        <th class="industryHeader unselectable" width=4.1%  >|||||||||||||||||||||</th>
 					        <th class="industryHeader unselectable" width=4.1%  >Sumry</th>
 					        <th class="industryHeader unselectable" width=4.1%  >MovS</th>
 					        <th class="industryHeader unselectable" width=4.1%  >TechS</th>
@@ -145,36 +157,9 @@
 					      </tr>
 					      </thead>
 				    </table>
-					   <div class='scrollable noTop' style="height: 600px;">
+					   <div class='scrollable noTop' style="height: 500px;">
 				   	<table class="table  noTop ">
-				   	<thead bgcolor="lightGrey">
-					      <tr >
-					        <th class="industryHeader unselectable" width=4.1% >Grp</th>
-					        <th class="industryHeader unselectable" width=4.1% >Int</th>
-					        <th class="industryHeader unselectable" width=4.1% >CAPTURED</th>
-					        <th class="industryHeader unselectable" width=4.1%  >Sumry</th>
-					        <th class="industryHeader unselectable" width=4.1%  >MovS</th>
-					        <th class="industryHeader unselectable" width=4.1%  >TechS</th>
-					        <th class="industryHeader unselectable" width=4.1%  >MA5</th>
-					        <th class="industryHeader unselectable" width=4.1% >MA10</th>
-					        <th class="industryHeader unselectable" width=4.1%  >MA20</th>
-					        <th class="industryHeader unselectable" width=4.1% >MA50</th>
-					        <th class="industryHeader unselectable" width=4.1%  >MA100</th>
-					        <th class="industryHeader unselectable" width=4.1% >MA200</th>
-					        <th class="industryHeader unselectable" width=4.1%  >RSI</th>
-					        <th class="industryHeader unselectable" width=4.1%  >STOCH</th>
-					        <th class="industryHeader unselectable" width=4.1%  >STCHSI</th>
-					        <th class="industryHeader unselectable" width=4.1%  >MACD</th>
-					        <th class="industryHeader unselectable" width=4.1% >ATR</th>
-					        <th class="industryHeader unselectable" width=4.1% >ADX</th>
-					        <th class="industryHeader unselectable" width=4.1% >CCI</th>
-					        <th class="industryHeader unselectable" width=4.1%  >H/L</th>
-					        <th class="industryHeader unselectable" width=4.1%  >UO</th>
-					        <th class="industryHeader unselectable" width=4.1%  >ROC</th>
-					        <th class="industryHeader unselectable" width=4.1%  >WillR</th>
-					        <th class="industryHeader unselectable" width=4.1%  >BllBr</th>
-					      </tr>
-					      </thead>
+				   
 					      <tbody>
 					      <tr class="" ng-repeat="row in stockData ">
 					        <td  width=4.1% >{{row.Group}}</td>

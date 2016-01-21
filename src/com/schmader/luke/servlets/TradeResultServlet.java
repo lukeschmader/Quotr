@@ -59,9 +59,16 @@ public class TradeResultServlet extends HttpServlet {
            
             boolean hasResults = false;
             int k = 1;
-            
+            double diffPct;
             while (rs.next()) {
+            	if(rs.getDouble(4) > 0 && rs.getDouble(6) > 0){
+            		diffPct = (rs.getDouble(6)-rs.getDouble(4))/rs.getDouble(4);
+            	}else
+            	{
+            		diffPct = 0.0;
+            	}
             	returnData.append("{");
+            	returnData.append("\"DiffPct\":\"" + diffPct + "\",");
             	returnData.append("\"Group\":\"" + rs.getInt(1) + "\",");
             	returnData.append("\"Symbol\":\"" + rs.getString(2) + "\",");
             	returnData.append("\"Dt_Bought\":\"" + rs.getTimestamp(3) + "\",");

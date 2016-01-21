@@ -92,7 +92,7 @@ public class AnalysisServlet extends HttpServlet {
 		            	returnData.append("\"WillR\":\"" + rs.getInt(21) + "\",");//WilliamsR());
 		            	returnData.append("\"BllBr\":\"" + rs.getInt(22) + "\",");//BullBear13());
 		            	returnData.append("\"Group\":\"" + rs.getInt(23) + "\",");//Group());  
-		            	returnData.append("\"Captured\":\"" + rs.getInt(24) + "\",");//Group());  
+		            	returnData.append("\"Captured\":\"" + rs.getTimestamp(24) + "\",");//Group());  
 		            	returnData.append("\"Price\":\"" + rs.getDouble(25) + "\"");//Captured
 			            
 			            returnData.append("}");

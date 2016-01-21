@@ -56,7 +56,7 @@ public class CurrentDecisionsServlet extends HttpServlet {
             
             List<String> recordList = new ArrayList<String>();
             StringBuffer returnData;
-            returnData = new StringBuffer ("{\"Decisions\":[");
+            returnData = new StringBuffer ("{\"Objects\":[");
            
             boolean hasResults = false;
             int k = 1;

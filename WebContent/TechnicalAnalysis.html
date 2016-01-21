@@ -2,7 +2,7 @@
 <html ng-app="stockApp" >
 <head>
 <meta charset="UTF-8">
-<title>Quoter - Favorites</title>
+<title>Quoter - Automation</title>
 	<link rel="icon"  href="img/favicon.ico" />
 	<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.19/angular.js"></script>
   	<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.19/angular-cookies.js"></script>
@@ -25,32 +25,59 @@
 		$scope.isLoggedIn = false;
 		$scope.stockData = null;
 		$scope.stockTradeResults = null;
-		$scope.stockCurrentDecisions = [];
+		$scope.currentIntArray = [];
+		$scope.currentGroupArray = [];
 		$scope.groups = [];
 		$scope.prices = [];
 		var init = function () { 			
 			  populateIndicatorTable();
 	          $scope.$apply();	          
 	      };
-	      function populateGraphs(){
-	    	  
-	      }
 	      function getTradeResults(){
 	    	  var urls = '/StockWebApp/TradeResultServlet';
 	          	$http.get(urls).success(function(data){        		
-	          		$scope.stockTradeResults = data.Decisions;
-	          		//Populate Chart for Trades
+	          		$scope.stockTradeResults = data.Trades;
 	          		$scope.$apply();
 	          	}); 
-	          	populateGraphs();
 	      }
 	      function getCurrentDecisions(){
 	    	  var urls = '/StockWebApp/CurrentDecisionsServlet';
-	          	$http.get(urls).success(function(data){        		
-	          		$scope.stockCurrentDecisions = data.Decisions;
+	          	$http.get(urls).success(function(data){   
+	          		for(var k = 0; k < data.Objects.length; k++) {
+	          				$scope.currentGroupArray.push(data.Objects[k].Group);
+	          				$scope.currentIntArray.push(data.Objects[k].Decision);
+	          		}
 	          		$scope.$apply();
-	          		getTradeResults();
-	          	});  	    	  
+		        	var datac = {
+		        		    labels: $scope.currentGroupArray,
+		        		    datasets: [
+		        		        {		        		            
+		        		            fillColor: "rgba(220,220,220,0.2)",
+		        		            strokeColor: "#676767",
+		        		            pointColor: "#676767",
+		        		            pointStrokeColor: "#fff",
+		        		            pointHighlightFill: "#fff",
+		        		            pointHighlightStroke: "rgba(220,220,220,1)",
+		        		            data: $scope.currentIntArray
+		        		        }
+		        		    ]
+		        		};
+		        	var canvas = document.getElementById("decisionCanvas");
+		        	var ctx = document.getElementById("decisionCanvas").getContext("2d");	        	
+		        	ctx.clearRect(0, 0, canvas.width, canvas.height);	
+		        	lineChart = new Chart(ctx).Line(datac, {
+		        	    bezierCurve: false,
+		        	    pointDot : false,
+		        	    animationEasing: "easeOutQuart",
+		        	    pointHitDetectionRadius : -2,
+		        	    showTooltips: false,
+		        	    //responsive: true,
+		        	    animation: false      	    
+		        	
+		        	});		          		
+	          		
+	          	}); 
+	          	getTradeResults();
 	      }
 	      
           init();
@@ -60,14 +87,42 @@
           	$http.get(urls).success(function(data){        		
           		$scope.stockData = data.Analysis;
           		$scope.$apply();
-          		for(var row in $scope.stockData) {
-          			if(row.Interval !== null){
-          				$scope.groups.push(row.Group);
-          				$scope.prices.push(row.Price);
+          		for(var i = 0; i < data.Analysis.length; i = i +7) {
+          			if(data.Analysis[i].Interval !== null){
+          				$scope.groups.push(data.Analysis[i].Group);
+          				$scope.prices.push(data.Analysis[i].Price);
           			}
           		}
-          		getCurrentDecisions();
-          	});      	
+          		var datac = {
+	        		    labels: $scope.groups,
+	        		    datasets: [
+	        		        {		        		            
+	        		            fillColor: "rgba(220,220,220,0.2)",
+	        		            strokeColor: "#676767",
+	        		            pointColor: "#676767",
+	        		            pointStrokeColor: "#fff",
+	        		            pointHighlightFill: "#fff",
+	        		            pointHighlightStroke: "rgba(220,220,220,1)",
+	        		            data: $scope.prices
+	        		        }
+	        		    ]
+	        		};
+	        	var canvas = document.getElementById("priceCanvas");
+	        	var ctx = document.getElementById("priceCanvas").getContext("2d");	        	
+	        	ctx.clearRect(0, 0, canvas.width, canvas.height);	
+	        	lineChart = new Chart(ctx).Line(datac, {
+	        	    bezierCurve: false,
+	        	    pointDot : false,
+	        	    animationEasing: "easeOutQuart",
+	        	    pointHitDetectionRadius : -2,
+	        	    showTooltips: false,
+	        	    //responsive: true,
+	        	    animation: false      	    
+	        	
+	        	});		          		
+          		
+          	}); 
+          	getCurrentDecisions();
           }
           $scope.set_color = function (number) {
         	  
@@ -100,7 +155,7 @@
 </style>
 </head>
 <body ng-controller="StockCtrl">
-	<nav class="navbar navbar-inverse navbar-fixed-top">	
+	<nav class="navbar navbar-inverse navbar-fixed-top" >	
 	        <div class="navbar-header">
 	          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
 	            <span class="sr-only">Toggle navigation</span>
@@ -126,38 +181,90 @@
 			Technical Analysis For Algorithm
 		</div>
 	</div>
-				<div style="margin-top:10px;margin-bottom:0px;">
+	<div style="text-align: center;">
+	<h3>Daily Price Change</h3>
+	<p>Coca-Cola Co (KO)</p>
+	<canvas id="priceCanvas" class="favCanv"  height="250" width="900"></canvas>
+	<h3>Algorithm Buy/Sell</h3>
+	<canvas id="decisionCanvas" class="favCanv"  height="250" width="900"></canvas>
+	<p>Note: Algorithm Buys at 1 and sells at -1. It trades all available funds each buy/sell.</p>
+							  
+	</div>
+	<div style="padding-top:10px; padding-bottom:10px; background:#dddddd;">
+				<div style="text-align: center;">
+				<h3>Trade History</h3>
+				</div>
+				<div style="margin-top:10px;margin-bottom:0px;width:900px;" height="200" class="favCanv"> 
 					<table class="table  noTop ">
 				   	<thead style="margin-bottom:0px;margin-left:15px;" bgcolor="lightGrey">
 					      <tr style="margin-left:15px; margin-bottom:0px;">
-					      	<th class="industryHeader unselectable" style="width=120px;" >&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;</th>
-					        <th class="industryHeader unselectable" width=4.1%  >|||||||||||||||||||||</th>
-					        <th class="industryHeader unselectable" width=4.1%  >Sumry</th>
-					        <th class="industryHeader unselectable" width=4.1%  >MovS</th>
-					        <th class="industryHeader unselectable" width=4.1%  >TechS</th>
-					        <th class="industryHeader unselectable" width=4.1%  >MA5</th>
-					        <th class="industryHeader unselectable" width=4.1% >MA10</th>
-					        <th class="industryHeader unselectable" width=4.1%  >MA20</th>
-					        <th class="industryHeader unselectable" width=4.1% >MA50</th>
-					        <th class="industryHeader unselectable" width=4.1%  >MA100</th>
-					        <th class="industryHeader unselectable" width=4.1% >MA200</th>
-					        <th class="industryHeader unselectable" width=4.1%  >RSI</th>
-					        <th class="industryHeader unselectable" width=4.1%  >STOCH</th>
-					        <th class="industryHeader unselectable" width=4.1%  >STCHSI</th>
-					        <th class="industryHeader unselectable" width=4.1%  >MACD</th>
-					        <th class="industryHeader unselectable" width=4.1% >ATR</th>
-					        <th class="industryHeader unselectable" width=4.1% >ADX</th>
-					        <th class="industryHeader unselectable" width=4.1% >CCI</th>
-					        <th class="industryHeader unselectable" width=4.1%  >H/L</th>
-					        <th class="industryHeader unselectable" width=4.1%  >UO</th>
-					        <th class="industryHeader unselectable" width=4.1%  >ROC</th>
-					        <th class="industryHeader unselectable" width=4.1%  >WillR</th>
-					        <th class="industryHeader unselectable" width=4.1%  >BllBr</th>
-					      	<th class="industryHeader unselectable" width=1%  >|</th>
+					      	<th class="industryHeader unselectable" width=12.5%  >Group</th>
+					        <th class="industryHeader unselectable" width=12.5%  >Symbol</th>
+					        <th class="industryHeader unselectable" width=12.5%  >Buying Price</th>
+					        <th class="industryHeader unselectable" width=12.5%  >Buying Time</th>
+					        <th class="industryHeader unselectable" width=12.5%  >Flag Sold</th>
+					        <th class="industryHeader unselectable" width=12.5%  >Selling Price</th>
+					        <th class="industryHeader unselectable" width=12.5%  >Selling Time</th>
+					        <th class="industryHeader unselectable" width=12.5%  >Difference</th>
 					      </tr>
 					      </thead>
 				    </table>
-					   <div class='scrollable noTop' style="height: 500px;">
+					   <div class='scrollable noTop' style="height: 200px;">
+				   	<table class="table  noTop " >
+					      <tbody>
+					      <tr class="" ng-repeat="row in stockTradeResults ">
+					        <td  width=12.5% >{{row.Group}}</td>
+					        <td width=12.5% >{{row.Symbol}}</td>
+					        <td width=12.5% >{{row.Price_Bought}}</td>
+					        <td width=12.5% >{{row.Dt_Bought}}</td>		
+					        <td width=12.5% >{{row.Flag_Sold}}</td>			        
+					        <td width=12.5% >{{row.Price_Sold}}</td>
+					        <td width=12.5% >{{row.Dt_Sold}}</td>
+					        <td width=12.5%  ng-style="set_color(((row.diffPct)))">{{row.diffPct < 0 ? row.diffPct +"%" : "+" + row.diffPct + "%"}}</td>
+
+					      </tr>
+					      </tbody>
+				    </table>	
+					
+				</div>
+		</div>
+		</div>
+		<div style="text-align: center;">
+				<h3>Moving Averages and Technical Indicators</h3>
+				<p>Zooming out or wide monitor required to view properly</p>
+				</div>
+				<div style="margin-top:10px;margin-bottom:0px;" width="1500">
+					<table class="table  noTop ">
+				   	<thead style="margin-bottom:0px;" bgcolor="lightGrey" >
+					      <tr style="margin-bottom:0px;">
+					      	<th class="industryHeader unselectable" width=4.1% >Grp&ensp;</th>
+					      	<th class="industryHeader unselectable" width=4.1% >Int</th>
+					        <th class="industryHeader unselectable" width=4.1% >TimeCaptured</th>
+					        <th class="industryHeader unselectable" width=4.1% >Sumry</th>
+					        <th class="industryHeader unselectable"  width=4.1% >MovS</th>
+					        <th class="industryHeader unselectable" width=4.1% >TechS</th>
+					        <th class="industryHeader unselectable" width=4.1%  >MA5</th>
+					        <th class="industryHeader unselectable" width=4.1% >MA10</th>
+					        <th class="industryHeader unselectable"  width=4.1% >MA20</th>
+					        <th class="industryHeader unselectable"  width=4.1% >MA50</th>
+					        <th class="industryHeader unselectable"  width=4.1%  >MA100</th>
+					        <th class="industryHeader unselectable"  width=4.1% >MA200</th>
+					        <th class="industryHeader unselectable"  width=4.1% >RSI</th>
+					        <th class="industryHeader unselectable" width=4.1%  >STOCH</th>
+					        <th class="industryHeader unselectable" width=4.1% >STCHSI</th>
+					        <th class="industryHeader unselectable" width=4.1%  >MACD</th>
+					        <th class="industryHeader unselectable"  width=4.1% >ATR</th>
+					        <th class="industryHeader unselectable"width=4.1% >ADX</th>
+					        <th class="industryHeader unselectable" width=4.1%  >CCI</th>
+					        <th class="industryHeader unselectable" width=4.1%  >H/L</th>
+					        <th class="industryHeader unselectable"  width=4.1% >UO</th>
+					        <th class="industryHeader unselectable" width=4.1% >ROC</th>
+					        <th class="industryHeader unselectable" width=4.1%  >WillR</th>
+					        <th class="industryHeader unselectable" width=4.1%  >BllBr</th>
+					      </tr>
+					      </thead>
+				    </table>
+					   <div class='scrollable noTop' style="height: 500px;" width="1000px;">
 				   	<table class="table  noTop ">
 				   
 					      <tbody>
@@ -191,6 +298,7 @@
 				    </table>	
 					
 				</div>
-	
+		</div>
+		
 	</body>
 </html>
