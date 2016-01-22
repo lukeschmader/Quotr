@@ -79,7 +79,9 @@
         	  console.log("json Called");
         	  $scope.autoCompleteCompanies = data.companies;
         	  console.log("AutoComplete set");
-          });          
+          });    
+          
+          $jq(".gauge").width(80).height(40);
           //$scope.searchBox = "GOOGL"
           };
           init();
@@ -167,6 +169,7 @@
         		refreshStock(newValue);     
         		$scope.$apply();       		
         	} 
+        	$jq(".gauge").width(80).height(40);
         	
           });  
         $jq('.graph-btn').click(function(){
@@ -228,6 +231,7 @@
         		$scope.industryCount = data.stats.industryCount;
         		
         		$scope.isIndustryLoaded = true;
+        		$jq(".gauge").width(80).height(40);
         	});
         	
         }
@@ -698,7 +702,7 @@
 	   		</div>
 	   		<div class="well darkWell inline">
 	   		<h3 class="consensus">Potential</h3>
-	   		<canvas class="gauge" gaugejs options="gaugeOptions" value="gaugeValue" max-value="maxValue" min-value="5" animation-time="animationTime"></canvas>
+	   		<canvas class="gauge" style="width:80px;" gaugejs options="gaugeOptions" value="gaugeValue" max-value="maxValue" min-value="5" animation-time="animationTime"></canvas>
 			<p class="inline sell">Sell&ensp;&ensp;&ensp;&ensp;Buy</p>
 	   		</div>
    		</div>
