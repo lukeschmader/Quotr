@@ -5,6 +5,11 @@
 	margin-bottom: 5px;
 }
 
+
+.small{
+    font-size:11px;
+}
+
 .center {
    display:block;
    margin:auto;
@@ -118,6 +123,11 @@
 {
 	overflow: auto;
 	height: 280px;
+}
+.tallScrollable
+{
+	overflow: auto;
+	height: 200px;
 }
 .legendScrollable
 {

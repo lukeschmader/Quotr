@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html ng-app="stockApp" >
+<html ng-app="stockApp" manifest="manifest.appcache">
 <head>
 <meta charset="UTF-8">
 <title>Quoter - Automation</title>
@@ -29,19 +29,22 @@
 		$scope.currentGroupArray = [];
 		$scope.groups = [];
 		$scope.prices = [];
+		$scope.dataLoaded = false;
 		var init = function () { 			
 			  populateIndicatorTable();
 	          $scope.$apply();	          
 	      };
 	      function getTradeResults(){
-	    	  var urls = '/StockWebApp/TradeResultServlet';
+	    	  var time = new Date().getTime();	
+	    	  var urls = '/StockWebApp/TradeResultServlet' + "?t=" + time;
 	          	$http.get(urls).success(function(data){        		
-	          		$scope.stockTradeResults = data.Trades;
+	          		$scope.stockTradeResults = data.Trades.reverse();
 	          		$scope.$apply();
 	          	}); 
 	      }
 	      function getCurrentDecisions(){
-	    	  var urls = '/StockWebApp/CurrentDecisionsServlet';
+	    	  var time = new Date().getTime();	
+	    	  var urls = '/StockWebApp/CurrentDecisionsServlet' + "?t=" + time;
 	          	$http.get(urls).success(function(data){   
 	          		for(var k = 0; k < data.Objects.length; k++) {
 	          				$scope.currentGroupArray.push(data.Objects[k].Group);
@@ -82,7 +85,8 @@
 	      
           init();
           function populateIndicatorTable(){        	
-          	var urls = '/StockWebApp/AnalysisServlet';
+        	  var time = new Date().getTime();	
+          	var urls = '/StockWebApp/AnalysisServlet' + "?t=" + time;
 
           	$http.get(urls).success(function(data){        		
           		$scope.stockData = data.Analysis;
@@ -120,7 +124,7 @@
 	        	    animation: false      	    
 	        	
 	        	});		          		
-          		
+	        	$scope.dataLoaded = true;
           	}); 
           	getCurrentDecisions();
           }
@@ -184,13 +188,13 @@
 	<div style="text-align: center;">
 	<h3>Daily Price Change</h3>
 	<p>Coca-Cola Co (KO)</p>
-	<canvas id="priceCanvas" class="favCanv"  height="250" width="900"></canvas>
+	 <canvas  id="priceCanvas" class="favCanv"  height="250" width="900"></canvas>
 	<h3>Algorithm Buy/Sell</h3>
 	<canvas id="decisionCanvas" class="favCanv"  height="250" width="900"></canvas>
 	<p>Note: Algorithm Buys at 1 and sells at -1. It trades all available funds each buy/sell.</p>
 							  
 	</div>
-	<div style="padding-top:10px; padding-bottom:10px; background:#dddddd;">
+	<div style="padding-top:10px; padding-bottom:10px; background:#eeeeee;">
 				<div style="text-align: center;">
 				<h3>Trade History</h3>
 				</div>
@@ -220,7 +224,7 @@
 					        <td width=12.5% >{{row.Flag_Sold}}</td>			        
 					        <td width=12.5% >{{row.Price_Sold}}</td>
 					        <td width=12.5% >{{row.Dt_Sold}}</td>
-					        <td width=12.5%  ng-style="set_color(((row.diffPct)))">{{row.diffPct < 0 ? row.diffPct +"%" : "+" + row.diffPct + "%"}}</td>
+					        <td width=12.5%  ng-style="set_color(((row.DiffPct)))">{{row.DiffPct < 0.0 ? row.DiffPct +"%" : "+" + row.DiffPct + "%"}}</td>
 
 					      </tr>
 					      </tbody>
@@ -239,7 +243,7 @@
 					      <tr style="margin-bottom:0px;">
 					      	<th class="industryHeader unselectable" width=4.1% >Grp&ensp;</th>
 					      	<th class="industryHeader unselectable" width=4.1% >Int</th>
-					        <th class="industryHeader unselectable" width=4.1% >TimeCaptured</th>
+					        <th class="industryHeader unselectable" width=4.1% >Time</th>
 					        <th class="industryHeader unselectable" width=4.1% >Sumry</th>
 					        <th class="industryHeader unselectable"  width=4.1% >MovS</th>
 					        <th class="industryHeader unselectable" width=4.1% >TechS</th>

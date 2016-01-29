@@ -23,7 +23,8 @@
     	$scope.$watch('user.username', function(newValue, oldValue){
     		if(typeof newValue != 'undefined')
          	{   	     
-    			var urls = '/StockWebApp/UsernameCheckServlet?username=' + angular.lowercase($scope.user.username);
+    			var time = new Date().getTime();	
+    			var urls = '/StockWebApp/UsernameCheckServlet?username=' + angular.lowercase($scope.user.username) + "&t=" + time;
     	        $http.get(urls).success(function(data){
     	        	$scope.userMessage = data.message;  
     	        	
@@ -53,7 +54,8 @@
     	});
     	
 	   	$scope.submitProfile = function () {
-	   		var urls = '/StockWebApp/CreateProfileServlet?username=' + angular.lowercase($scope.user.username) + '&password=' + $scope.user.password + '&organization=' + $scope.user.organization;
+	   		var time = new Date().getTime();	
+	   		var urls = '/StockWebApp/CreateProfileServlet?username=' + angular.lowercase($scope.user.username) + '&t=' + time + '&password=' + $scope.user.password + '&organization=' + $scope.user.organization;
 	        $http.get(urls).success(function(data){
 	        	$scope.createMessage = data.message;
 	        	if($scope.createMessage === "success")
@@ -80,7 +82,7 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand heading" href="#">Luke Schmader</a>
+          <a class="navbar-brand heading" href="main.html" >Quotr</a>
         </div>
         <div id="navbar" class="" >
         <div class="navbar-right">
@@ -114,7 +116,7 @@
 		<div class="loginInputs">
 		Password:
 		<span style="color:darkred; font-weight: bold;" ng-show="myForm.createPassword.$dirty && invalidPassword">
-  		<span ng-show="myForm.createPassword.$error.required">Passoword Required</span>
+  		<span ng-show="myForm.createPassword.$error.required">Password Required</span>
   		</span>
   		<span style="color:green; font-weight: bold;" ng-show="myForm.createPassword.$dirty && !invalidPassword">
   		<span style="color:green;" ng-show="myForm.createPassword.$dirty && (!(invalidPassword))">Valid</span>

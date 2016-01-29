@@ -1,6 +1,7 @@
 package com.schmader.luke.servlets;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -59,13 +60,12 @@ public class TradeResultServlet extends HttpServlet {
            
             boolean hasResults = false;
             int k = 1;
-            double diffPct;
+            double diffPct = 0.0;
             while (rs.next()) {
+            	diffPct = 0.0;
             	if(rs.getDouble(4) > 0 && rs.getDouble(6) > 0){
             		diffPct = (rs.getDouble(6)-rs.getDouble(4))/rs.getDouble(4);
-            	}else
-            	{
-            		diffPct = 0.0;
+            		diffPct = new BigDecimal(diffPct * 100.00).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
             	}
             	returnData.append("{");
             	returnData.append("\"DiffPct\":\"" + diffPct + "\",");
@@ -73,7 +73,9 @@ public class TradeResultServlet extends HttpServlet {
             	returnData.append("\"Symbol\":\"" + rs.getString(2) + "\",");
             	returnData.append("\"Dt_Bought\":\"" + rs.getTimestamp(3) + "\",");
             	returnData.append("\"Price_Bought\":\"" + rs.getDouble(4) + "\",");
-            	returnData.append("\"Dt_Sold\":\"" + rs.getTimestamp(5) + "\",");
+            	if(rs.getInt(5) > 0){
+            		returnData.append("\"Dt_Sold\":\"" + rs.getTimestamp(5) + "\",");
+            	}            	
             	returnData.append("\"Price_Sold\":\"" + rs.getDouble(6) + "\",");
             	returnData.append("\"Flag_Sold\":\"" + rs.getString(7) + "\"");
 	            returnData.append("}");
