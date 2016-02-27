@@ -5,7 +5,16 @@
 {color: #ffffff;
 	background: #444444;
 }
+.foot2
+{
 
+
+	padding-top: 10px;
+	padding-left: 100px;
+	background: #b7b7b7;
+	 /* Firefox 3.6+ */ background: -moz-linear-gradient(top, #cbcbcb, #b5b5b5);
+    border: 1px solid #b7b7b7;
+}
 .loginTitle
 {
 	color: #FFFFFF;

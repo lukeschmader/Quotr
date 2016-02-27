@@ -23,7 +23,9 @@
     display: block;
 
 }
-
+.no-outline{
+	outline: 0;
+}
 .unselectable {
     -webkit-touch-callout: none;
     -webkit-user-select: none;
@@ -38,6 +40,8 @@
 	color: #ffffff;
 	background: #444444;
 }
+
+
 
 .heading
 {
@@ -338,7 +342,18 @@ tr {width:100%; }
 
 .foot
 {
-	margin-top: 100px;
+
+	
+	padding-top: 10px;
+	padding-left: 100px;
+	background: #b7b7b7;
+	 /* Firefox 3.6+ */ background: -moz-linear-gradient(top, #cbcbcb, #b5b5b5);
+    border: 1px solid #b7b7b7;
+}
+.foot2
+{
+
+
 	padding-top: 10px;
 	padding-left: 100px;
 	background: #b7b7b7;

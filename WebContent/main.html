@@ -3,7 +3,7 @@
   <head>
  	 <link rel="icon"  href="img/favicon.ico" />
     <meta charset="utf-8">
-    <title>Stock App</title>
+    <title>Quotr</title>
     <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.19/angular.js"></script>
   	<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.19/angular-cookies.js"></script>
   
@@ -74,7 +74,7 @@
 				refreshFavorites();
 				$scope.$apply();		
           	}
-          $scope.search="GOOGL";
+          $scope.search="AAPL";
           var urls = 'CompanyAutoComplete.json';
           $http.get(urls).success(function(data){
         	  //console.log("json Called");
@@ -345,13 +345,13 @@
 							           
 		            //Table
 		            document.getElementById("price").innerHTML =J.data.stock.price;	
-		            document.getElementById("change").innerHTML =J.data.stock.change;
+		            document.getElementById("change").innerHTML =J.data.stock.change < 0 ? J.data.stock.change : "+" + J.data.stock.change;
 		            document.getElementById("dayLow").innerHTML =J.data.stock.dayLow;
 		            document.getElementById("dayHigh").innerHTML =J.data.stock.dayHigh;
 		            document.getElementById("ask").innerHTML =J.data.stock.ask;
 		            document.getElementById("bid").innerHTML =J.data.stock.bid;
-		            document.getElementById("avgVolume").innerHTML =J.data.stock.avgVolume;
-		            document.getElementById("volume").innerHTML =J.data.stock.volume ;
+		            document.getElementById("avgVolume").innerHTML =Number(J.data.stock.avgVolume).toLocaleString();
+		            document.getElementById("volume").innerHTML =Number(J.data.stock.volume).toLocaleString() ;
 		            document.getElementById("chgFromYearLowPct").innerHTML =J.data.stock.chgFromYearLowPct + "%";
 		            document.getElementById("chgFromYearHighPct").innerHTML =J.data.stock.chgFromYearHighPct+ "%";
 		            document.getElementById("yieldPct").innerHTML =J.data.stock.yieldPct + "%";
@@ -517,7 +517,10 @@
         //setInterval(function(){ refreshStockHeader($scope.search); }, 3000);
       }]);       
  </script>     
+<style type="text/css">
 
+
+</style>
       
       
 
@@ -570,12 +573,13 @@
 			Stock Analysis
 		</div>
 	</div>
+	<div class="body-bg">
    <div class="container">
 	<div class="row searchRow">
 		<div class="col-md-12 searchRow">
 		<form ng-submit="updateSymbol(searchBox, false);">
 		<div class="ui-widget" style="margin-top: 5px;">      
-		<input  id="automplete-2" class="form-control" style="margin: auto; width: 60%; border-color: #aaaaaa;" ng-model="searchBox" placeholder="Search Symbol or Company..."  type="text"/>
+		<input  id="automplete-2" class="form-control" style="margin: auto; width: 60%; border-color: #888888;" ng-model="searchBox" placeholder="Search Symbol or Company..."  type="text"/>
 		</div>
 		<br><br>
 		</form>
@@ -781,10 +785,10 @@
    </div>
    </div>
    </div>
-   <div class='row' style="margin-top:15px">
+   <div class='row' style="margin-top:15px; margin-bottom: 50px;">
 	   <div class='col-md-12'>
 	   <div style="border-bottom-style: solid; border-width: 2px; border-color: grey;">
-	   <h2>News for {{currentSymbol}}</h2>
+	   <h4>News for {{currentSymbol}}</h4>
 	   </div>
 		   <div class='noTop tallScrollable'>
 		      <li class="" ng-repeat="article in news">
@@ -797,6 +801,7 @@
 	</div>
 
   </div>  
+</div>
 </div>
   </body>
    <footer class="foot">

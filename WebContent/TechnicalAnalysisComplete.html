@@ -93,7 +93,7 @@
           	$http.get(urls).success(function(data){        		
           		$scope.stockData = data.Analysis;
           		$scope.$apply();
-          		for(var i = 0; i < data.Analysis.length; i = i +4) {
+          		for(var i = 0; i < data.Analysis.length; i = i +7) {
           			if(data.Analysis[i].Interval !== null){
           				$scope.groups.push(data.Analysis[i].Group);
           				$scope.prices.push(data.Analysis[i].Price);
@@ -203,20 +203,19 @@
 	</div>
 	<div style="text-align: center;">
 	<h3>Daily Price Change</h3>
-	<p>Microsoft (MSFT)</p>
-	 <canvas  id="priceCanvas" class="favCanv"  height="375" width="900"></canvas>
+	<p>Coca-Cola Co (KO)</p>
+	 <canvas  id="priceCanvas" class="favCanv"  height="250" width="900"></canvas>
 	<h3>Algorithm Buy/Sell</h3>
-	<canvas id="decisionCanvas" class="favCanv"  height="125" width="900"></canvas>
+	<canvas id="decisionCanvas" class="favCanv"  height="250" width="900"></canvas>
 	<p>Note: Algorithm Buys at 1 and sells at -1. It trades all available funds each buy/sell.</p>
 							  
 	</div>
 	<div style="padding-top:10px; padding-bottom:10px; background:#eeeeee;">
 				<div style="text-align: center;">
 				<h3>Trade History</h3>
-				<p>Algorithm buys at ask price and sells at bid price</p>
 				</div>
 				<div style="margin-top:10px;margin-bottom:0px;width:900px; " height="200" class="favCanv"> 
-				<div style="padding-right:15px; margin-bottom:0px;">
+				<div style="padding-right:10px; margin-bottom:0px;">
 					<table class="table  noTop " style="margin-bottom:0px;">
 				   	<thead style="margin-bottom:0px;margin-left:15px; margin-bottom:0px;" bgcolor="lightGrey">
 					      <tr style="margin-left:15px; margin-bottom:0px;">
@@ -255,44 +254,70 @@
 				<h3>Sum of Differences:&ensp;<span ng-style="set_text_color(((tradeResultPctSum.toFixed(2))))">{{tradeResultPctSum.toFixed(2) < 0.0 ? tradeResultPctSum.toFixed(2) +"%" : "+" + tradeResultPctSum.toFixed(2) + "%"}}</span></h3>
 			</div>
 		</div>
-		<div style="text-align: center;" >
+		<div style="text-align: center;">
 				<h3>Moving Averages and Technical Indicators</h3>
+				<p>Zooming out or wide monitor required to view properly</p>
 				</div>
-				<div class="favCanv" style="margin-top:10px;margin-bottom:50px; width:100%;" width="1500">
-				<div style="margin-right:15px;">
-					<table class="table  noTop " style="margin-bottom:0px;">
+				<div style="margin-top:10px;margin-bottom:0px;" width="1500">
+					<table class="table  noTop ">
 				   	<thead style="margin-bottom:0px;" bgcolor="lightGrey" >
 					      <tr style="margin-bottom:0px;">
-					      	<th class="industryHeader unselectable" width=10% >Group</th>
-					      	<th class="industryHeader unselectable" width=10% >Interval</th>
-					        <th class="industryHeader unselectable" width=10% >Time</th>
-					         <th class="industryHeader unselectable" width=10% >Summary</th>
-					        <th class="industryHeader unselectable" width=10%  >MA5</th>
-					        <th class="industryHeader unselectable" width=10% >MA10</th>
-					        <th class="industryHeader unselectable"  width=10% >MA20</th>
-					        <th class="industryHeader unselectable" width=10%  >STOCH</th>
-					        <th class="industryHeader unselectable"  width=10% >ATR</th>
-					        <th class="industryHeader unselectable" width=10%  >WillR</th>
-
+					      	<th class="industryHeader unselectable" width=4.1% >Grp&ensp;</th>
+					      	<th class="industryHeader unselectable" width=4.1% >Int</th>
+					        <th class="industryHeader unselectable" width=4.1% >Time</th>
+					        <th class="industryHeader unselectable" width=4.1% >Sumry</th>
+					        <th class="industryHeader unselectable"  width=4.1% >MovS</th>
+					        <th class="industryHeader unselectable" width=4.1% >TechS</th>
+					        <th class="industryHeader unselectable" width=4.1%  >MA5</th>
+					        <th class="industryHeader unselectable" width=4.1% >MA10</th>
+					        <th class="industryHeader unselectable"  width=4.1% >MA20</th>
+					        <th class="industryHeader unselectable"  width=4.1% >MA50</th>
+					        <th class="industryHeader unselectable"  width=4.1%  >MA100</th>
+					        <th class="industryHeader unselectable"  width=4.1% >MA200</th>
+					        <th class="industryHeader unselectable"  width=4.1% >RSI</th>
+					        <th class="industryHeader unselectable" width=4.1%  >STOCH</th>
+					        <th class="industryHeader unselectable" width=4.1% >STCHSI</th>
+					        <th class="industryHeader unselectable" width=4.1%  >MACD</th>
+					        <th class="industryHeader unselectable"  width=4.1% >ATR</th>
+					        <th class="industryHeader unselectable"width=4.1% >ADX</th>
+					        <th class="industryHeader unselectable" width=4.1%  >CCI</th>
+					        <th class="industryHeader unselectable" width=4.1%  >H/L</th>
+					        <th class="industryHeader unselectable"  width=4.1% >UO</th>
+					        <th class="industryHeader unselectable" width=4.1% >ROC</th>
+					        <th class="industryHeader unselectable" width=4.1%  >WillR</th>
+					        <th class="industryHeader unselectable" width=4.1%  >BllBr</th>
 					      </tr>
 					      </thead>
 				    </table>
-				    </div>
 					   <div class='scrollable noTop' style="height: 500px;" width="1000px;">
 				   	<table class="table  noTop ">
 				   
 					      <tbody>
 					      <tr class="" ng-repeat="row in stockData ">
-					        <td  width=10% >{{row.Group}}</td>
-					        <td width=10% >{{row.Interval}}</td>
-					        <td width=10% >{{row.Captured}}</td>
-					        <td width=10%  ng-style="set_color(row.Sumry)">{{row.Sumry < 0 ? row.Sumry : "+" + row.Sumry }}</td>
-					        <td width=10%  ng-style="set_color(row.MA5)">{{row.MA5 < 0 ? row.MA5 : "+" + row.MA5 }}</td>
-					        <td width=10%  ng-style="set_color(row.MA10)">{{row.MA10 < 0 ? row.MA10 : "+" + row.MA10 }}</td>
-					        <td width=10%  ng-style="set_color(row.MA20)">{{row.MA20 < 0 ? row.MA20 : "+" + row.MA20 }}</td>
-					        <td width=10%  ng-style="set_color(row.STOCH)">{{row.STOCH < 0 ? row.STOCH : "+" + row.STOCH }}</td>
-					        <td width=10%  ng-style="set_color(row.ATR)">{{row.ATR < 0 ? row.ATR : "+" + row.ATR }}</td>
-					        <td width=10%  ng-style="set_color(row.WillR)">{{row.WillR < 0 ? row.WillR : "+" + row.WillR }}</td>
+					        <td  width=4.1% >{{row.Group}}</td>
+					        <td width=4.1% >{{row.Interval}}</td>
+					        <td width=4.1% >{{row.Captured}}</td>
+					        <td width=4.1%  ng-style="set_color(row.Sumry)">{{row.Sumry < 0 ? row.Sumry : "+" + row.Sumry }}</td>
+					        <td width=4.1%  ng-style="set_color(row.MovS)">{{row.MovS < 0 ? row.MovS : "+" + row.MovS }}</td>
+					        <td width=4.1%  ng-style="set_color(row.TechS)">{{row.TechS < 0 ? row.TechS : "+" + row.TechS }}</td>
+					        <td width=4.1%  ng-style="set_color(row.MA5)">{{row.MA5 < 0 ? row.MA5 : "+" + row.MA5 }}</td>
+					        <td width=4.1%  ng-style="set_color(row.MA10)">{{row.MA10 < 0 ? row.MA10 : "+" + row.MA10 }}</td>
+					        <td width=4.1%  ng-style="set_color(row.MA20)">{{row.MA20 < 0 ? row.MA20 : "+" + row.MA20 }}</td>
+					        <td width=4.1%  ng-style="set_color(row.MA50)">{{row.MA50 < 0 ? row.MA50 : "+" + row.MA50 }}</td>
+					        <td width=4.1%  ng-style="set_color(row.MA100)">{{row.MA100 < 0 ? row.MA100 : "+" + row.MA100 }}</td>
+					        <td width=4.1%  ng-style="set_color(row.MA200)">{{row.MA200 < 0 ? row.MA200 : "+" + row.MA200 }}</td>
+					        <td width=4.1%  ng-style="set_color(row.RSI)">{{row.RSI < 0 ? row.RSI : "+" + row.RSI }}</td>
+					        <td width=4.1%  ng-style="set_color(row.STOCH)">{{row.STOCH < 0 ? row.STOCH : "+" + row.STOCH }}</td>
+					        <td width=4.1%  ng-style="set_color(row.STCHSI)">{{row.STCHSI < 0 ? row.STCHSI : "+" + row.STCHSI }}</td>
+					        <td width=4.1%  ng-style="set_color(row.MACD)">{{row.MACD < 0 ? row.MACD : "+" + row.MACD }}</td>
+					        <td width=4.1%  ng-style="set_color(row.ATR)">{{row.ATR < 0 ? row.ATR : "+" + row.ATR }}</td>
+					        <td width=4.1%  ng-style="set_color(row.ADX)">{{row.ADX < 0 ? row.ADX : "+" + row.ADX }}</td>
+					        <td width=4.1%  ng-style="set_color(row.CCI)">{{row.CCI < 0 ? row.CCI : "+" + row.CCI }}</td>
+					        <td width=4.1%  ng-style="set_color(row.HL)">{{row.HL < 0 ? row.HL : "+" + row.HL }}</td>
+					        <td width=4.1%  ng-style="set_color(row.UO)">{{row.UO < 0 ? row.UO : "+" + row.UO }}</td>
+					        <td width=4.1%  ng-style="set_color(row.ROC)">{{row.ROC < 0 ? row.ROC : "+" + row.ROC }}</td>
+					        <td width=4.1%  ng-style="set_color(row.WillR)">{{row.WillR < 0 ? row.WillR : "+" + row.WillR }}</td>
+					        <td width=4.1%  ng-style="set_color(row.BllBr)">{{row.BllBr < 0 ? row.BllBr : "+" + row.BllBr }}</td>
 					      </tr>
 					      </tbody>
 				    </table>	

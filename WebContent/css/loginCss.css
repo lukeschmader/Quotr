@@ -32,7 +32,16 @@ input.ng-invalid
 	position: absolute;
 	right: 5px;
 }
+.foot2
+{
 
+
+	padding-top: 10px;
+	padding-left: 100px;
+	background: #b7b7b7;
+	 /* Firefox 3.6+ */ background: -moz-linear-gradient(top, #cbcbcb, #b5b5b5);
+    border: 1px solid #b7b7b7;
+}
 .centerForm
 {
 	

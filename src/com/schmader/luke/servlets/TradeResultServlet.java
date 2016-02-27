@@ -59,24 +59,27 @@ public class TradeResultServlet extends HttpServlet {
             returnData = new StringBuffer ("{\"Trades\":[");
            
             boolean hasResults = false;
-            int k = 1;
+            int count = 0;
+            double totalPct = 0.0;
             double diffPct = 0.0;
             while (rs.next()) {
             	diffPct = 0.0;
             	if(rs.getDouble(4) > 0 && rs.getDouble(6) > 0){
             		diffPct = (rs.getDouble(6)-rs.getDouble(4))/rs.getDouble(4);
             		diffPct = new BigDecimal(diffPct * 100.00).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+            	
+            		totalPct = totalPct + diffPct;
             	}
             	returnData.append("{");
-            	returnData.append("\"DiffPct\":\"" + diffPct + "\",");
+            	returnData.append("\"DiffPct\":" + diffPct + ",");
             	returnData.append("\"Group\":\"" + rs.getInt(1) + "\",");
             	returnData.append("\"Symbol\":\"" + rs.getString(2) + "\",");
             	returnData.append("\"Dt_Bought\":\"" + rs.getTimestamp(3) + "\",");
-            	returnData.append("\"Price_Bought\":\"" + rs.getDouble(4) + "\",");
+            	returnData.append("\"Price_Bought\":" + rs.getDouble(4) + ",");
             	if(rs.getInt(5) > 0){
             		returnData.append("\"Dt_Sold\":\"" + rs.getTimestamp(5) + "\",");
             	}            	
-            	returnData.append("\"Price_Sold\":\"" + rs.getDouble(6) + "\",");
+            	returnData.append("\"Price_Sold\":" + rs.getDouble(6) + ",");
             	returnData.append("\"Flag_Sold\":\"" + rs.getString(7) + "\"");
 	            returnData.append("}");
 				 if(rs.next())
@@ -84,9 +87,10 @@ public class TradeResultServlet extends HttpServlet {
 					 rs.previous();
 					 returnData.append(",");
 				 }
-				 k++;
+				
             }
-            returnData.append("]}");
+            totalPct = new BigDecimal(totalPct).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+            returnData.append("],"+ "\"Pct_Sum\":" + totalPct +"}");
 			 //Write back
 			 System.out.println(returnData.toString());
 			 response.getWriter().write(returnData.toString());
