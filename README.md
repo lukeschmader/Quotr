@@ -1,3 +1,3 @@
 # WebApp
 
-![alt tag](http://imgur.com/bTYpTg9)
+![alt tag](http://i.imgur.com/bTYpTg9.jpg)
