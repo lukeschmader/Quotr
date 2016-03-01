@@ -1,6 +1,6 @@
 # Quotr
 
-main.html
+Stock Quotes
 ![alt tag](http://i.imgur.com/bTYpTg9.jpg)
 
 Favorites Analysis
