@@ -134,7 +134,7 @@ body:before {
   		<span style="color:green;" ng-show="myForm.createUsername.$dirty && (!(exists))">Available</span>
   		</span>
 		<br>
-		<input type="text"  maxlength="29" name="createUsername"  placeholder="username..." class="form-control" ng-model="user.username" required>
+		<input type="text"  maxlength="15" name="createUsername"  placeholder="username..." class="form-control" ng-model="user.username" required>
 		</div><br>
 		<div class="loginInputs">
 		Password:
@@ -145,13 +145,13 @@ body:before {
   		<span style="color:green;" ng-show="myForm.createPassword.$dirty && (!(invalidPassword))">Valid</span>
   		</span>
 		<br>
-		<input type="password" name="createPassword" maxlength="29" placeholder="password..." class="form-control" ng-model="user.password" required>
+		<input type="password" name="createPassword" maxlength="15" placeholder="password..." class="form-control" ng-model="user.password" required>
 		</div> <br>
 		<div class="loginInputs">
 		Organization:
 		 <font color=grey><i>(optional)</i> </font>
 		 <br>
-		 <input type="text" name="createOrganization" maxlength="29" ng-model="user.organization" placeholder="organization..." class="form-control" >
+		 <input type="text" name="createOrganization" maxlength="15" ng-model="user.organization" placeholder="organization..." class="form-control" >
 		</div> <br>
 		<div class="loginButton">
 		<button  ng-disabled="exists || (myForm.createPassword.$error.required)"  class="btn btn-warning">Sign Up</button><br>
@@ -168,5 +168,5 @@ body:before {
 </div>
 
   </body>
- 
+
 </html>

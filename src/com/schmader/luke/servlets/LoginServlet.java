@@ -52,7 +52,10 @@ public class LoginServlet extends HttpServlet {
 		// TODO Auto-generated method stub
 		String user = request.getParameter("username");
 	    String password = request.getParameter("password");
-
+	    if(user.length() > 15 || password.length() > 15 ){
+	    	response.sendRedirect("FailedLogin.html");
+	    	return;
+	    }
 	    //Query for user with password
 	    System.out.println(user);
 	    System.out.println(password);

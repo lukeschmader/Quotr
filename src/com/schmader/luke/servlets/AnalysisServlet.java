@@ -57,7 +57,7 @@ public class AnalysisServlet extends HttpServlet {
 		        try {
 		        	
 		            con = DriverManager.getConnection(dburl, dbuser, dbpassword);
-		            pst = con.prepareStatement("SELECT TIME_INTERVAL,SUMMARY,MOVING_AVERAGES,TECH_INDICATORS,MA5_EXP,MA10_EXP,MA20_EXP,MA50_EXP,MA100_EXP,MA200_EXP,RSI14,STOCH96,STOCHRSI14,MACD1226,ATR14,ADX14,CCI14,HIGHS_LOWS_14,UO,ROC,WILLIAMSR,BULLBEAR13, ID_GROUP, DT_CAPTURED, PRICE FROM TECH_ANLYSS_ONGOING");
+		            pst = con.prepareStatement("SELECT TIME_INTERVAL,SUMMARY,MOVING_AVERAGES,TECH_INDICATORS,MA5_EXP,MA10_EXP,MA20_EXP,MA50_EXP,MA100_EXP,MA200_EXP,RSI14,STOCH96,STOCHRSI14,MACD1226,ATR14,ADX14,CCI14,HIGHS_LOWS_14,UO,ROC,WILLIAMSR,BULLBEAR13, ID_GROUP, DT_CAPTURED, PRICE, MA5_SIMPLE_AMT, MA10_SIMPLE_AMT, MA20_SIMPLE_AMT, MA50_SIMPLE_AMT, MA100_SIMPLE_AMT, MA200_SIMPLE_AMT FROM TECH_ANLYSS_ONGOING");
 		            rs = pst.executeQuery();
 		            
 		            List<String> recordList = new ArrayList<String>();
@@ -93,7 +93,13 @@ public class AnalysisServlet extends HttpServlet {
 		            	returnData.append("\"BllBr\":\"" + rs.getInt(22) + "\",");//BullBear13());
 		            	returnData.append("\"Group\":\"" + rs.getInt(23) + "\",");//Group());  
 		            	returnData.append("\"Captured\":\"" + rs.getTimestamp(24) + "\",");//Group());  
-		            	returnData.append("\"Price\":\"" + rs.getDouble(25) + "\"");//Captured
+		            	returnData.append("\"Price\":\"" + rs.getDouble(25) +  "\",");//Price
+		            	returnData.append("\"MA5amt\":\"" + rs.getDouble(26) +  "\",");//
+		            	returnData.append("\"MA10amt\":\"" + rs.getDouble(27) +  "\",");//
+		            	returnData.append("\"MA20amt\":\"" + rs.getDouble(28) +  "\",");//
+		            	returnData.append("\"MA50amt\":\"" + rs.getDouble(29) +  "\",");//
+		            	returnData.append("\"MA100amt\":\"" + rs.getDouble(30) +  "\",");//
+		            	returnData.append("\"MA200amt\":\"" + rs.getDouble(31) + "\"");//
 			            
 			            returnData.append("}");
 						 if(rs.next())

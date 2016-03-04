@@ -128,6 +128,10 @@ public class CreateProfileServlet extends HttpServlet {
 		String cUsername = request.getParameter("createUsername");
 	    String cPassword = request.getParameter("createPassword");
 	    String cOrganization = request.getParameter("createOrganization");
+	    if(cUsername.length() > 15 || cPassword.length() > 15 || cOrganization.length() > 15){
+	    	response.sendRedirect("CreateProfile.html");
+	    	return;
+	    }
 		if(cOrganization.equals("undefined"))
 		{
 			cOrganization = null;

@@ -76,6 +76,7 @@
 	  		
 	      };
           init();
+          
           function getFavorites(){
         	  var time = new Date().getTime();	
         	  var urls = '/StockWebApp/FavoritesRetrieverServlet?username=' + $scope.user + "&t=" + time;
@@ -87,6 +88,7 @@
           		createMonthGraphs();
     	        createYearGraphs();
     	        createYear5Graphs();
+    	        getNews();
           		var legendHtml = "";
              	 	for (var i = 0; i < $scope.favorites.length; i++) {
              	 		legendHtml = legendHtml.concat('<span style="border-style:solid; border-width: 1px; background:' + colorPicker(i) + ';"> &ensp;</span>&ensp;' + $scope.favorites[i].symbol + '<br>' + $scope.favorites[i].name + '<br><br>');
@@ -95,6 +97,21 @@
              	 	document.getElementById("legend").innerHTML = legendHtml;
              	 	
           	});      	
+          }
+          function getNews(){
+        	var temp = '';
+        	for(var j = 0; j<$scope.favorites.length; j++){
+        		temp = temp.concat($scope.favorites[j].symbol)
+        		if(j != $scope.favorites.length -1){
+        			temp = temp.concat('+');
+        		}
+        	}
+          	var url = 'http://feeds.finance.yahoo.com/rss/2.0/headline?s='+ temp + '&region=US&lang=en-US'
+          	$http.jsonp('//ajax.googleapis.com/ajax/services/feed/load?v=1.0&num=50&callback=JSON_CALLBACK&q=' + encodeURIComponent(url))
+          		.success(function(data){
+         				 $scope.news = data.responseData.feed.entries;
+         				 var i = 0;
+      			});
           }
           function createYear5Graphs(){
         	  var time = new Date().getTime();	
@@ -789,7 +806,7 @@ body:before {
 					
 				</div>
 				<div id="caroselDiv" class="col-xs-10 no-outline" style="margin-top:10px;">
-					<div id="carosel" class="no-outline" style="height: 550px; margin-bottom:100px;" >
+					<div id="carosel" class="no-outline" style="height: 550px;" >
 						<div style="height: 550px;"class="bg no-outline" data-slick='{"slidesToShow": 1, "slidesToScroll": 1, "dots":true, "arrows":true}'>
 						  
 						  <div class="no-outline" id="monthPctDiv" style="text-align: center;">
@@ -995,13 +1012,29 @@ body:before {
 					</div>
 				</div>
 			</div>
+	<div class='row' style="margin-top:30px;margin-left:-30px;margin-right:-30px; margin-bottom: 10px;">
+	   <div class='col-md-12' style="margin-top:0px;margin-left:0px;margin-right:0px;"">
+	   <div style="border-bottom-style: solid; border-width: 2px; border-color: grey;">
+	   <h4>Top News For Favorites</h4>
+	   </div>
+	   <div style="padding-bottom:100px;">
+		   <div class='noTop tallScrollable' style="height:300px;">
+		      <li class="" ng-repeat="article in news">
+		        <h5><a target="_blank" href="{{article.link}}">{{article.title}}</a></h5>                                        
+                    <p class="text-left">{{article.contentSnippet}}</p>                    
+                    <span class="small">{{article.publishedDate}}</span>
+		      </li>
+		   </div>
+		   </div>
+	   </div>
+	</div>
 		</div>		
 		</div>
-<div id="footer" class="foot2">
-  <p>Created By: Luke Schmader</p>
-  <p>Email: <a href="mailto:lukeschmader@gmail.com">lukeschmader@gmail.com</a></p>
-</div>
+
 </body>
-	
+	 <footer class="foot">
+  <p>Created By: Luke Schmader</p>
+  <p>Email: <a href="mailto:lukeschmader@gmail.com">lukeschmader@gmail.com</a>.</p>
+</footer> 
 
 </html>

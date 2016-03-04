@@ -29,12 +29,24 @@
 		$scope.currentGroupArray = [];
 		$scope.groups = [];
 		$scope.prices = [];
+		$scope.MA5amts = [];
+		$scope.MA10amts = [];
+		$scope.MA20amts = [];
+		$scope.MA50amts = [];
+		$scope.MA100amts = [];
+		$scope.MA200amts = [];
 		$scope.tradeResultPctSum = 0.00;
 		$scope.dataLoaded = false;
-		var init = function () { 			
+		var init = function () { 
+			for(var j = 0; j < 180; j++){
+				
+      				$scope.groups.push(j);
+				
+      		}
 			  populateIndicatorTable();
 	          $scope.$apply();	          
 	      };
+	      init();
 	      function getTradeResults(){
 	    	  var time = new Date().getTime();	
 	    	  var urls = '/StockWebApp/TradeResultServlet' + "?t=" + time;
@@ -54,7 +66,7 @@
 	          		}
 	          		$scope.$apply();
 		        	var datac = {
-		        		    labels: $scope.currentGroupArray,
+		        		    labels: $scope.groups,
 		        		    datasets: [
 		        		        {		        		            
 		        		            fillColor: "rgba(220,220,220,0.2)",
@@ -68,14 +80,15 @@
 		        		    ]
 		        		};
 		        	var canvas = document.getElementById("decisionCanvas");
+		        	fitToContainer(canvas);
 		        	var ctx = document.getElementById("decisionCanvas").getContext("2d");	        	
-		        	ctx.clearRect(0, 0, canvas.width, canvas.height);	
+		        	//ctx.clearRect(0, 0, canvas.width, canvas.height);	
 		        	lineChart = new Chart(ctx).Line(datac, {
 		        	    bezierCurve: false,
 		        	    pointDot : false,
-		        	    animationEasing: "easeOutQuart",
-		        	    pointHitDetectionRadius : -2,
-		        	    showTooltips: false,
+		        	    //animationEasing: "easeOutQuart",
+		        	    pointHitDetectionRadius : 0,
+		        	    showTooltips: true,
 		        	    //responsive: true,
 		        	    animation: false      	    
 		        	
@@ -84,8 +97,11 @@
 	          	}); 
 	          	getTradeResults();
 	      }
-	      
-          init();
+	      function fitToContainer(canvas){
+	    	  canvas.style.width='100%';
+	    	  canvas.width  = canvas.offsetWidth;
+	    	}
+          
           function populateIndicatorTable(){        	
         	  var time = new Date().getTime();	
           	var urls = '/StockWebApp/AnalysisServlet' + "?t=" + time;
@@ -93,35 +109,98 @@
           	$http.get(urls).success(function(data){        		
           		$scope.stockData = data.Analysis;
           		$scope.$apply();
+          		
           		for(var i = 0; i < data.Analysis.length; i = i +4) {
           			if(data.Analysis[i].Interval !== null){
-          				$scope.groups.push(data.Analysis[i].Group);
+          				//$scope.groups.push(data.Analysis[i].Group);
           				$scope.prices.push(data.Analysis[i].Price);
+          				$scope.MA5amts.push(data.Analysis[i].MA5amt);
+          				$scope.MA10amts.push(data.Analysis[i].MA10amt);
+          				$scope.MA20amts.push(data.Analysis[i].MA20amt);
+          				$scope.MA50amts.push(data.Analysis[i].MA50amt);
+          				$scope.MA100amts.push(data.Analysis[i].MA100amt);
+          				$scope.MA200amts.push(data.Analysis[i].MA200amt);
           			}
           		}
+          		
           		var datac = {
 	        		    labels: $scope.groups,
 	        		    datasets: [
+							{		        		            
+							    fillColor: "rgba(220,220,220,0.5)",
+							    strokeColor: "#000000",
+							    pointColor: "#000000",
+							    pointStrokeColor: "#fff",
+							    pointHighlightFill: "#fff",
+							    pointHighlightStroke: "rgba(220,220,220,1)",
+							    data: $scope.prices
+							},
 	        		        {		        		            
-	        		            fillColor: "rgba(220,220,220,0.2)",
-	        		            strokeColor: "#676767",
-	        		            pointColor: "#676767",
+	        		            fillColor: "rgba(252, 171, 66,0.0)", 
+	        		            strokeColor: "rgba(255, 0, 0, 0.3)", //red
+	        		            pointColor: "rgb(255, 0, 0)",
 	        		            pointStrokeColor: "#fff",
 	        		            pointHighlightFill: "#fff",
-	        		            pointHighlightStroke: "rgba(220,220,220,1)",
-	        		            data: $scope.prices
+	        		            pointHighlightStroke: "rgba(220,220,220,0)",
+	        		            data: $scope.MA5amts
+	        		        },
+	        		        {		        		            
+	        		            fillColor: "rgba(125, 125, 200)", //
+	        		            strokeColor: "rgba(255, 168, 0, 0.3)", //orange
+	        		            pointColor: "rgb(255, 168, 0)",
+	        		            pointStrokeColor: "#fff",
+	        		            pointHighlightFill: "#fff",
+	        		            pointHighlightStroke: "rgba(220,220,220,0)",
+	        		            data: $scope.MA10amts
+	        		        },
+	        		        {		        		            
+	        		            fillColor: "rgba(51, 204, 51,0.0)", //
+	        		            strokeColor: "rgba(204, 204, 0, 0.4)", //yellow
+	        		            pointColor: "rgb(204, 204, 0)",
+	        		            pointStrokeColor: "#fff",
+	        		            pointHighlightFill: "#fff",
+	        		            pointHighlightStroke: "rgba(220,220,220,0)",
+	        		            data: $scope.MA20amts
+	        		        },
+	        		        {		        		            
+	        		            fillColor: "rgba(255, 51, 0,0.0)", //
+	        		            strokeColor: "rgba(42, 212, 0, 0.3)", //green
+	        		            pointColor: "rgb(42, 212, 0)",
+	        		            pointStrokeColor: "#fff",
+	        		            pointHighlightFill: "#fff",
+	        		            pointHighlightStroke: "rgba(220,220,220,0)",
+	        		            data: $scope.MA50amts
+	        		        },
+	        		        {		        		            
+	        		            fillColor: "rgba(172, 0, 230,0.0)", //
+	        		            strokeColor: "rgba(0, 137, 242, 0.3)", //blue
+	        		            pointColor: "rgb(0, 137, 242)",
+	        		            pointStrokeColor: "#fff",
+	        		            pointHighlightFill: "#fff",
+	        		            pointHighlightStroke: "rgba(220,220,220,0)",
+	        		            data: $scope.MA100amts
+	        		        },
+	        		        {		        		            
+	        		            fillColor: "rgba(153, 102, 51,0.0)", //
+	        		            strokeColor: "rgba(149, 0, 255, 0.3)", //purple
+	        		            pointColor: "rgb(149, 0, 255)",
+	        		            pointStrokeColor: "rgb(149, 0, 255)",
+	        		            pointHighlightFill: "#rgb(149, 0, 255)",
+	        		            pointHighlightStroke: "rgba(220,220,220,0)",
+	        		            data: $scope.MA200amts
 	        		        }
 	        		    ]
 	        		};
 	        	var canvas = document.getElementById("priceCanvas");
+	        	fitToContainer(canvas);
 	        	var ctx = document.getElementById("priceCanvas").getContext("2d");	        	
-	        	ctx.clearRect(0, 0, canvas.width, canvas.height);	
+	        	//ctx.clearRect(0, 0, canvas.width, canvas.height);	
 	        	lineChart = new Chart(ctx).Line(datac, {
 	        	    bezierCurve: false,
 	        	    pointDot : false,
-	        	    animationEasing: "easeOutQuart",
-	        	    pointHitDetectionRadius : -2,
-	        	    showTooltips: false,
+	        	   // animationEasing: "easeOutQuart",
+	        	   pointHitDetectionRadius : 0,
+	        	    showTooltips: true,
 	        	    //responsive: true,
 	        	    animation: false      	    
 	        	
@@ -148,14 +227,14 @@
         	  
         	  if (number < 0) {
         		  if(number < -3){
-        			  return { background: "red" }
+        			  return { background: "maroon" }
         		  }
         	    return { background: "pink" }
         	  }
         	  else if(number > 0)
        		  {        	
         		  if(number > 3){
-        			  return { background: "green" }
+        			  return { background: "darkGreen" }
         		  }
         		  return { background: "lightGreen" }
         		  
@@ -164,7 +243,7 @@
         		  return { background: "lightGrey" }
         	  }
         	}
-	
+          
 	
 	}]);
 
@@ -201,14 +280,23 @@
 			Technical Analysis For Algorithm
 		</div>
 	</div>
-	<div style="text-align: center;">
-	<h3>Daily Price Change</h3>
-	<p>Microsoft (MSFT)</p>
-	 <canvas  id="priceCanvas" class="favCanv"  height="375" width="900"></canvas>
-	<h3>Algorithm Buy/Sell</h3>
-	<canvas id="decisionCanvas" class="favCanv"  height="125" width="900"></canvas>
-	<p>Note: Algorithm Buys at 1 and sells at -1. It trades all available funds each buy/sell.</p>
-							  
+	<div style="text-align: center; padding-left:20px; padding-right:20px;">
+		<h3>Microsoft (MSFT)</h3>
+		<p>Two Minute Price Change -
+			<span style="border-style:solid; border-width: 1px; background:rgba(255, 0, 0, 0.3); margin-right:2px;"> &ensp;</span>MA5
+			<span style="border-style:solid; border-width: 1px; background:rgba(255, 168, 0, 0.3); margin-right:2px;"> &ensp;</span>MA10
+			<span style="border-style:solid; border-width: 1px; background:rgba(204, 204, 0, 0.4); margin-right:2px;"> &ensp;</span>MA20
+			<span style="border-style:solid; border-width: 1px; background:rgba(42, 212, 0, 0.3); margin-right:2px;"> &ensp;</span>MA50
+			<span style="border-style:solid; border-width: 1px; background:rgba(0, 137, 242, 0.3); margin-right:2px;"> &ensp;</span>MA100
+			<span style="border-style:solid; border-width: 1px; background:rgba(149, 0, 255, 0.3); margin-right:2px;"> &ensp;</span>MA200
+		</p>
+		 	<canvas id="priceCanvas" class="favCanv"  height="500" width="1200"></canvas>
+		 <div>
+			<h3 style="display:inline;">Algorithm</h3><span >&ensp;v1.2.0</span>
+		</div>
+			<canvas id="decisionCanvas" class="favCanv"  height="125" width="1200"></canvas>
+		<p>Note: Algorithm Buys at 1 and sells at -1. It trades all available funds each buy/sell.</p>
+								  
 	</div>
 	<div style="padding-top:10px; padding-bottom:10px; background:#eeeeee;">
 				<div style="text-align: center;">
@@ -258,7 +346,7 @@
 		<div style="text-align: center;" >
 				<h3>Moving Averages and Technical Indicators</h3>
 				</div>
-				<div class="favCanv" style="margin-top:10px;margin-bottom:50px; width:100%;" width="1500">
+				<div class="favCanv" style="margin-top:10px;margin-bottom:50px; width:100%;" >
 				<div style="margin-right:15px;">
 					<table class="table  noTop " style="margin-bottom:0px;">
 				   	<thead style="margin-bottom:0px;" bgcolor="lightGrey" >
