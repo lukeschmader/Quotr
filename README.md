@@ -7,7 +7,7 @@ Favorites Analysis
 ![alt tag](http://i.imgur.com/KUamCin.jpg)
 
 Trading Automation
-![alt tag](http://i.imgur.com/aL3HXnP.jpg)
+![alt tag](http://i.imgur.com/MXjdit3.jpg)
 ![alt tag](http://i.imgur.com/UGaZSnh.jpg)
 
 Profile Creation
